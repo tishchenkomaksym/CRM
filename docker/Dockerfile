@@ -1,1 +1,0 @@
-FROM trafex/alpine-nginx-php7:latest
