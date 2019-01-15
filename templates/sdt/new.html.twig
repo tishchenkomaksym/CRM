@@ -1,0 +1,21 @@
+{% extends 'sdt/teamplate.twig' %}
+
+{% block title %}New Sdt{% endblock %}
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ path('default') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ path('sdt_index') }}">SDT list</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Sdt list</li>
+    </ol>
+    </nav>{% endblock %}
+
+{% block body %}
+    <h1>Create new Sdt</h1>
+    <div class="row">
+        <div class="col-4">
+            {{ include('sdt/_form.html.twig') }}
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,16 +1,26 @@
-web:
-  image: nginx:latest
+nginx:
+  restart: always
+  image: registry.devzone.net/mygarage/mygarage-nginx:1-alpine
+  volumes:
+  - ../:/application
+  - phpsocket:/var/run
+  - ./site.conf:/etc/nginx/conf.d/site.conf
+  environment:
+    PHP_FPM_HOST: php-fpm
+    PHP_FPM_PORT: 9000
   ports:
-    - "8080:80"
-  volumes:
-    - ../:/code
-    - ./site.conf:/etc/nginx/conf.d/default.conf
+  - 8080:90
   links:
-    - php
-php:
-  image: zaherg/php-7.2-xdebug-alpine
+  - php-fpm
+php-fpm:
+  image: registry.devzone.net/mygarage/mygarage-php:7.2-fpm-alpine-dev
+  restart: always
   volumes:
-    - ../:/code
+    - ../:/application
+    - phpsocket:/var/run
+  environment:
+      XDEBUG_CONFIG: remote_enable=1 remote_host=10.0.7.211
+      PHP_IDE_CONFIG: serverName=symfony-demo
 db:
   image: mysql:5.7
   environment:
