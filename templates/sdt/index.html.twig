@@ -9,33 +9,11 @@
         <li class="breadcrumb-item active" aria-current="page">Sdt list</li>
     </ol>
     </nav>{% endblock %}
-
 {% block body %}
-    <table class="table col-4">
-        <thead>
-        <tr>
-            <th>SDT start date</th>
-            <th>Days Count</th>
-            <th>actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for sdt in sdts %}
-            <tr>
-                <td>{{ sdt.createDate ? sdt.createDate|date('Y-m-d') : '' }}</td>
-                <td>{{ sdt.count }}</td>
-                <td>
-                    <a href="{{ path('sdt_show', {'id': sdt.id}) }}">show</a>
-                    <a href="{{ path('sdt_edit', {'id': sdt.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
     <a href="{{ path('sdt_new') }}"  class="btn btn-primary" role="button">Create new</a>
+    <div id="calendar"></div>
+
+    <script>
+        $('#calendar').fullCalendar({{ calendarEvents|raw }});
+    </script>
 {% endblock %}

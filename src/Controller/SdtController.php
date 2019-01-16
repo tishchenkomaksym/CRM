@@ -24,10 +24,25 @@ class SdtController extends AbstractController
      */
     public function index(SdtRepository $sdtRepository): Response
     {
+        $sdtList = $sdtRepository->findAll();
+        $eventsInCalendar = [];
+        foreach ($sdtList as $sdt) {
+            $createDate = $sdt->getCreateDate();
+            if (!empty($createDate)) {
+                $eventsInCalendar[] = [
+                    'title' => 'Sdt',
+                    'start' => $createDate->format('Y-m-d'),
+                    'url' => $this->generateUrl('sdt_show', ['id' => $sdt->getId()]),
+                    'end' => date_modify($createDate, '+' . $sdt->getCount() . ' weekdays')->format('Y-m-d')
+                ];
+            }
+        }
+        $calendarEvents = json_encode(['events' => $eventsInCalendar]);
         return $this->render(
             'sdt/index.html.twig',
             [
                 'sdts' => $sdtRepository->findAll(),
+                'calendarEvents' => $calendarEvents
             ]
         );
     }
