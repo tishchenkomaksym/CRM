@@ -3,8 +3,9 @@
     "license": "proprietary",
     "require": {
         "ext-ctype": "*",
-        "ext-json": "*",
         "ext-iconv": "*",
+        "ext-json": "*",
+        "elasticsearch/elasticsearch": "~6.0",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/asset": "4.2.*",
         "symfony/console": "4.2.*",
@@ -13,6 +14,7 @@
         "symfony/flex": "^1.1",
         "symfony/form": "4.2.*",
         "symfony/framework-bundle": "4.2.*",
+        "symfony/ldap": "4.2.*",
         "symfony/monolog-bundle": "^3.1",
         "symfony/orm-pack": "*",
         "symfony/process": "4.2.*",
@@ -23,8 +25,7 @@
         "symfony/twig-bundle": "4.2.*",
         "symfony/validator": "4.2.*",
         "symfony/web-link": "4.2.*",
-        "symfony/yaml": "4.2.*",
-        "elasticsearch/elasticsearch": "~6.0"
+        "symfony/yaml": "4.2.*"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.1",

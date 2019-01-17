@@ -11,9 +11,10 @@ nginx:
   ports:
   - 8080:90
   links:
-  - php-fpm
-php-fpm:
-  image: registry.devzone.net/mygarage/mygarage-php:7.2-fpm-alpine-dev
+  - php-fpm-new
+php-fpm-new:
+  build: .
+  dockerfile: Dockerfile
   restart: always
   volumes:
     - ../:/application
