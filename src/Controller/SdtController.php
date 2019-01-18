@@ -2,14 +2,13 @@
 
 namespace App\Controller;
 
+use App\Calendar\CalendarEventItemCollection;
+use App\Calendar\SdtCalendarEventItemBuilder;
 use App\Entity\Sdt;
-use App\Entity\User;
-use App\Form\SdtType;
 use App\Repository\SdtRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,24 +24,21 @@ class SdtController extends AbstractController
     public function index(SdtRepository $sdtRepository): Response
     {
         $sdtList = $sdtRepository->findAll();
-        $eventsInCalendar = [];
+        $calendarEventItemCollection = new CalendarEventItemCollection();
         foreach ($sdtList as $sdt) {
-            $createDate = $sdt->getCreateDate();
-            if (!empty($createDate)) {
-                $eventsInCalendar[] = [
-                    'title' => 'Sdt',
-                    'start' => $createDate->format('Y-m-d'),
-                    'url' => $this->generateUrl('sdt_show', ['id' => $sdt->getId()]),
-                    'end' => date_modify($createDate, '+' . $sdt->getCount() . ' weekdays')->format('Y-m-d')
-                ];
-            }
+            $calendarEventItemCollection->add(
+                (new SdtCalendarEventItemBuilder(
+                    $sdt,
+                    $this->container->get('router'),
+                    $this->getUser()
+                ))->build()
+            );
         }
-        $calendarEvents = json_encode(['events' => $eventsInCalendar]);
         return $this->render(
             'sdt/index.html.twig',
             [
-                'sdts' => $sdtRepository->findAll(),
-                'calendarEvents' => $calendarEvents
+                'sdts' => $sdtList,
+                'calendarEvents' => $calendarEventItemCollection->toJson()
             ]
         );
     }
@@ -56,7 +52,7 @@ class SdtController extends AbstractController
         $sdt->setUser($this->getUser());
         $form = $this->createFormBuilder($sdt)
                      ->add('count', IntegerType::class)
-                     ->add('createDate', DateType::class,['widget'=>'single_text'] )
+                     ->add('createDate', DateType::class, ['widget' => 'single_text'])
                      ->getForm();
         $form->handleRequest($request);
 
@@ -97,7 +93,7 @@ class SdtController extends AbstractController
     {
         $form = $this->createFormBuilder($sdt)
                      ->add('count', IntegerType::class)
-                     ->add('createDate', DateType::class,['widget'=>'single_text'] )
+                     ->add('createDate', DateType::class, ['widget' => 'single_text'])
                      ->getForm();
         $form->handleRequest($request);
 

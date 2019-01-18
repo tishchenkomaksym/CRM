@@ -11,8 +11,8 @@ nginx:
   ports:
   - 8080:90
   links:
-  - php-fpm-new
-php-fpm-new:
+  - php-fpm
+php-fpm:
   build: .
   dockerfile: Dockerfile
   restart: always
@@ -20,7 +20,7 @@ php-fpm-new:
     - ../:/application
     - phpsocket:/var/run
   environment:
-      XDEBUG_CONFIG: remote_enable=1 remote_host=10.0.5.86
+      XDEBUG_CONFIG: remote_enable=0 remote_host=10.0.5.86
       PHP_IDE_CONFIG: serverName=symfony-demo
 db:
   image: mysql:5.7
