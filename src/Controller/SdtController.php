@@ -6,6 +6,7 @@ use App\Calendar\CalendarEventItemCollection;
 use App\Calendar\SdtCalendarEventItemBuilder;
 use App\Entity\Sdt;
 use App\Repository\SdtRepository;
+use App\Service\UserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -21,11 +22,12 @@ class SdtController extends AbstractController
     /**
      * @Route("/", name="sdt_index", methods={"GET"})
      */
-    public function index(SdtRepository $sdtRepository): Response
+    public function index(SdtRepository $sdtRepository, UserInformationService $userInformationService): Response
     {
-        $sdtList = $sdtRepository->findAll();
+        $sdtCollection = $userInformationService
+            ->getAllUserSdt($sdtRepository, $this->getUser()->getId());
         $calendarEventItemCollection = new CalendarEventItemCollection();
-        foreach ($sdtList as $sdt) {
+        foreach ($sdtCollection->getItems() as $sdt) {
             $calendarEventItemCollection->add(
                 (new SdtCalendarEventItemBuilder(
                     $sdt,
@@ -34,10 +36,11 @@ class SdtController extends AbstractController
                 ))->build()
             );
         }
+
         return $this->render(
             'sdt/index.html.twig',
             [
-                'sdts' => $sdtList,
+                'sdts' => $sdtCollection->getItems(),
                 'calendarEvents' => $calendarEventItemCollection->toJson()
             ]
         );
