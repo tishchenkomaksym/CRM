@@ -1,20 +1,15 @@
 FROM php:7.2-fpm-alpine
 RUN apk --no-cache update \
     && apk --no-cache upgrade \
-    && apk add --no-cache php7-zip 	zlib-dev libldap
+    && apk add --no-cache php7-zip 	zlib-dev libldap php7-mysqli git
 RUN apk update && \
          apk add --no-cache --virtual .build-deps $PHPIZE_DEPS openldap-dev && \
          docker-php-ext-install ldap && \
          apk del .build-deps && \
          rm -rf /tmp/* /var/cache/apk/*
-RUN docker-php-ext-install zip
-RUN docker-php-ext-install mysqli pdo pdo_mysql
-RUN apk add --no-cache php7-mysqli
-#RUN apt-get update \
-#    && apt-get install -y git
-##
+RUN docker-php-ext-install zip mysqli pdo pdo_mysql
+
 RUN set -xe \
-    && apk add --no-cache git \
 #    # Install Composer
     && curl --silent --show-error https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \

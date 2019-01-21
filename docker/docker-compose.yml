@@ -6,13 +6,13 @@ nginx:
   - phpsocket:/var/run
   - ./site.conf:/etc/nginx/conf.d/site.conf
   environment:
-    PHP_FPM_HOST: php-fpm
+    PHP_FPM_HOST: php-fpm-2
     PHP_FPM_PORT: 9000
   ports:
   - 8080:90
   links:
-  - php-fpm
-php-fpm:
+  - php-fpm-2
+php-fpm-2:
   build: .
   dockerfile: Dockerfile
   restart: always

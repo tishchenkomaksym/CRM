@@ -29,6 +29,8 @@ class UserDataProvider
 
     public function getUserTime($user, $dateFrom, $dateTo)
     {
-        return $this->elasticSearchClient->getWorkLogFromDate($user,$dateFrom,$dateTo);
+        return $this->elasticSearchClient->getWorkLogFromDate($user, $dateFrom, $dateTo);
     }
+
+
 }

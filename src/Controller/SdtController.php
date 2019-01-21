@@ -6,8 +6,8 @@ use App\Calendar\CalendarEventItemCollection;
 use App\Calendar\HolidayCalendarEventItemBuilder;
 use App\Calendar\SdtCalendarEventItemBuilder;
 use App\Entity\Sdt;
-use App\Repository\HolidayRepository;
 use App\Repository\SdtRepository;
+use App\Service\HolidayService;
 use App\Service\UserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -23,28 +23,33 @@ class SdtController extends AbstractController
 {
     /**
      * @Route("/", name="sdt_index", methods={"GET"})
+     * @param SdtRepository $sdtRepository
+     * @param HolidayService $holidayService
+     * @param UserInformationService $userInformationService
+     * @return Response
      */
     public function index(
         SdtRepository $sdtRepository,
-        HolidayRepository $holidayRepository,
+        HolidayService $holidayService,
         UserInformationService $userInformationService
     ): Response
     {
         $sdtCollection = $userInformationService
             ->getAllUserSdt($sdtRepository, $this->getUser()->getId());
-        $holidayArratCollection = $holidayRepository
-            ->findAll();
+
         $calendarEventItemCollection = new CalendarEventItemCollection();
         foreach ($sdtCollection->getItems() as $sdt) {
             $calendarEventItemCollection->add(
                 (new SdtCalendarEventItemBuilder(
                     $sdt,
                     $this->container->get('router'),
-                    $this->getUser()
+                    $this->getUser(),
+                    $holidayService
                 ))->build()
             );
         }
-        foreach ($holidayArratCollection as $holiday) {
+
+        foreach ($holidayService->getHolidays() as $holiday) {
             $calendarEventItemCollection->add(
                 (new HolidayCalendarEventItemBuilder(
                     $holiday,
@@ -57,7 +62,8 @@ class SdtController extends AbstractController
             'sdt/index.html.twig',
             [
                 'sdts' => $sdtCollection->getItems(),
-                'calendarEvents' => $calendarEventItemCollection->toJson()
+                'calendarEvents' => $calendarEventItemCollection->toJson(),
+                'leftSdt' => $userInformationService->getSdtLeft($sdtCollection)
             ]
         );
     }

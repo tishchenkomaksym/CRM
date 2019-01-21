@@ -23,17 +23,17 @@ class UserInformationService
 
     }
 
-    public function getSdtCountSum(SdtCollection $sdtCollection)
-    {
-        $sum = 0;
-        foreach ($sdtCollection->getItems() as $collectionItem) {
-            $sum += $collectionItem->getCount();
-        }
-        return $sum;
-    }
-
     public function getAllUserSdt(SdtRepository $sdtRepository, int $userId): SdtCollection
     {
         return new SdtCollection($sdtRepository->findBy(['userId' => $userId]));
+    }
+
+    /**
+     * @param SdtCollection $sdtCollection
+     * @return int
+     */
+    public function getSdtLeft(SdtCollection $sdtCollection): int
+    {
+        return $sdtCollection->getCountSum();
     }
 }

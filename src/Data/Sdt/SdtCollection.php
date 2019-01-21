@@ -33,4 +33,16 @@ class SdtCollection
     {
         return $this->items;
     }
+
+    /**
+     * @return int
+     */
+    public function getCountSum()
+    {
+        $sum = 0;
+        foreach ($this->items as $item) {
+            $sum += $item->getCount();
+        }
+        return $sum;
+    }
 }
