@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Calendar\CalendarEventItemCollection;
+use App\Calendar\HolidayCalendarEventItemBuilder;
 use App\Calendar\SdtCalendarEventItemBuilder;
 use App\Entity\Sdt;
+use App\Repository\HolidayRepository;
 use App\Repository\SdtRepository;
 use App\Service\UserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,10 +24,16 @@ class SdtController extends AbstractController
     /**
      * @Route("/", name="sdt_index", methods={"GET"})
      */
-    public function index(SdtRepository $sdtRepository, UserInformationService $userInformationService): Response
+    public function index(
+        SdtRepository $sdtRepository,
+        HolidayRepository $holidayRepository,
+        UserInformationService $userInformationService
+    ): Response
     {
         $sdtCollection = $userInformationService
             ->getAllUserSdt($sdtRepository, $this->getUser()->getId());
+        $holidayArratCollection = $holidayRepository
+            ->findAll();
         $calendarEventItemCollection = new CalendarEventItemCollection();
         foreach ($sdtCollection->getItems() as $sdt) {
             $calendarEventItemCollection->add(
@@ -33,6 +41,14 @@ class SdtController extends AbstractController
                     $sdt,
                     $this->container->get('router'),
                     $this->getUser()
+                ))->build()
+            );
+        }
+        foreach ($holidayArratCollection as $holiday) {
+            $calendarEventItemCollection->add(
+                (new HolidayCalendarEventItemBuilder(
+                    $holiday,
+                    $this->container->get('router')
                 ))->build()
             );
         }

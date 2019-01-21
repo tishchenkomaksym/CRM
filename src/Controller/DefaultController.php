@@ -17,7 +17,7 @@ class DefaultController extends AbstractController
      */
     public function index(UserDataProvider $userDataProvider)
     {
-        $time = $userDataProvider->getUserTime('ivan.melnichuk', '01/01/2019', '31/01/2019');
+//        $time = $userDataProvider->getUserTime('ivan.melnichuk', '01/01/2019', '31/01/2019');
 
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
