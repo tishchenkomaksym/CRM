@@ -40,7 +40,7 @@ class HolidayCalendarEventItemBuilder
         //TODO: add TOM role check
         $calendarItem->url = $this->router->generate(
             'holiday_show',
-            [$this->holiday->getId()],
+            ['id' => $this->holiday->getId()],
             UrlGeneratorInterface::ABSOLUTE_PATH
         );
         return $calendarItem;

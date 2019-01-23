@@ -27,7 +27,7 @@ class Sdt
     private $count;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy="sdt", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="sdt")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
