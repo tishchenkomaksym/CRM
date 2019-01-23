@@ -71,7 +71,7 @@ class SdtCalendarEventItemBuilder
         if ($this->user->getId() === $this->sdt->getId()) {
             $calendarItem->url = $this->router->generate(
                 'sdt_edit',
-                [$this->sdt->getId()],
+                ['id' => $this->sdt->getId()],
                 UrlGeneratorInterface::ABSOLUTE_PATH
             );
         }

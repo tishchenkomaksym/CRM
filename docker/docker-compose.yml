@@ -22,7 +22,7 @@ php-fpm-2:
     - ../:/application
     - phpsocket:/var/run
   environment:
-      XDEBUG_CONFIG: remote_enable=0 remote_host=10.0.5.86
+    XDEBUG_CONFIG: remote_enable=1 remote_host=host.docker.internal
       PHP_IDE_CONFIG: serverName=symfony-demo
 db:
   image: mysql:5.7

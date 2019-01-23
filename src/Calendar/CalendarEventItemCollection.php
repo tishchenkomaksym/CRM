@@ -22,6 +22,10 @@ class CalendarEventItemCollection
 
     public function toJson()
     {
-        return json_encode(['events' => get_object_vars($this->collection)]);
+        $array = [];
+        foreach ($this->collection as $calendarItem) {
+            $array[] = get_object_vars($calendarItem);
+        }
+        return json_encode(['events' => $array]);
     }
 }

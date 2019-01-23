@@ -25,7 +25,7 @@ class UserInformationService
 
     public function getAllUserSdt(SdtRepository $sdtRepository, int $userId): SdtCollection
     {
-        return new SdtCollection($sdtRepository->findBy(['userId' => $userId]));
+        return new SdtCollection($sdtRepository->findBy(['user' => $userId]));
     }
 
     /**
