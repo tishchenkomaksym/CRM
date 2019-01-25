@@ -32,6 +32,11 @@ class Sdt
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $acting;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -61,7 +66,7 @@ class Sdt
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
@@ -69,6 +74,18 @@ class Sdt
     public function setUser(User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getActing(): ?string
+    {
+        return $this->acting;
+    }
+
+    public function setActing(string $acting): self
+    {
+        $this->acting = $acting;
 
         return $this;
     }

@@ -9,6 +9,7 @@
 namespace App\Service;
 
 use App\Data\Sdt\SdtCollection;
+use App\Entity\User;
 use App\Repository\SdtRepository;
 
 class UserInformationService
@@ -30,10 +31,15 @@ class UserInformationService
 
     /**
      * @param SdtCollection $sdtCollection
+     * @param User $user
      * @return int
      */
-    public function getSdtLeft(SdtCollection $sdtCollection): int
+    public function getSdtLeft(SdtCollection $sdtCollection, User $user): int
     {
-        return $sdtCollection->getCountSum();
+        $existSDT = 0;
+        foreach ($user->getMonthlySdts() as $monthlySdt) {
+            $existSDT += $monthlySdt->getCount();
+        }
+        return $existSDT - $sdtCollection->getCountSum();
     }
 }

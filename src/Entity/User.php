@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -34,9 +36,19 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Sdt", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Sdt", mappedBy="user", cascade={"persist", "remove"})
      */
     private $sdt;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MonthlySdt", mappedBy="user_id")
+     */
+    private $monthlySdts;
+
+    public function __construct()
+    {
+        $this->monthlySdts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -131,5 +143,41 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection|MonthlySdt[]
+     */
+    public function getMonthlySdts(): Collection
+    {
+        return $this->monthlySdts;
+    }
+
+    public function addMonthlySdt(MonthlySdt $monthlySdt): self
+    {
+        if (!$this->monthlySdts->contains($monthlySdt)) {
+            $this->monthlySdts[] = $monthlySdt;
+            $monthlySdt->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMonthlySdt(MonthlySdt $monthlySdt): self
+    {
+        if ($this->monthlySdts->contains($monthlySdt)) {
+            $this->monthlySdts->removeElement($monthlySdt);
+            // set the owning side to null (unless already changed)
+            if ($monthlySdt->getUserId() === $this) {
+                $monthlySdt->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->getUsername();
     }
 }

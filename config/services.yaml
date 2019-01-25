@@ -31,3 +31,15 @@ services:
     App\Service\ElasticSearchClient:
         arguments:
             $host: '%env(ELASTIC_URL)%'
+
+
+    Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
+      arguments:
+      - host: ipa.onyxenterprises.com
+        port: 389
+        encryption: tls
+        options:
+          protocol_version: 3
+          referrals: false
+    Symfony\Component\Ldap\Ldap:
+      arguments: ['@Symfony\Component\Ldap\Adapter\ExtLdap\Adapter']

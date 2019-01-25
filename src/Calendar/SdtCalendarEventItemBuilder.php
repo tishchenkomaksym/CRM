@@ -58,19 +58,19 @@ class SdtCalendarEventItemBuilder
             $sdtCount = $this->sdt->getCount();
             $calculatedSdtCount = $sdtCount > 0 ? $sdtCount : $sdtCount * -1;
             if ($createDate instanceof \DateTime) {
-                $endDate = date_modify($createDate, '+' . $calculatedSdtCount . ' weekdays');
+                $endDate = date_modify(clone $createDate, '+' . $calculatedSdtCount . ' weekdays');
                 $holidaysCount = count($this->holidayService->getHolidayBetweenDate($createDate, $endDate));
                 if ($holidaysCount > 0) {
-                    $endDate = date_modify($endDate, '+' . $holidaysCount . ' weekdays');
+                    date_modify($endDate, '+' . $holidaysCount . ' weekdays');
                 }
                 $calendarItem->end = $endDate->format('Y-m-d');
             }
         }
         $calendarItem->title = 'SDT';
         //TODO: add TOM role check
-        if ($this->user->getId() === $this->sdt->getId()) {
+        if ($this->user->getId() === $this->sdt->getUser()->getId()) {
             $calendarItem->url = $this->router->generate(
-                'sdt_edit',
+                'sdt_show',
                 ['id' => $this->sdt->getId()],
                 UrlGeneratorInterface::ABSOLUTE_PATH
             );

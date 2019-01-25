@@ -12,6 +12,7 @@ use App\Service\UserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -63,7 +64,7 @@ class SdtController extends AbstractController
             [
                 'sdts' => $sdtCollection->getItems(),
                 'calendarEvents' => $calendarEventItemCollection->toJson(),
-                'leftSdt' => $userInformationService->getSdtLeft($sdtCollection)
+                'leftSdt' => $userInformationService->getSdtLeft($sdtCollection, $this->getUser())
             ]
         );
     }
@@ -78,6 +79,7 @@ class SdtController extends AbstractController
         $form = $this->createFormBuilder($sdt)
                      ->add('count', IntegerType::class)
                      ->add('createDate', DateType::class, ['widget' => 'single_text'])
+                     ->add('acting', TextType::class)
                      ->getForm();
         $form->handleRequest($request);
 
@@ -119,6 +121,7 @@ class SdtController extends AbstractController
         $form = $this->createFormBuilder($sdt)
                      ->add('count', IntegerType::class)
                      ->add('createDate', DateType::class, ['widget' => 'single_text'])
+                     ->add('acting', TextType::class, ['label' => 'Acting person'])
                      ->getForm();
         $form->handleRequest($request);
 
