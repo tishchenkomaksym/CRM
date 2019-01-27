@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\MonthlySdt;
+use App\Entity\User;
 use App\Form\MonthlySdtType;
 use App\Repository\MonthlySdtRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,10 +21,14 @@ class MonthlySdtController extends AbstractController
      */
     public function index(MonthlySdtRepository $monthlySdtRepository): Response
     {
+        $user = $this->getUser();
+        if ($user instanceof User) {
+            $monthlySdts = $user->getMonthlySdts();
+        }
         return $this->render(
             'monthly_sdt/index.html.twig',
             [
-                'monthly_sdts' => $monthlySdtRepository->findAll(),
+                'monthly_sdts' => $monthlySdts,
             ]
         );
     }

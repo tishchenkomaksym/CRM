@@ -41,7 +41,7 @@ class User implements UserInterface
     private $sdt;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\MonthlySdt", mappedBy="user_id")
+     * @ORM\OneToMany(targetEntity="App\Entity\MonthlySdt", mappedBy="user")
      */
     private $monthlySdts;
 

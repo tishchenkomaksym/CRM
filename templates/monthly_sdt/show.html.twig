@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MonthlySdt{% endblock %}
+
+{% block body %}
+    <h1>MonthlySdt</h1>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ monthly_sdt.id }}</td>
+        </tr>
+        <tr>
+            <th>Count</th>
+            <td>{{ monthly_sdt.count }}</td>
+        </tr>
+        <tr>
+            <th>Create_date</th>
+            <td>{{ monthly_sdt.createDate ? monthly_sdt.createDate|date('Y-m-d') : '' }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('monthly_sdt_index') }}">back to list</a>
+
+    <a href="{{ path('monthly_sdt_edit', {'id': monthly_sdt.id}) }}">edit</a>
+
+    {{ include('monthly_sdt/_delete_form.html.twig') }}
+{% endblock %}

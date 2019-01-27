@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit MonthlySdt{% endblock %}
+
+{% block body %}
+    <h1>Edit MonthlySdt</h1>
+
+    {{ include('monthly_sdt/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('monthly_sdt_index') }}">back to list</a>
+
+    {{ include('monthly_sdt/_delete_form.html.twig') }}
+{% endblock %}

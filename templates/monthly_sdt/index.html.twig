@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MonthlySdt index{% endblock %}
+
+{% block body %}
+    <h1>MonthlySdt index</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Count</th>
+            <th>Create_date</th>
+            <th>actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for monthly_sdt in monthly_sdts %}
+            <tr>
+                <td>{{ monthly_sdt.id }}</td>
+                <td>{{ monthly_sdt.count }}</td>
+                <td>{{ monthly_sdt.userId }}</td>
+                <td>{{ monthly_sdt.createDate ? monthly_sdt.createDate|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('monthly_sdt_show', {'id': monthly_sdt.id}) }}">show</a>
+                    <a href="{{ path('monthly_sdt_edit', {'id': monthly_sdt.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('monthly_sdt_new') }}">Create new</a>
+{% endblock %}

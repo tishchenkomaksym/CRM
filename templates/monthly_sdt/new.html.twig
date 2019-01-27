@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New MonthlySdt{% endblock %}
+
+{% block body %}
+    <h1>Create new MonthlySdt</h1>
+
+    {{ include('monthly_sdt/_form.html.twig') }}
+
+    <a href="{{ path('monthly_sdt_index') }}">back to list</a>
+{% endblock %}
