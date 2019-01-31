@@ -197,8 +197,8 @@ class SdtController extends AbstractController
 
     private function sendNewSdtEmail(\Swift_Mailer $mailer, NewSdtMailData $mailData): int
     {
-        $message = (new \Swift_Message('Hello Email'))
-            ->setFrom($this->getUser()->getEmail())
+        $message = (new \Swift_Message($mailData->getSubject()))
+            ->setFrom($mailData->getFromEmail())
             ->setTo($mailData->getToEmails())
             ->setBody(
                 $this->renderView(
@@ -218,8 +218,8 @@ class SdtController extends AbstractController
 
     private function sendEditSdtEmail(\Swift_Mailer $mailer, EditSdtMailData $mailData): int
     {
-        $message = (new \Swift_Message('Hello Email'))
-            ->setFrom($this->getUser()->getEmail())
+        $message = (new \Swift_Message($mailData->getSubject()))
+            ->setFrom($mailData->getFromEmail())
             ->setTo($mailData->getToEmails())
             ->setBody(
                 $this->renderView(
@@ -241,8 +241,8 @@ class SdtController extends AbstractController
 
     private function sendDeleteSdtEmail(\Swift_Mailer $mailer, DeleteSdtMailData $mailData): int
     {
-        $message = (new \Swift_Message('Hello Email'))
-            ->setFrom($this->getUser()->getEmail())
+        $message = (new \Swift_Message($mailData->getSubject()))
+            ->setFrom($mailData->getFromEmail())
             ->setTo(
                 $mailData->getToEmails()
             )

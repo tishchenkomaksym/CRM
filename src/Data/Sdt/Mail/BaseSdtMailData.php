@@ -17,6 +17,12 @@ class BaseSdtMailData
         'dmitriy.la@onyx.com',
         'vitaliy.ko@onyx.com'
     ];
+    private $userName;
+
+    public function __construct(string $userName)
+    {
+        $this->userName = $userName;
+    }
 
     /**
      * @return array
@@ -32,5 +38,15 @@ class BaseSdtMailData
     public function setToEmails(array $toEmails): void
     {
         $this->toEmails = $toEmails;
+    }
+
+    public function getSubject(): string
+    {
+        return 'SDT Request || ' . $this->userName . ', Programming Team';
+    }
+
+    public function getFromEmail()
+    {
+        return getenv('LOCAL_EMAIL');
     }
 }

@@ -8,17 +8,19 @@
 
 namespace App\Data\Sdt\Mail;
 
+
 class DeleteSdtMailData extends BaseSdtMailData
 {
     private $daysCount;
     private $fromDate;
     private $toDate;
 
-    public function __construct(string $fromDate, string $toDate, $daysCount)
+    public function __construct(string $userName, string $fromDate, string $toDate, $daysCount)
     {
         $this->fromDate = $fromDate;
         $this->toDate = $toDate;
         $this->daysCount = $daysCount;
+        BaseSdtMailData::__construct($userName);
     }
 
     /**
