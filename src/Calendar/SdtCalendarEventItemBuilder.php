@@ -8,7 +8,7 @@
 
 namespace App\Calendar;
 
-use App\Entity\Holiday;
+use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
 use App\Entity\Sdt;
 use App\Entity\User;
 use App\Service\HolidayService;
@@ -39,7 +39,7 @@ class SdtCalendarEventItemBuilder
      * @param Sdt $sdt
      * @param Router $router
      * @param User $user
-     * @param Holiday[] $holidays
+     * @param HolidayService $holidayService
      */
     public function __construct(Sdt $sdt, Router $router, User $user, HolidayService $holidayService)
     {
@@ -53,18 +53,13 @@ class SdtCalendarEventItemBuilder
     {
         $calendarItem = new CalendarItem();
         $createDate = $this->sdt->getCreateDate();
-        if ($createDate) {
+        if ($createDate && $createDate instanceof \DateTime) {
             $calendarItem->start = $createDate->format('Y-m-d');
-            $sdtCount = $this->sdt->getCount();
-            $calculatedSdtCount = $sdtCount > 0 ? $sdtCount : $sdtCount * -1;
-            if ($createDate instanceof \DateTime) {
-                $endDate = date_modify(clone $createDate, '+' . $calculatedSdtCount . ' weekdays');
-                $holidaysCount = count($this->holidayService->getHolidayBetweenDate($createDate, $endDate));
-                if ($holidaysCount > 0) {
-                    date_modify($endDate, '+' . $holidaysCount . ' weekdays');
-                }
-                $calendarItem->end = $endDate->format('Y-m-d');
-            }
+            $calendarItem->end = DateCalculatorWithWeekends::getDateWithOffset(
+                $createDate,
+                $this->sdt->getCount(),
+                $this->holidayService
+            )->format('Y-m-d');
         }
         $calendarItem->title = 'SDT';
         //TODO: add TOM role check
