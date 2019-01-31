@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\MonthlySdt;
 use App\Entity\User;
 use App\Form\MonthlySdtType;
-use App\Repository\MonthlySdtRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +18,7 @@ class MonthlySdtController extends AbstractController
     /**
      * @Route("/", name="monthly_sdt_index", methods={"GET"})
      */
-    public function index(MonthlySdtRepository $monthlySdtRepository): Response
+    public function index(): Response
     {
         $user = $this->getUser();
         if ($user instanceof User) {
@@ -79,7 +78,6 @@ class MonthlySdtController extends AbstractController
     {
         $form = $this->createForm(MonthlySdtType::class, $monthlySdt);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
