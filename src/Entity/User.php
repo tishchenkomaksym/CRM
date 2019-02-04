@@ -45,6 +45,12 @@ class User implements UserInterface
      */
     private $monthlySdts;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\UserPhpDeveloperLevelRelation", mappedBy="user", cascade={"persist",
+     *     "remove"})
+     */
+    private $phpDeveloperLevelRelation;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
@@ -179,5 +185,22 @@ class User implements UserInterface
     public function __toString()
     {
         return $this->getUsername();
+    }
+
+    public function getPhpDeveloperLevelRelation(): ?UserPhpDeveloperLevelRelation
+    {
+        return $this->phpDeveloperLevelRelation;
+    }
+
+    public function setPhpDeveloperLevelRelation(UserPhpDeveloperLevelRelation $phpDeveloperLevelRelation): self
+    {
+        $this->phpDeveloperLevelRelation = $phpDeveloperLevelRelation;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $phpDeveloperLevelRelation->getUser()) {
+            $phpDeveloperLevelRelation->setUser($this);
+        }
+
+        return $this;
     }
 }

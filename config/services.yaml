@@ -37,7 +37,7 @@ services:
       arguments:
       - host: ipa.onyxenterprises.com
         port: 389
-        encryption: tls
+        #        encryption: tls
         options:
           protocol_version: 3
           referrals: false

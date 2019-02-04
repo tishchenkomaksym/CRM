@@ -20,6 +20,7 @@ class UserFixtures extends Fixture
     {
         $user = new User();
         $user->setEmail('ivan.melnichuk@onyx.com');
+        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST']);
         $user->setPassword(
             $this->passwordEncoder->encodePassword(
                 $user,
@@ -27,7 +28,38 @@ class UserFixtures extends Fixture
             )
         );
         $manager->persist($user);
+        $user = new User();
+        $user->setEmail('junior1@onyx.com');
+        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
+        $user->setPassword(
+            $this->passwordEncoder->encodePassword(
+                $user,
+                'junior1@onyx.com'
+            )
+        );
+        $manager->persist($user);
+        $user = new User();
+        $user->setEmail('recrutier@onyx.com');
+        $user->setPassword(
+            $this->passwordEncoder->encodePassword(
+                $user,
+                'qwerty'
+            )
+        );
+        $user->setRoles(['ROLE_USER', 'ROLE_RECRUITER']);
+        $manager->persist($user);
         $manager->flush();
-
+        $manager->persist($user);
+        $user = new User();
+        $user->setEmail('hr@onyx.com');
+        $user->setPassword(
+            $this->passwordEncoder->encodePassword(
+                $user,
+                'qwerty'
+            )
+        );
+        $user->setRoles(['ROLE_USER', 'ROLE_HR', 'ROLE_MANAGE_HOLIDAYS', 'ROLE_MANAGE_MONTHLY_SDT']);
+        $manager->persist($user);
+        $manager->flush();
     }
 }

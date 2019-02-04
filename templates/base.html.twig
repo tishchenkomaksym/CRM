@@ -46,9 +46,15 @@
                 <h1>Menu:</h1>
                 {% block menu %}
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><a href="{{ path('sdt_index') }}">SDT request</a></li>
-                        <li class="list-group-item"><a href="{{ path('holiday_index') }}">Holidays</a></li>
+                        {% if is_granted('ROLE_SDT_REQUEST') %}
+                            <li class="list-group-item"><a href="{{ path('sdt_index') }}">SDT request</a></li>
+                        {% endif %}
+                        {% if is_granted('ROLE_MANAGE_HOLIDAYS') %}
+                            <li class="list-group-item"><a href="{{ path('holiday_index') }}">Holidays</a></li>
+                        {% endif %}
+                        {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
                         <li class="list-group-item"><a href="{{ path('monthly_sdt_index') }}">SDT monthly</a>
+                            {% endif %}
                         <li class="list-group-item">Vestibulum at eros</li>
                     </ul>
                 {% endblock %}
