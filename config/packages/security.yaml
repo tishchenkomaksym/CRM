@@ -8,11 +8,11 @@ security:
         # used to reload user from session & other features (e.g. switch_user)
       chain_provider:
         chain:
-          providers: [app_user_provider, my_ldap]
-      app_user_provider:
-        entity:
-          class: App\Entity\User
-          property: email
+          providers: [my_ldap]
+#      app_user_provider:
+#        entity:
+#          class: App\Entity\User
+#          property: email
       my_ldap:
         ldap:
           service: Symfony\Component\Ldap\Ldap
@@ -22,20 +22,20 @@ security:
           search_password: "!rCLV@HVbFkV4p7fNFz4"
           #                  search_password: "{password}"
           default_roles: ROLE_USER
-          uid_key: "ivan.melnichuk"
+          uid_key: "ivan.melnichuk@onyx.com"
   #                  uid_key: "{username}"
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-          anonymous: ~
-          guard:
-            authenticators:
-            - App\Security\LoginFormAuthenticator
-          logout:
-            path:   app_logout
-          provider: app_user_provider
+#        main:
+#          anonymous: ~
+#          guard:
+#            authenticators:
+#            - App\Security\LoginFormAuthenticator
+#          logout:
+#            path:   app_logout
+#          provider: app_user_provider
         ldap:
           anonymous: ~
           guard:

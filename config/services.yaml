@@ -35,9 +35,9 @@ services:
 
     Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
       arguments:
-      - host: ipa.onyxenterprises.com
+      - host: ipa1.onyxenterprises.com
         port: 389
-        #        encryption: tls
+#        encryption: tls
         options:
           protocol_version: 3
           referrals: false
