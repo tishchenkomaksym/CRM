@@ -8,42 +8,34 @@ security:
         # used to reload user from session & other features (e.g. switch_user)
       chain_provider:
         chain:
-          providers: [my_ldap]
-#      app_user_provider:
-#        entity:
-#          class: App\Entity\User
-#          property: email
+          providers: [app_user_provider, my_ldap]
+      app_user_provider:
+        entity:
+          class: App\Entity\User
+          property: email
       my_ldap:
-        ldap:
-          service: Symfony\Component\Ldap\Ldap
-          base_dn: dc=onyxenterprises,dc=com
-          search_dn: "cn=users,cn=accounts,dc=onyxenterprises,dc=com"
-          #                search_dn: "cn=users,cn=accounts,dc=onyxenterprises,dc=com"
-          search_password: "!rCLV@HVbFkV4p7fNFz4"
-          #                  search_password: "{password}"
-          default_roles: ROLE_USER
-          uid_key: "ivan.melnichuk@onyx.com"
-  #                  uid_key: "{username}"
+        id: App\Security\LdapUserProvider
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-#        main:
-#          anonymous: ~
-#          guard:
-#            authenticators:
-#            - App\Security\LoginFormAuthenticator
-#          logout:
-#            path:   app_logout
-#          provider: app_user_provider
-        ldap:
+        main:
           anonymous: ~
           guard:
             authenticators:
             - App\Security\LoginFormAuthenticator
           logout:
             path:   app_logout
+          provider: app_user_provider
+        ldap:
+          anonymous: ~
+          guard:
+            authenticators:
+            - App\Security\LoginFormLdapAuthenticator
+          logout:
+            path:   app_logout
           provider: my_ldap
+
 
   #          form_login_ldap:
   #            service: Symfony\Component\Ldap\Ldap
@@ -54,3 +46,6 @@ security:
     - { path: ^/sdt, roles: ROLE_SDT_REQUEST }
     - { path: ^/holiday, roles: ROLE_MANAGE_HOLIDAYS }
     - { path: ^/monthly/sdt/, roles: ROLE_MANAGE_MONTHLY_SDT }
+
+    role_hierarchy:
+      ROLE_USER: [ROLE_SDT_REQUEST]

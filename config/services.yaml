@@ -35,7 +35,7 @@ services:
 
     Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
       arguments:
-      - host: ipa1.onyxenterprises.com
+      - host: ipa2.onyxenterprises.com
         port: 389
 #        encryption: tls
         options:
@@ -43,3 +43,10 @@ services:
           referrals: false
     Symfony\Component\Ldap\Ldap:
       arguments: ['@Symfony\Component\Ldap\Adapter\ExtLdap\Adapter']
+    App\Security\LdapUserProvider:
+      arguments:
+        $ldap: '@Symfony\Component\Ldap\Ldap'
+        $baseDn: "cn=users,cn=accounts,dc=onyxenterprises,dc=com"
+        $searchDn: "uid=ivan.melnichuk,cn=users,cn=accounts,dc=onyxenterprises,dc=com"
+        $defaultRoles: ['ROLE_USER']
+        $uidKey: "uid"

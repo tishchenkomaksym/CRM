@@ -18,16 +18,16 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        $user = new User();
-        $user->setEmail('ivan.melnichuk@onyx.com');
-        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST']);
-        $user->setPassword(
-            $this->passwordEncoder->encodePassword(
-                $user,
-                'qwerty'
-            )
-        );
-        $manager->persist($user);
+//        $user = new User();
+//        $user->setEmail('ivan.melnichuk@onyx.com');
+//        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST']);
+//        $user->setPassword(
+//            $this->passwordEncoder->encodePassword(
+//                $user,
+//                'qwerty'
+//            )
+//        );
+//        $manager->persist($user);
         $user = new User();
         $user->setEmail('junior1@onyx.com');
         $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
