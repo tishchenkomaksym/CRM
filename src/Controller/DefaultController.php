@@ -14,6 +14,7 @@ class DefaultController extends AbstractController
     }
 
     /**
+     *
      * @Route("/default", name="default")
      */
     public function index(UserDataProvider $userDataProvider, HolidayService $holidayService)

@@ -49,6 +49,9 @@
                         {% if is_granted('ROLE_SDT_REQUEST') %}
                             <li class="list-group-item"><a href="{{ path('sdt_index') }}">SDT request</a></li>
                         {% endif %}
+                        {% if is_granted('') %}
+                            <li class="list-group-item"><a href="{{ path('sdt_index') }}">Profile</a></li>
+                        {% endif %}
                         {% if is_granted('ROLE_MANAGE_HOLIDAYS') %}
                             <li class="list-group-item"><a href="{{ path('holiday_index') }}">Holidays</a></li>
                         {% endif %}
