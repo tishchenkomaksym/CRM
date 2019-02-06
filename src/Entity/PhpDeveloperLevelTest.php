@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -30,6 +32,16 @@ class PhpDeveloperLevelTest
      * @ORM\ManyToOne(targetEntity="App\Entity\PhpDeveloperLevel", inversedBy="phpDeveloperLevelTests")
      */
     private $phpDeveloperLevel;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperLevelTestPassed", mappedBy="phpDeveloperLevelTest", orphanRemoval=true)
+     */
+    private $phpDeveloperLevelTestPasseds;
+
+    public function __construct()
+    {
+        $this->phpDeveloperLevelTestPasseds = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -68,6 +80,37 @@ class PhpDeveloperLevelTest
     public function setPhpDeveloperLevel(?PhpDeveloperLevel $phpDeveloperLevel): self
     {
         $this->phpDeveloperLevel = $phpDeveloperLevel;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PhpDeveloperLevelTestPassed[]
+     */
+    public function getPhpDeveloperLevelTestPasseds(): Collection
+    {
+        return $this->phpDeveloperLevelTestPasseds;
+    }
+
+    public function addPhpDeveloperLevelTestPassed(PhpDeveloperLevelTestPassed $phpDeveloperLevelTestPassed): self
+    {
+        if (!$this->phpDeveloperLevelTestPasseds->contains($phpDeveloperLevelTestPassed)) {
+            $this->phpDeveloperLevelTestPasseds[] = $phpDeveloperLevelTestPassed;
+            $phpDeveloperLevelTestPassed->setPhpDeveloperLevelTest($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhpDeveloperLevelTestPassed(PhpDeveloperLevelTestPassed $phpDeveloperLevelTestPassed): self
+    {
+        if ($this->phpDeveloperLevelTestPasseds->contains($phpDeveloperLevelTestPassed)) {
+            $this->phpDeveloperLevelTestPasseds->removeElement($phpDeveloperLevelTestPassed);
+            // set the owning side to null (unless already changed)
+            if ($phpDeveloperLevelTestPassed->getPhpDeveloperLevelTest() === $this) {
+                $phpDeveloperLevelTestPassed->setPhpDeveloperLevelTest(null);
+            }
+        }
 
         return $this;
     }

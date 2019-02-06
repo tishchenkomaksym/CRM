@@ -51,9 +51,15 @@ class User implements UserInterface
      */
     private $phpDeveloperLevelRelation;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperLevelTestPassed", mappedBy="user", orphanRemoval=true)
+     */
+    private $phpDeveloperLevelTestsPassed;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
+        $this->phpDeveloperLevelTestsPassed = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -199,6 +205,37 @@ class User implements UserInterface
         // set the owning side of the relation if necessary
         if ($this !== $phpDeveloperLevelRelation->getUser()) {
             $phpDeveloperLevelRelation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PhpDeveloperLevelTestPassed[]
+     */
+    public function getPhpDeveloperLevelTestsPassed(): Collection
+    {
+        return $this->phpDeveloperLevelTestsPassed;
+    }
+
+    public function addPhpDeveloperLevelTestsPassed(PhpDeveloperLevelTestPassed $phpDeveloperLevelTestsPassed): self
+    {
+        if (!$this->phpDeveloperLevelTestsPassed->contains($phpDeveloperLevelTestsPassed)) {
+            $this->phpDeveloperLevelTestsPassed[] = $phpDeveloperLevelTestsPassed;
+            $phpDeveloperLevelTestsPassed->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhpDeveloperLevelTestsPassed(PhpDeveloperLevelTestPassed $phpDeveloperLevelTestsPassed): self
+    {
+        if ($this->phpDeveloperLevelTestsPassed->contains($phpDeveloperLevelTestsPassed)) {
+            $this->phpDeveloperLevelTestsPassed->removeElement($phpDeveloperLevelTestsPassed);
+            // set the owning side to null (unless already changed)
+            if ($phpDeveloperLevelTestsPassed->getUser() === $this) {
+                $phpDeveloperLevelTestsPassed->setUser(null);
+            }
         }
 
         return $this;

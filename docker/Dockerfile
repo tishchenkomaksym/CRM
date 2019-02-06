@@ -21,8 +21,5 @@ RUN set -xe \
     && docker-php-source delete \
     # Clear cache
     && rm -rf /tmp/* /var/cache/apk/*
-RUN cd /application
-RUN php bin/console doctrine:migrations:migrate
-
 
 #RUN echo "listen=/var/run/php7-fpm.sock"
