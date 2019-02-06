@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -26,6 +28,16 @@ class PhpDeveloperLevel
      *     cascade={"persist", "remove"})
      */
     private $phpDeveloperRelation;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperLevelTest", mappedBy="phpDeveloperLevel")
+     */
+    private $phpDeveloperLevelTests;
+
+    public function __construct()
+    {
+        $this->phpDeveloperLevelTests = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -56,6 +68,37 @@ class PhpDeveloperLevel
         // set the owning side of the relation if necessary
         if ($this !== $phpDeveloperRelation->getPhpDeveloperLevel()) {
             $phpDeveloperRelation->setPhpDeveloperLevel($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PhpDeveloperLevelTest[]
+     */
+    public function getPhpDeveloperLevelTests(): Collection
+    {
+        return $this->phpDeveloperLevelTests;
+    }
+
+    public function addPhpDeveloperLevelTest(PhpDeveloperLevelTest $phpDeveloperLevelTest): self
+    {
+        if (!$this->phpDeveloperLevelTests->contains($phpDeveloperLevelTest)) {
+            $this->phpDeveloperLevelTests[] = $phpDeveloperLevelTest;
+            $phpDeveloperLevelTest->setPhpDeveloperLevel($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhpDeveloperLevelTest(PhpDeveloperLevelTest $phpDeveloperLevelTest): self
+    {
+        if ($this->phpDeveloperLevelTests->contains($phpDeveloperLevelTest)) {
+            $this->phpDeveloperLevelTests->removeElement($phpDeveloperLevelTest);
+            // set the owning side to null (unless already changed)
+            if ($phpDeveloperLevelTest->getPhpDeveloperLevel() === $this) {
+                $phpDeveloperLevelTest->setPhpDeveloperLevel(null);
+            }
         }
 
         return $this;

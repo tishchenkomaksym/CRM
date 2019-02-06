@@ -28,16 +28,7 @@ class UserFixtures extends Fixture
 //            )
 //        );
 //        $manager->persist($user);
-        $user = new User();
-        $user->setEmail('junior1@onyx.com');
-        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
-        $user->setPassword(
-            $this->passwordEncoder->encodePassword(
-                $user,
-                'junior1@onyx.com'
-            )
-        );
-        $manager->persist($user);
+
         $user = new User();
         $user->setEmail('recrutier@onyx.com');
         $user->setPassword(

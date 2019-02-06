@@ -2,16 +2,33 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\PhpDeveloperLevelTest;
+use App\Entity\User;
+use App\Entity\UserPhpDeveloperLevelRelation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class PhpDeveloperLevel extends Fixture
 {
+    protected $passwordEncoder;
+
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    {
+        $this->passwordEncoder = $passwordEncoder;
+    }
+
+    /**
+     * @param ObjectManager $manager
+     * @throws \Exception
+     */
     public function load(ObjectManager $manager)
     {
-        $product = new \App\Entity\PhpDeveloperLevel();
-        $product->setTitle('PHP Junior Level 1');
-        $manager->persist($product);
+        $phpDeveloperLevel = new \App\Entity\PhpDeveloperLevel();
+        $phpDeveloperLevel->setTitle('PHP Junior Level 1');
+        $manager->persist($phpDeveloperLevel);
+        $this->juniorUser($manager, $phpDeveloperLevel);
+        $this->juniorLvlOneTests($manager, $phpDeveloperLevel);
         $product = new \App\Entity\PhpDeveloperLevel();
         $product->setTitle('PHP Junior Level 2');
         $manager->persist($product);
@@ -37,5 +54,55 @@ class PhpDeveloperLevel extends Fixture
         $product->setTitle('PHP Senior Level 3');
         $manager->persist($product);
         $manager->flush();
+
+    }
+
+    private function juniorLvlOneTests(ObjectManager $manager, \App\Entity\PhpDeveloperLevel $phpDeveloperLevel)
+    {
+        $test = new PhpDeveloperLevelTest();
+        $test->setTitle('MySQL Level 1');
+        $test->setLink('https://drive.google.com/open?id=17rYa4kxiGQzsmBh8zANz3B6PEQdBShVlHBGmctpKSEA');
+        $test->setPhpDeveloperLevel($phpDeveloperLevel);
+        $manager->persist($test);
+        $test = new PhpDeveloperLevelTest();
+        $test->setTitle('PHP Base');
+        $test->setLink('https://docs.google.com/forms/d/1SoIxgZOp8FkzycPYXu2L_VgS-OrNLJ1a9-y3USDW2gk/');
+        $test->setPhpDeveloperLevel($phpDeveloperLevel);
+        $manager->persist($test);
+        $test = new PhpDeveloperLevelTest();
+        $test->setTitle('PHP OOP');
+        $test->setLink('https://drive.google.com/open?id=1ROB5y3_EO8lFmMgA-zoxAG64ESMGQUBWPrsemxRq6Ik');
+        $test->setPhpDeveloperLevel($phpDeveloperLevel);
+        $manager->persist($test);
+    }
+
+    /**
+     * @param ObjectManager $manager
+     * @param \App\Entity\PhpDeveloperLevel $phpDeveloperLevel
+     * @throws \Exception
+     */
+    private function juniorUser(ObjectManager $manager, \App\Entity\PhpDeveloperLevel $phpDeveloperLevel)
+    {
+
+
+        $user = new User();
+        $user->setEmail('junior1@onyx.com');
+        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
+        $user->setPassword(
+            $this->passwordEncoder->encodePassword(
+                $user,
+                'junior1@onyx.com'
+            )
+        );
+        $manager->persist($user);
+
+        $relation = new UserPhpDeveloperLevelRelation();
+        $relation->setUser($user);
+        $dateTime = new \DateTimeImmutable();
+        $relation->setCreateDate($dateTime);
+        $relation->setPhpDeveloperLevel($phpDeveloperLevel);
+        $manager->persist($relation);
+
+
     }
 }

@@ -42,4 +42,22 @@ class UserInformationService
         }
         return $existSDT - $sdtCollection->getCountSum();
     }
+
+    public function getPhpUserLevel(User $user): ?string
+    {
+        if ($user->getPhpDeveloperLevelRelation() === null || $user->getPhpDeveloperLevelRelation(
+            )->getPhpDeveloperLevel() === null) {
+            return 'Undefined';
+        }
+        return $user->getPhpDeveloperLevelRelation()->getPhpDeveloperLevel()->getTitle();
+    }
+
+    public function getPhpUserLevelTests(User $user): array
+    {
+        if ($user->getPhpDeveloperLevelRelation() === null || $user->getPhpDeveloperLevelRelation(
+            )->getPhpDeveloperLevel() === null) {
+            return [];
+        }
+        return $user->getPhpDeveloperLevelRelation()->getPhpDeveloperLevel()->getPhpDeveloperLevelTests()->getValues();
+    }
 }
