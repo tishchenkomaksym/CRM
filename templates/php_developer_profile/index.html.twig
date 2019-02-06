@@ -4,12 +4,16 @@
 
 {% block body %}
     <div class="row">
+        <h3>Status:</h3>
+    </div>
+    <div class="row">
+
         <div class="col-3">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">PHP developer Lvl</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                    <p class="card-text">PHP developer level:<span class="badge badge-info">{{ userLevel }}</p>
+                    <p class="card-text">PHP developer level: <span class="badge badge-info">{{ userLevel }}</span></p>
                     {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
                     {#<a href="#" class="card-link">Another link</a>#}
                 </div>
@@ -18,12 +22,48 @@
         <div class="col-3">
             <div class="card">
                 <div class="card-body">
+                    <h5 class="card-title">Your Manager</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    <p class="card-text">Your manager is: <span class="badge badge-info">Text</span></p>
+                    {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row"><h3>Information:</h3></div>
+    <div class="row">
+
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
                     <h5 class="card-title">Salary raise</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's
-                        content.</p>
+                    <p class="card-text">Some text</p>
                     <a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">SDT Request</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    <p class="card-text">Some text</p>
+                    <a href="{{ path('sdt_new') }}" class="card-link">Make request</a>
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Software request</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    <p class="card-text">Some text</p>
+                    {#<a href="{{ path('sdt_new') }}" class="card-link">Make request</a>#}
                     {#<a href="#" class="card-link">Another link</a>#}
                 </div>
             </div>
