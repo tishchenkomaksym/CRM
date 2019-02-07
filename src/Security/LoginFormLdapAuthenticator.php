@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,24 +28,37 @@ class LoginFormLdapAuthenticator extends AbstractFormLoginAuthenticator
     private $router;
     private $csrfTokenManager;
     private $passwordEncoder;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
 
+    /**
+     * LoginFormLdapAuthenticator constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param RouterInterface $router
+     * @param CsrfTokenManagerInterface $csrfTokenManager
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param UserRepository $userRepository
+     */
     public function __construct(
         EntityManagerInterface $entityManager,
         RouterInterface $router,
         CsrfTokenManagerInterface $csrfTokenManager,
-        UserPasswordEncoderInterface $passwordEncoder
+        UserPasswordEncoderInterface $passwordEncoder,
+        UserRepository $userRepository
 
     ) {
         $this->entityManager = $entityManager;
         $this->router = $router;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
-
+        $this->userRepository = $userRepository;
     }
 
     public function supports(Request $request)
     {
-        return 'app_login' === $request->attributes->get('_route')
+        return 'app_ldap' === $request->attributes->get('_route')
             && $request->isMethod('POST');
     }
 
@@ -71,32 +85,23 @@ class LoginFormLdapAuthenticator extends AbstractFormLoginAuthenticator
      */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
+        $user = null;
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
         if (!$this->csrfTokenManager->isTokenValid($token)) {
-            throw new InvalidCsrfTokenException();
+            throw new InvalidCsrfTokenException('Wrong Csrf token');
         }
         if ($userProvider instanceof LdapUserProvider) {
             $userProvider->setSearchPassword($credentials['password']);
-            $user = $userProvider->loadUserByUsername($credentials['email']);
-            if ($user) {
-                $userEntity = new User();
-                $userEntity->setEmail($user->getUsername() . '@onyx.com');
-                $userEntity->setPassword(
-                    $this->passwordEncoder->encodePassword(
-                        $userEntity,
-                        $credentials['password']
-                    )
-                );
-                $this->entityManager->persist($userEntity);
-                $this->entityManager->flush();
-                return $userEntity;
+            $ldapUser = $userProvider->loadUserByUsername($credentials['email']);
+            if ($ldapUser) {
+                $user = $this->getDbUser($ldapUser->getUsername(), $credentials['password']);
             }
         } else {
-            throw new \Exception('Wrong type of authenticator');
+            throw new \RuntimeException('Wrong type of authenticator');
         }
 //        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $credentials['email']]);
 
-        if (!$user) {
+        if ($user === null) {
             // fail authentication with a custom error
             throw new CustomUserMessageAuthenticationException('Email could not be found.');
         }
@@ -121,6 +126,31 @@ class LoginFormLdapAuthenticator extends AbstractFormLoginAuthenticator
 
     protected function getLoginUrl()
     {
-        return $this->router->generate('app_login');
+        return $this->router->generate('app_ldap');
+    }
+
+    /**
+     * @param $credentialsEmail
+     * @param $ldapUserName
+     * @param $credentialsPassword
+     * @return User|User[]
+     */
+    public function getDbUser($ldapUserName, $credentialsPassword)
+    {
+        $dbUser = $this->userRepository->findOneBy(['email' => $ldapUserName . '@onyx.com']);
+        if ($dbUser && $dbUser instanceof User) {
+            return $dbUser;
+        }
+        $userEntity = new User();
+        $userEntity->setEmail($ldapUserName . '@onyx.com');
+        $userEntity->setPassword(
+            $this->passwordEncoder->encodePassword(
+                $userEntity,
+                $credentialsPassword
+            )
+        );
+        $this->entityManager->persist($userEntity);
+        $this->entityManager->flush();
+        return $userEntity;
     }
 }

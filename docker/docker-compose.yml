@@ -13,9 +13,9 @@ nginx:
   links:
   - php-fpm-2
 php-fpm-2:
+  restart: always
   build: .
   dockerfile: Dockerfile
-  restart: always
   volumes:
     - ./xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     - ./zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
@@ -27,7 +27,6 @@ php-fpm-2:
 php-fpm-test:
   build: .
   dockerfile: Dockerfile
-  restart: always
   volumes:
   - ./xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
   - ./zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf

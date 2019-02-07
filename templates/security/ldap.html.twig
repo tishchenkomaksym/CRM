@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="home-tab" href="{{ path('app_login') }}">Email</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+               aria-controls="profile"
+               aria-selected="false">Ldap</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+
+        <div class="tab-pane  fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <br/>
+            <div class="row">
+                <div class="col-4">
+                    <form method="post">
+                        {% if error %}
+                            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                        {% endif %}
+
+                        <h1 class="h3 mb-4 font-weight-normal">LDAP authentication</h1>
+                        <label for="inputEmail" class="sr-only">Username</label>
+                        <input type="text" value="{{ last_username }}" name="email" id="inputEmail" class="form-control"
+                               placeholder="Email" required autofocus>
+                        <label for="inputPassword" class="sr-only">Password</label>
+                        <input type="password" name="password" id="inputPassword" class="form-control"
+                               placeholder="Password"
+                               required>
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                        <button class="btn btn-md btn-primary" type="submit">
+                            Sign in
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
