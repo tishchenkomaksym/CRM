@@ -90,7 +90,11 @@ class UserInformationService
         return $manager;
     }
 
-    public static function getPhpDeveloperNotPassedTests(User $user)
+    /**
+     * @param User $user
+     * @return PhpDeveloperLevelTest[]
+     */
+    public static function getPhpDeveloperNotPassedTests(User $user): array
     {
         /** @var PhpDeveloperLevelTestPassed[] $passedTests */
         $passedTests = $user->getPhpDeveloperLevelTestsPassed()->getValues();

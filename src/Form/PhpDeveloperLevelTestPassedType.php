@@ -18,6 +18,10 @@ class PhpDeveloperLevelTestPassedType extends AbstractType
         $choices = [];
         if ($phpDeveloperLevelTestPassed instanceof PhpDeveloperLevelTestPassed) {
             $choices = UserInformationService::getPhpDeveloperNotPassedTests($phpDeveloperLevelTestPassed->getUser());
+            $existsValue = $phpDeveloperLevelTestPassed->getPhpDeveloperLevelTest();
+            if ($existsValue) {
+                $choices[] = $existsValue;
+            }
         }
         $builder
             ->add(

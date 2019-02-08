@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class PhpDeveloperLevelTestPassedController extends AbstractController
 {
     /**
-     * @Route("/{id}", name="php_developer_level_test_passed_index", methods={"GET"})
+     * @Route("/index/{id}", name="php_developer_level_test_passed_index", methods={"GET"})
      * @param User $user
      * @param PhpDeveloperLevelTestPassedRepository $phpDeveloperLevelTestPassedRepository
      * @return Response
@@ -71,6 +71,7 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
     {
         return $this->render(
             'php_developer_level_test_passed/show.html.twig', [
+                                                                'user' => $phpDeveloperLevelTestPassed->getUser(),
                                                                 'php_developer_level_test_passed' => $phpDeveloperLevelTestPassed,
                                                             ]
         );
@@ -96,6 +97,7 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
 
         return $this->render(
             'php_developer_level_test_passed/edit.html.twig', [
+                                                                'user' => $phpDeveloperLevelTestPassed->getUser(),
                                                                 'php_developer_level_test_passed' => $phpDeveloperLevelTestPassed,
                                                                 'form' => $form->createView(),
                                                             ]
@@ -107,6 +109,7 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
      */
     public function delete(Request $request, PhpDeveloperLevelTestPassed $phpDeveloperLevelTestPassed): Response
     {
+        $userId = $phpDeveloperLevelTestPassed->getUser()->getId();
         if ($this->isCsrfTokenValid(
             'delete' . $phpDeveloperLevelTestPassed->getId(), $request->request->get('_token')
         )) {
@@ -115,6 +118,6 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('php_developer_level_test_passed_index');
+        return $this->redirectToRoute('php_developer_level_test_passed_index', ['id' => $userId]);
     }
 }

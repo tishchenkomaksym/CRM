@@ -8,13 +8,18 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ php_developer_level_test_passed.id }}</td>
+                <th>Test</th>
+                <td>{{ php_developer_level_test_passed.phpDeveloperLevelTest.title }}</td>
+
+            </tr>
+            <tr>
+                <th>User</th>
+                <td>{{ php_developer_level_test_passed.user.username }}</td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('php_developer_level_test_passed_index') }}">back to list</a>
+    <a href="{{ path('php_developer_level_test_passed_index', {'id':user.id}) }}">back to list</a>
 
     <a href="{{ path('php_developer_level_test_passed_edit', {'id': php_developer_level_test_passed.id}) }}">edit</a>
 
