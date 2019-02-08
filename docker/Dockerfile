@@ -21,5 +21,6 @@ RUN set -xe \
     && docker-php-source delete \
     # Clear cache
     && rm -rf /tmp/* /var/cache/apk/*
+WORKDIR /application
 
 #RUN echo "listen=/var/run/php7-fpm.sock"
