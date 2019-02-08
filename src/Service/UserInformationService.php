@@ -9,6 +9,8 @@
 namespace App\Service;
 
 use App\Data\Sdt\SdtCollection;
+use App\Entity\PhpDeveloperLevelTest;
+use App\Entity\PhpDeveloperLevelTestPassed;
 use App\Entity\User;
 use App\Repository\SdtRepository;
 
@@ -86,5 +88,31 @@ class UserInformationService
             $manager = $relation->getManager();
         }
         return $manager;
+    }
+
+    public static function getPhpDeveloperNotPassedTests(User $user)
+    {
+        /** @var PhpDeveloperLevelTestPassed[] $passedTests */
+        $passedTests = $user->getPhpDeveloperLevelTestsPassed()->getValues();
+        /** @var PhpDeveloperLevelTest[] $allTestsOfUserLevel */
+        $allTestsOfUserLevel = $user
+            ->getPhpDeveloperLevelRelation()
+            ->getPhpDeveloperLevel()
+            ->getPhpDeveloperLevelTests()->getValues();
+        $result = [];
+
+        foreach ($allTestsOfUserLevel as $allTest) {
+            $add = true;
+            foreach ($passedTests as $passedTest) {
+                if ($passedTest->getPhpDeveloperLevelTest()->getId()=== $allTest->getId()) {
+                    $add = false;
+                    break;
+                }
+            }
+            if($add) {
+                $result[] = $allTest;
+            }
+        }
+        return $result;
     }
 }

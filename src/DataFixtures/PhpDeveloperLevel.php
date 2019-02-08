@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\PhpDeveloperLevelTest;
+use App\Entity\PhpDeveloperLevelTestPassed;
 use App\Entity\PhpDeveloperManagerRelation;
 use App\Entity\User;
 use App\Entity\UserPhpDeveloperLevelRelation;
@@ -29,7 +30,6 @@ class PhpDeveloperLevel extends Fixture
         $phpDeveloperLevel->setTitle('PHP Junior Level 1');
         $manager->persist($phpDeveloperLevel);
         $this->juniorUser($manager, $phpDeveloperLevel);
-        $this->juniorLvlOneTests($manager, $phpDeveloperLevel);
         $product = new \App\Entity\PhpDeveloperLevel();
         $product->setTitle('PHP Junior Level 2');
         $manager->persist($product);
@@ -58,18 +58,30 @@ class PhpDeveloperLevel extends Fixture
 
     }
 
-    private function juniorLvlOneTests(ObjectManager $manager, \App\Entity\PhpDeveloperLevel $phpDeveloperLevel)
+    private function juniorLvlOneTests(
+        ObjectManager $manager,
+        \App\Entity\PhpDeveloperLevel $phpDeveloperLevel,
+        User $user
+    )
     {
         $test = new PhpDeveloperLevelTest();
         $test->setTitle('MySQL Level 1');
         $test->setLink('https://drive.google.com/open?id=17rYa4kxiGQzsmBh8zANz3B6PEQdBShVlHBGmctpKSEA');
         $test->setPhpDeveloperLevel($phpDeveloperLevel);
         $manager->persist($test);
+
+        $passed = new PhpDeveloperLevelTestPassed();
+        $passed->setUser($user);
+        $passed->setPhpDeveloperLevelTest($test);
+        $manager->persist($passed);
+
+
         $test = new PhpDeveloperLevelTest();
         $test->setTitle('PHP Base');
         $test->setLink('https://docs.google.com/forms/d/1SoIxgZOp8FkzycPYXu2L_VgS-OrNLJ1a9-y3USDW2gk/');
         $test->setPhpDeveloperLevel($phpDeveloperLevel);
         $manager->persist($test);
+
         $test = new PhpDeveloperLevelTest();
         $test->setTitle('PHP OOP');
         $test->setLink('https://drive.google.com/open?id=1ROB5y3_EO8lFmMgA-zoxAG64ESMGQUBWPrsemxRq6Ik');
@@ -96,6 +108,7 @@ class PhpDeveloperLevel extends Fixture
             )
         );
         $manager->persist($user);
+        $this->juniorLvlOneTests($manager, $phpDeveloperLevel, $user);
 
         $relation = new UserPhpDeveloperLevelRelation();
         $relation->setUser($user);

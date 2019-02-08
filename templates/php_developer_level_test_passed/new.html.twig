@@ -7,5 +7,5 @@
 
     {{ include('php_developer_level_test_passed/_form.html.twig') }}
 
-    <a href="{{ path('php_developer_level_test_passed_index') }}">back to list</a>
+    <a href="{{ path('php_developer_level_test_passed_index',{'id':user.id}) }}">back to list</a>
 {% endblock %}

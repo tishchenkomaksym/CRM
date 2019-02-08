@@ -36,12 +36,16 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
     }
 
     /**
-     * @Route("/new", name="php_developer_level_test_passed_new", methods={"GET","POST"})
+     * @Route("/{id}/new", name="php_developer_level_test_passed_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(User $user, Request $request): Response
     {
         $phpDeveloperLevelTestPassed = new PhpDeveloperLevelTestPassed();
-        $form = $this->createForm(PhpDeveloperLevelTestPassedType::class, $phpDeveloperLevelTestPassed);
+        $phpDeveloperLevelTestPassed->setUser($user);
+        $form = $this->createForm(
+            PhpDeveloperLevelTestPassedType::class, $phpDeveloperLevelTestPassed
+        );
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -49,12 +53,12 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
             $entityManager->persist($phpDeveloperLevelTestPassed);
             $entityManager->flush();
 
-            return $this->redirectToRoute('php_developer_level_test_passed_index');
+            return $this->redirectToRoute('php_developer_level_test_passed_index', ['id' => $user->getId()]);
         }
 
         return $this->render(
             'php_developer_level_test_passed/new.html.twig', [
-                                                               'php_developer_level_test_passed' => $phpDeveloperLevelTestPassed,
+                                                               'user' => $user,
                                                                'form' => $form->createView(),
                                                            ]
         );
