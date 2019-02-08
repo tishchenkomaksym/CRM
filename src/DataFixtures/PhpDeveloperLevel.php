@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\PhpDeveloperLevelTest;
+use App\Entity\PhpDeveloperManagerRelation;
 use App\Entity\User;
 use App\Entity\UserPhpDeveloperLevelRelation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -104,5 +105,21 @@ class PhpDeveloperLevel extends Fixture
         $manager->persist($relation);
 
 
+        $managerUser = new User();
+        $managerUser->setEmail('juniorPM@onyx.com');
+        $managerUser->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_MANAGER']);
+        $managerUser->setPassword(
+            $this->passwordEncoder->encodePassword(
+                $managerUser,
+                'juniorPM@onyx.com'
+            )
+        );
+        $manager->persist($managerUser);
+
+        $relation = new PhpDeveloperManagerRelation();
+        $relation->setManager($managerUser);
+        $relation->setPhpDeveloper($user);
+        $manager->persist($relation);
     }
+
 }

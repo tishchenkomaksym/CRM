@@ -56,10 +56,22 @@ class User implements UserInterface
      */
     private $phpDeveloperLevelTestsPassed;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperManagerRelation", mappedBy="phpDeveloper", orphanRemoval=true)
+     */
+    private $phpDeveloperManagerRelations;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperManagerRelation", mappedBy="manager", orphanRemoval=true)
+     */
+    private $phpManagerDeveloperRelations;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
         $this->phpDeveloperLevelTestsPassed = new ArrayCollection();
+        $this->phpDeveloperManagerRelations = new ArrayCollection();
+        $this->phpManagerDeveloperRelations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -235,6 +247,68 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($phpDeveloperLevelTestsPassed->getUser() === $this) {
                 $phpDeveloperLevelTestsPassed->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PhpDeveloperManagerRelation[]
+     */
+    public function getPhpDeveloperManagerRelations(): Collection
+    {
+        return $this->phpDeveloperManagerRelations;
+    }
+
+    public function addPhpDeveloperManagerRelation(PhpDeveloperManagerRelation $phpDeveloperManagerRelation): self
+    {
+        if (!$this->phpDeveloperManagerRelations->contains($phpDeveloperManagerRelation)) {
+            $this->phpDeveloperManagerRelations[] = $phpDeveloperManagerRelation;
+            $phpDeveloperManagerRelation->setPhpDeveloper($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhpDeveloperManagerRelation(PhpDeveloperManagerRelation $phpDeveloperManagerRelation): self
+    {
+        if ($this->phpDeveloperManagerRelations->contains($phpDeveloperManagerRelation)) {
+            $this->phpDeveloperManagerRelations->removeElement($phpDeveloperManagerRelation);
+            // set the owning side to null (unless already changed)
+            if ($phpDeveloperManagerRelation->getPhpDeveloper() === $this) {
+                $phpDeveloperManagerRelation->setPhpDeveloper(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PhpDeveloperManagerRelation[]
+     */
+    public function getPhpManagerDeveloperRelations(): Collection
+    {
+        return $this->phpManagerDeveloperRelations;
+    }
+
+    public function addPhpManagerDeveloperRelation(PhpDeveloperManagerRelation $phpManagerDeveloperRelation): self
+    {
+        if (!$this->phpManagerDeveloperRelations->contains($phpManagerDeveloperRelation)) {
+            $this->phpManagerDeveloperRelations[] = $phpManagerDeveloperRelation;
+            $phpManagerDeveloperRelation->setManager($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhpManagerDeveloperRelation(PhpDeveloperManagerRelation $phpManagerDeveloperRelation): self
+    {
+        if ($this->phpManagerDeveloperRelations->contains($phpManagerDeveloperRelation)) {
+            $this->phpManagerDeveloperRelations->removeElement($phpManagerDeveloperRelation);
+            // set the owning side to null (unless already changed)
+            if ($phpManagerDeveloperRelation->getManager() === $this) {
+                $phpManagerDeveloperRelation->setManager(null);
             }
         }
 
