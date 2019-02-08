@@ -5,6 +5,7 @@ namespace App\Security;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Security\User\EntityUserProvider;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
@@ -13,6 +14,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\User\ChainUserProvider;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
@@ -58,7 +60,7 @@ class LoginFormLdapAuthenticator extends AbstractFormLoginAuthenticator
 
     public function supports(Request $request)
     {
-        return 'app_ldap' === $request->attributes->get('_route')
+        return 'app_login' === $request->attributes->get('_route')
             && $request->isMethod('POST');
     }
 
@@ -79,27 +81,38 @@ class LoginFormLdapAuthenticator extends AbstractFormLoginAuthenticator
 
     /**
      * @param mixed $credentials
-     * @param UserProviderInterface $userProvider
+     * @param UserProviderInterface $chainUserProvider
      * @return User|null|\Symfony\Component\Security\Core\User\User|UserInterface
      * @throws \Exception
      */
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    public function getUser($credentials, UserProviderInterface $chainUserProvider)
     {
         $user = null;
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
         if (!$this->csrfTokenManager->isTokenValid($token)) {
             throw new InvalidCsrfTokenException('Wrong Csrf token');
         }
-        if ($userProvider instanceof LdapUserProvider) {
-            $userProvider->setSearchPassword($credentials['password']);
-            $ldapUser = $userProvider->loadUserByUsername($credentials['email']);
-            if ($ldapUser) {
-                $user = $this->getDbUser($ldapUser->getUsername(), $credentials['password']);
+        if ($chainUserProvider instanceof ChainUserProvider) {
+            foreach ($chainUserProvider->getProviders() as $userProvider) {
+                try {
+                    if ($userProvider instanceof LdapUserProvider) {
+                        $userProvider->setSearchPassword($credentials['password']);
+                        $ldapUser = $userProvider->loadUserByUsername($credentials['email']);
+                        if ($ldapUser) {
+                            $user = $this->getDbUser($ldapUser->getUsername(), $credentials['password']);
+                        }
+                    } elseif ($userProvider instanceof EntityUserProvider) {
+                        $user = $userProvider->loadUserByUsername($credentials['email']);
+                    }
+                }
+                catch (\Exception $exception)
+                {
+
+                }
             }
         } else {
             throw new \RuntimeException('Wrong type of authenticator');
         }
-//        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $credentials['email']]);
 
         if ($user === null) {
             // fail authentication with a custom error
@@ -126,7 +139,7 @@ class LoginFormLdapAuthenticator extends AbstractFormLoginAuthenticator
 
     protected function getLoginUrl()
     {
-        return $this->router->generate('app_ldap');
+        return $this->router->generate('app_login');
     }
 
     /**

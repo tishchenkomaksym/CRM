@@ -19,7 +19,6 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-
         ldap:
           anonymous: ~
           guard:
@@ -27,16 +26,16 @@ security:
             - App\Security\LoginFormLdapAuthenticator
           logout:
             path:   app_logout
-          provider: my_ldap
-        test:
-          anonymous: ~
-          guard:
-            authenticators:
-            - App\Security\LoginFormAuthenticator
-          logout:
-            path:   app_logout
-          provider: app_user_provider
-          entry_point: App\Security\LoginFormAuthenticator
+          provider: chain_provider
+#        test:
+#          anonymous: ~
+#          pattern: '/login'
+#          guard:
+#            authenticators:
+#            - App\Security\LoginFormAuthenticator
+#          logout:
+#            path:   app_logout
+#          provider: app_user_provider
 
 
   #          form_login_ldap:
