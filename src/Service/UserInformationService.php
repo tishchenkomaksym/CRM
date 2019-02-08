@@ -60,4 +60,31 @@ class UserInformationService
         }
         return $user->getPhpDeveloperLevelRelation()->getPhpDeveloperLevel()->getPhpDeveloperLevelTests()->getValues();
     }
+
+    /**
+     * @param User $user
+     * @return User[]
+     */
+    public function getPhpManagerDevelopers(User $user): array
+    {
+        $returnValue = [];
+        foreach ($user->getPhpManagerDeveloperRelations() as $relation) {
+            $returnValue[] = $relation->getPhpDeveloper();
+        }
+
+        return $returnValue;
+    }
+
+    /**
+     * @param User $user
+     * @return User
+     */
+    public function getPhpDeveloperManager(User $user): ?User
+    {
+        $manager = null;
+        foreach ($user->getPhpDeveloperManagerRelations() as $relation) {
+            $manager = $relation->getManager();
+        }
+        return $manager;
+    }
 }

@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PhpDeveloperLevelTestPassed{% endblock %}
+
+{% block body %}
+    <h1>PhpDeveloperLevelTestPassed</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ php_developer_level_test_passed.id }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('php_developer_level_test_passed_index') }}">back to list</a>
+
+    <a href="{{ path('php_developer_level_test_passed_edit', {'id': php_developer_level_test_passed.id}) }}">edit</a>
+
+    {{ include('php_developer_level_test_passed/_delete_form.html.twig') }}
+{% endblock %}

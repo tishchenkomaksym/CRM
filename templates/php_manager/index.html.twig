@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PhpDeveloperManagerController!{% endblock %}
+
+{% block body %}
+    <h1>Team info</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>User name</th>
+            <th>Test Info</th>
+            <th>actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for subordinate in subordinates %}
+            <tr>
+                <td>{{ subordinate.username }}</td>
+                <td><a href="{{ path('php_developer_level_test_passed_index',{'id':subordinate.id}) }}">Info</a></td>
+                {#<td>{{ s }}</td>#}
+                {#<td>{{ holiday.title }}</td>#}
+                {#<td>{{ holiday.date ? holiday.date|date('Y-m-d H:i:s') : '' }}</td>#}
+                {#<td>#}
+                {#<a href="{{ path('holiday_show', {'id': holiday.id}) }}">show</a>#}
+                {#<a href="{{ path('holiday_edit', {'id': holiday.id}) }}">edit</a>#}
+                {#</td>#}
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('holiday_new') }}">Create new</a>
+{% endblock %}
+

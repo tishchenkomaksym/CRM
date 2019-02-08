@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\PhpDeveloperLevelTestPassed;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -17,6 +18,11 @@ class PhpDeveloperLevelTestPassedRepository extends ServiceEntityRepository
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, PhpDeveloperLevelTestPassed::class);
+    }
+
+    public function getByUser(User $user)
+    {
+        return $this->findBy(['user' => $user]);
     }
 
     // /**

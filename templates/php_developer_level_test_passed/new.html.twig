@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New PhpDeveloperLevelTestPassed{% endblock %}
+
+{% block body %}
+    <h1>Create new PhpDeveloperLevelTestPassed</h1>
+
+    {{ include('php_developer_level_test_passed/_form.html.twig') }}
+
+    <a href="{{ path('php_developer_level_test_passed_index') }}">back to list</a>
+{% endblock %}

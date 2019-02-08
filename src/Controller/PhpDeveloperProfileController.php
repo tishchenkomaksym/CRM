@@ -16,10 +16,12 @@ class PhpDeveloperProfileController extends AbstractController
     public function index(UserInformationService $service)
     {
         $user = $this->getUser();
+        $manager = $service->getPhpDeveloperManager($user);
         return $this->render(
             'php_developer_profile/index.html.twig',
             [
-                'userLevel' => $service->getPhpUserLevel($user)
+                'userLevel' => $service->getPhpUserLevel($user),
+                'developerManager' => $manager
             ]
         );
     }
