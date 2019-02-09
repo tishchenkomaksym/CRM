@@ -10,6 +10,7 @@
         <tr>
             <th>User name</th>
             <th>Test Info</th>
+            <th>Make Rise</th>
             <th>actions</th>
         </tr>
         </thead>
@@ -18,6 +19,7 @@
             <tr>
                 <td>{{ subordinate.username }}</td>
                 <td><a href="{{ path('php_developer_level_test_passed_index',{'id':subordinate.id}) }}">Info</a></td>
+                <td><a href="{{ path('user_index',{'id':subordinate.id}) }}">Info</a></td>
                 {#<td>{{ s }}</td>#}
                 {#<td>{{ holiday.title }}</td>#}
                 {#<td>{{ holiday.date ? holiday.date|date('Y-m-d H:i:s') : '' }}</td>#}

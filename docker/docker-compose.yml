@@ -24,17 +24,6 @@ php-fpm-2:
   environment:
     XDEBUG_CONFIG: remote_enable=1 remote_host=host.docker.internal
     PHP_IDE_CONFIG: serverName=symfony-demo
-php-fpm-test:
-  build: .
-  dockerfile: Dockerfile
-  volumes:
-  - ./xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
-  - ./zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
-  - ../:/application
-  - phpsocket:/var/run
-  environment:
-    XDEBUG_CONFIG: remote_enable=1 remote_host=host.docker.internal
-    PHP_IDE_CONFIG: serverName=symfony-demo
 db:
   image: mysql:5.7
   environment:
