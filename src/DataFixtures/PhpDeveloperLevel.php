@@ -30,7 +30,6 @@ class PhpDeveloperLevel extends Fixture
         $phpDeveloperLevel->setTitle('PHP Junior Level 1');
         $manager->persist($phpDeveloperLevel);
         $this->juniorUser($manager, $phpDeveloperLevel);
-        $this->juniorUserWithoutManager($manager, $phpDeveloperLevel);
         $product = new \App\Entity\PhpDeveloperLevel();
         $product->setTitle('PHP Junior Level 2');
         $manager->persist($product);
@@ -71,7 +70,10 @@ class PhpDeveloperLevel extends Fixture
         $test->setLink('https://drive.google.com/open?id=17rYa4kxiGQzsmBh8zANz3B6PEQdBShVlHBGmctpKSEA');
         $test->setPhpDeveloperLevel($phpDeveloperLevel);
         $manager->persist($test);
-
+        $passed = new PhpDeveloperLevelTestPassed();
+        $passed->setUser($user);
+        $passed->setPhpDeveloperLevelTest($test);
+        $manager->persist($passed);
 
         $test = new PhpDeveloperLevelTest();
         $test->setTitle('PHP Base');
@@ -108,7 +110,8 @@ class PhpDeveloperLevel extends Fixture
             )
         );
         $manager->persist($user);
-        $this->juniorLvlOneTests($manager, $phpDeveloperLevel, $user);
+        $user2 = $this->juniorUser2($manager, $phpDeveloperLevel);
+        $this->juniorLvlOneTests($manager, $phpDeveloperLevel, $user, $user2);
 
         $relation = new UserPhpDeveloperLevelRelation();
         $relation->setUser($user);
@@ -133,14 +136,21 @@ class PhpDeveloperLevel extends Fixture
         $relation->setManager($managerUser);
         $relation->setPhpDeveloper($user);
         $manager->persist($relation);
+
+        $relation = new PhpDeveloperManagerRelation();
+        $relation->setManager($managerUser);
+        $relation->setPhpDeveloper($user2);
+        $manager->persist($relation);
+        return $user;
     }
 
     /**
      * @param ObjectManager $manager
      * @param \App\Entity\PhpDeveloperLevel $phpDeveloperLevel
+     * @return User
      * @throws \Exception
      */
-    private function juniorUserWithoutManager(ObjectManager $manager, \App\Entity\PhpDeveloperLevel $phpDeveloperLevel)
+    private function juniorUser2(ObjectManager $manager, \App\Entity\PhpDeveloperLevel $phpDeveloperLevel)
     {
         $user = new User();
         $user->setEmail('junior2@onyx.com');
@@ -160,22 +170,7 @@ class PhpDeveloperLevel extends Fixture
         $relation->setPhpDeveloperLevel($phpDeveloperLevel);
         $manager->persist($relation);
 
-
-        $managerUser = new User();
-        $managerUser->setEmail('juniorPM@onyx.com');
-        $managerUser->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_MANAGER']);
-        $managerUser->setPassword(
-            $this->passwordEncoder->encodePassword(
-                $managerUser,
-                'juniorPM@onyx.com'
-            )
-        );
-        $manager->persist($managerUser);
-
-        $relation = new PhpDeveloperManagerRelation();
-        $relation->setManager($managerUser);
-        $relation->setPhpDeveloper($user);
-        $manager->persist($relation);
+        return $user;
     }
 
 }
