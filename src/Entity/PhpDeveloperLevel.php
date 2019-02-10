@@ -24,10 +24,9 @@ class PhpDeveloperLevel
     private $title;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\UserPhpDeveloperLevelRelation", mappedBy="phpDeveloperLevel",
-     *     cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\UserPhpDeveloperLevelRelation", mappedBy="phpDeveloperLevel",)
      */
-    private $phpDeveloperRelation;
+    private $phpDeveloperRelations;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperLevelTest", mappedBy="phpDeveloperLevel")
@@ -37,6 +36,7 @@ class PhpDeveloperLevel
     public function __construct()
     {
         $this->phpDeveloperLevelTests = new ArrayCollection();
+        $this->phpDeveloperRelations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -56,18 +56,16 @@ class PhpDeveloperLevel
         return $this;
     }
 
-    public function getPhpDeveloperRelation(): ?UserPhpDeveloperLevelRelation
+    public function getPhpDeveloperRelations(): Collection
     {
-        return $this->phpDeveloperRelation;
+        return $this->phpDeveloperRelations;
     }
 
-    public function setPhpDeveloperRelation(UserPhpDeveloperLevelRelation $phpDeveloperRelation): self
+    public function setPhpDeveloperRelations(UserPhpDeveloperLevelRelation $phpDeveloperRelations): self
     {
-        $this->phpDeveloperRelation = $phpDeveloperRelation;
-
-        // set the owning side of the relation if necessary
-        if ($this !== $phpDeveloperRelation->getPhpDeveloperLevel()) {
-            $phpDeveloperRelation->setPhpDeveloperLevel($this);
+        if (!$this->phpDeveloperRelations->contains($phpDeveloperRelations)) {
+            $this->phpDeveloperRelations[] = $phpDeveloperRelations;
+            $phpDeveloperRelations->setPhpDeveloperLevel($this);
         }
 
         return $this;

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\PhpDeveloperTest\PhpDeveloperTestsInformationBuilder;
 use App\Service\UserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,9 +28,9 @@ class PhpManagerController extends AbstractController
     /**
      * @Route("/php/manager/make/rise/{id}", name="php_manager_make_rise")
      */
-    public function makeRise(User $user, UserInformationService $userInformationService)
+    public function makeRise(User $user)
     {
-        $notPassedTests = UserInformationService::getPhpDeveloperNotPassedTests($user);
-        $this->render('php_manager/make_rise.html.twig', ['notPassedTests' => $notPassedTests]);
+        $tests = PhpDeveloperTestsInformationBuilder::build($user);
+        return $this->render('php_manager/make_rise.html.twig', ['tests' => $tests]);
     }
 }

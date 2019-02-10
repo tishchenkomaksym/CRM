@@ -10,20 +10,20 @@
             <div class="col-3">
                 <div class="card" style="">
                     <div class="card-body">
-                        <h5 class="card-title">{{ test.title }}</h5>
+                        <h5 class="card-title">{{ test.test.title }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
                         <p class="card-text"></p>
                         {#<a href="#" class="card-link">Another link</a>#}
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
-                            Passed: {% if passedTestsIds[test.id] is defined %}<span
+                            Passed: {% if test.passed %}<span
                                     class="badge badge-success">Passed</span>{% else %}<span
                                     class="badge badge-secondary">Not Passed</span>{% endif %}</li>
 
                     </ul>
                     <div class="card-body">
-                        <a href="{{ test.link }}" class="card-link">Get Test</a>
+                        <a href="{{ test.test.link }}" class="card-link">Get Test</a>
                     </div>
                 </div>
             </div>

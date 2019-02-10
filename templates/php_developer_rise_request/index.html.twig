@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PhpDeveloperRiseRequest index{% endblock %}
+
+{% block body %}
+    <h1>PhpDeveloperRiseRequest index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Approved</th>
+                <th>CreatedDate</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for php_developer_rise_request in php_developer_rise_requests %}
+            <tr>
+                <td>{{ php_developer_rise_request.id }}</td>
+                <td>{{ php_developer_rise_request.approved ? 'Yes' : 'No' }}</td>
+                <td>{{ php_developer_rise_request.createdDate ? php_developer_rise_request.createdDate|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('php_developer_rise_request_show', {'id': php_developer_rise_request.id}) }}">show</a>
+                    <a href="{{ path('php_developer_rise_request_edit', {'id': php_developer_rise_request.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('php_developer_rise_request_new') }}">Create new</a>
+{% endblock %}

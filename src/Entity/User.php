@@ -66,12 +66,18 @@ class User implements UserInterface
      */
     private $phpManagerDeveloperRelations;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperRiseRequest", mappedBy="phpDeveloper", orphanRemoval=true)
+     */
+    private $phpDeveloperRiseRequests;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
         $this->phpDeveloperLevelTestsPassed = new ArrayCollection();
         $this->phpDeveloperManagerRelations = new ArrayCollection();
         $this->phpManagerDeveloperRelations = new ArrayCollection();
+        $this->phpDeveloperRiseRequests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -309,6 +315,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($phpManagerDeveloperRelation->getManager() === $this) {
                 $phpManagerDeveloperRelation->setManager(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PhpDeveloperRiseRequest[]
+     */
+    public function getPhpDeveloperRiseRequests(): Collection
+    {
+        return $this->phpDeveloperRiseRequests;
+    }
+
+    public function addPhpDeveloperRiseRequest(PhpDeveloperRiseRequest $phpDeveloperRiseRequest): self
+    {
+        if (!$this->phpDeveloperRiseRequests->contains($phpDeveloperRiseRequest)) {
+            $this->phpDeveloperRiseRequests[] = $phpDeveloperRiseRequest;
+            $phpDeveloperRiseRequest->setPhpDeveloper($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhpDeveloperRiseRequest(PhpDeveloperRiseRequest $phpDeveloperRiseRequest): self
+    {
+        if ($this->phpDeveloperRiseRequests->contains($phpDeveloperRiseRequest)) {
+            $this->phpDeveloperRiseRequests->removeElement($phpDeveloperRiseRequest);
+            // set the owning side to null (unless already changed)
+            if ($phpDeveloperRiseRequest->getPhpDeveloper() === $this) {
+                $phpDeveloperRiseRequest->setPhpDeveloper(null);
             }
         }
 

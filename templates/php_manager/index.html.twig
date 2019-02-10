@@ -9,6 +9,7 @@
         <thead>
         <tr>
             <th>User name</th>
+            <th>Current Level</th>
             <th>Test Info</th>
             <th>Make Rise</th>
             <th>actions</th>
@@ -18,8 +19,9 @@
         {% for subordinate in subordinates %}
             <tr>
                 <td>{{ subordinate.username }}</td>
+                <td>{{ subordinate.phpDeveloperLevelRelation.phpDeveloperLevel.title }}</td>
                 <td><a href="{{ path('php_developer_level_test_passed_index',{'id':subordinate.id}) }}">Info</a></td>
-                <td><a href="{{ path('user_index',{'id':subordinate.id}) }}">Info</a></td>
+                <td><a href="{{ path('php_manager_make_rise',{'id':subordinate.id}) }}">Info</a></td>
                 {#<td>{{ s }}</td>#}
                 {#<td>{{ holiday.title }}</td>#}
                 {#<td>{{ holiday.date ? holiday.date|date('Y-m-d H:i:s') : '' }}</td>#}
@@ -35,7 +37,5 @@
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('holiday_new') }}">Create new</a>
 {% endblock %}
 

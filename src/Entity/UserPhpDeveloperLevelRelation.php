@@ -24,7 +24,7 @@ class UserPhpDeveloperLevelRelation
     private $user;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\PhpDeveloperLevel", inversedBy="phpDeveloperRelation",
+     * @ORM\ManyToOne(targetEntity="App\Entity\PhpDeveloperLevel", inversedBy="phpDeveloperRelations",
      *     cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
