@@ -1,4 +1,4 @@
-php-fpm-test:
+php-fpm-test-2:
   build: .
   dockerfile: Dockerfile
   volumes:

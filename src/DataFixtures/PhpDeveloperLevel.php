@@ -26,16 +26,21 @@ class PhpDeveloperLevel extends Fixture
      */
     public function load(ObjectManager $manager)
     {
+        $phpDeveloperJuniorLevel3 = new \App\Entity\PhpDeveloperLevel();
+        $phpDeveloperJuniorLevel3->setTitle('PHP Junior Level 3');
+        $manager->persist($phpDeveloperJuniorLevel3);
+
+        $phpDeveloperJuniorLevel2 = new \App\Entity\PhpDeveloperLevel();
+        $phpDeveloperJuniorLevel2->setTitle('PHP Junior Level 2');
+        $phpDeveloperJuniorLevel2->setNextLevel($phpDeveloperJuniorLevel3);
+        $manager->persist($phpDeveloperJuniorLevel2);
+
         $phpDeveloperLevel = new \App\Entity\PhpDeveloperLevel();
         $phpDeveloperLevel->setTitle('PHP Junior Level 1');
+        $phpDeveloperLevel->setNextLevel($phpDeveloperJuniorLevel2);
         $manager->persist($phpDeveloperLevel);
         $this->juniorUser($manager, $phpDeveloperLevel);
-        $product = new \App\Entity\PhpDeveloperLevel();
-        $product->setTitle('PHP Junior Level 2');
-        $manager->persist($product);
-        $product = new \App\Entity\PhpDeveloperLevel();
-        $product->setTitle('PHP Junior Level 3');
-        $manager->persist($product);
+
         $product = new \App\Entity\PhpDeveloperLevel();
         $product->setTitle('PHP Middle Level 1');
         $manager->persist($product);

@@ -33,6 +33,11 @@ class PhpDeveloperLevel
      */
     private $phpDeveloperLevelTests;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\PhpDeveloperLevel", cascade={"persist", "remove"})
+     */
+    private $nextLevel;
+
     public function __construct()
     {
         $this->phpDeveloperLevelTests = new ArrayCollection();
@@ -98,6 +103,18 @@ class PhpDeveloperLevel
                 $phpDeveloperLevelTest->setPhpDeveloperLevel(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNextLevel(): ?self
+    {
+        return $this->nextLevel;
+    }
+
+    public function setNextLevel(?self $nextLevel): self
+    {
+        $this->nextLevel = $nextLevel;
 
         return $this;
     }

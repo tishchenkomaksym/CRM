@@ -22,7 +22,9 @@
                 <td>{{ php_developer_rise_request.createdDate ? php_developer_rise_request.createdDate|date('Y-m-d') : '' }}</td>
                 <td>
                     <a href="{{ path('php_developer_rise_request_show', {'id': php_developer_rise_request.id}) }}">show</a>
-                    <a href="{{ path('php_developer_rise_request_edit', {'id': php_developer_rise_request.id}) }}">edit</a>
+                    {% if php_developer_rise_request.approved == false %}
+                        <a href="{{ path('php_developer_rise_request_edit', {'id': php_developer_rise_request.id}) }}">edit</a>
+                    {% endif %}
                 </td>
             </tr>
         {% else %}

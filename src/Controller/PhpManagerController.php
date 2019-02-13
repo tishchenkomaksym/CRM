@@ -5,9 +5,15 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\PhpDeveloperTest\PhpDeveloperTestsInformationBuilder;
 use App\Service\UserInformationService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class PhpManagerController
+ * @IsGranted("ROLE_PHP_MANAGER")
+ * @package App\Controller
+ */
 class PhpManagerController extends AbstractController
 {
     /**

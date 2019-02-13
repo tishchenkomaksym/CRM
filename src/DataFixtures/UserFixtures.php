@@ -41,6 +41,20 @@ class UserFixtures extends Fixture
         $manager->persist($user);
         $manager->flush();
         $manager->persist($user);
+
+        $user = new User();
+        $user->setEmail('accountmanager@onyx.com');
+        $user->setPassword(
+            $this->passwordEncoder->encodePassword(
+                $user,
+                'accountmanager@onyx.com'
+            )
+        );
+        $user->setRoles(['ROLE_USER', 'ROLE_ACCOUNT_MANAGER']);
+        $manager->persist($user);
+        $manager->flush();
+        $manager->persist($user);
+
         $user = new User();
         $user->setEmail('hr@onyx.com');
         $user->setPassword(

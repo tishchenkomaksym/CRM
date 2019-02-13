@@ -5,12 +5,17 @@ namespace App\Controller;
 use App\Entity\PhpDeveloperRiseRequest;
 use App\Form\PhpDeveloperRiseRequestType;
 use App\Repository\PhpDeveloperRiseRequestRepository;
+use App\Service\PhpDeveloperRise\Exception\WrongPhpDeveloperConfiguration;
+use App\Service\PhpDeveloperRise\PhpDeveloperRiseService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * @IsGranted("ROLE_PHP_MANAGER")
  * @Route("/php/developer/rise/request")
  */
 class PhpDeveloperRiseRequestController extends AbstractController
@@ -27,18 +32,34 @@ class PhpDeveloperRiseRequestController extends AbstractController
 
     /**
      * @Route("/new", name="php_developer_rise_request_new", methods={"GET","POST"})
+     * @param Request $request
+     * @return Response
      */
     public function new(Request $request): Response
     {
         $phpDeveloperRiseRequest = new PhpDeveloperRiseRequest();
-        $form = $this->createForm(PhpDeveloperRiseRequestType::class, $phpDeveloperRiseRequest);
+        $phpDeveloperRiseRequest->setCreatedDate(New \DateTime());
+        $builder = $this->createFormBuilder($phpDeveloperRiseRequest);
+        $form = new PhpDeveloperRiseRequestType();
+        $form->setManager($this->getUser());
+        $form->buildForm($builder, []);
+        $form = $builder->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($phpDeveloperRiseRequest);
-            $entityManager->flush();
-
+            $data = $form->getData();
+            if ($data instanceof PhpDeveloperRiseRequest) {
+                try {
+                    if ($data->getApproved()) {
+                        PhpDeveloperRiseService::processRiseUp($data);
+                    }
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($phpDeveloperRiseRequest);
+                    $entityManager->flush();
+                } catch (WrongPhpDeveloperConfiguration $e) {
+                    $form->addError(New FormError($e->getMessage()));
+                }
+            }
             return $this->redirectToRoute('php_developer_rise_request_index');
         }
 
@@ -63,11 +84,25 @@ class PhpDeveloperRiseRequestController extends AbstractController
      */
     public function edit(Request $request, PhpDeveloperRiseRequest $phpDeveloperRiseRequest): Response
     {
-        $form = $this->createForm(PhpDeveloperRiseRequestType::class, $phpDeveloperRiseRequest);
+        $builder = $this->createFormBuilder($phpDeveloperRiseRequest);
+        $form = new PhpDeveloperRiseRequestType();
+        $form->setManager($this->getUser());
+        $form->buildForm($builder, []);
+        $form = $builder->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $data = $form->getData();
+            if ($data instanceof PhpDeveloperRiseRequest) {
+                try {
+                    if ($data->getApproved()) {
+                        PhpDeveloperRiseService::processRiseUp($data);
+                    }
+                    $this->getDoctrine()->getManager()->flush();
+                } catch (WrongPhpDeveloperConfiguration $e) {
+                    $form->addError(New FormError($e->getMessage()));
+                }
+            }
 
             return $this->redirectToRoute('php_developer_rise_request_index', [
                 'id' => $phpDeveloperRiseRequest->getId(),
