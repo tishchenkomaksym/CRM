@@ -28,10 +28,10 @@ unit-tests:
 #  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
 #  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
   script:
+  - export APP_ENV=prod
   # Install DEVELOPMENT dependencies
   - composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
   - cp ./phpunit.xml.dist ./phpunit.xml
-  - cp ./.env.test ./.env
   - vendor/bin/phpunit --configuration ./phpunit.xml --coverage-text --colors=never ./tests
 #  except:
 #  - develop
