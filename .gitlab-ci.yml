@@ -8,12 +8,12 @@ cache:
   paths:
   - build
 
-dich:
-  image: epcallan/php7-testing-phpunit:7.2-phpunit7
-  stage: dich
-  script:
-  - composer install --ignore-platform-reqs
-  - phpunit --log-junit build/index.xml --coverage-xml build/coverage --coverage-clover build/coverage/coverage_index.xml
+#dich:
+#  image: epcallan/php7-testing-phpunit:7.2-phpunit7
+#  stage: dich
+#  script:
+#  - composer install --ignore-platform-reqs
+#  - phpunit --log-junit build/index.xml --coverage-xml build/coverage --coverage-clover build/coverage/coverage_index.xml
 
 unit-tests:
   stage: testing
@@ -37,7 +37,7 @@ unit-tests:
 #  - master
 
 
-code check:
-  image: emeraldsquad/sonar-scanner:latest
-  stage: code check
-  script: sonar-scanner -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectVersion=$CI_BUILD_ID -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.sources=src -Dsonar.coverage.exclusions=*.js,*.css,*.html,**Interface.php,**Kernel.php -Dsonar.php.tests.reportPath=build/index.xml -Dsonar.php.coverage.reportPaths=build/coverage/coverage_index.xml
+#code check:
+#  image: emeraldsquad/sonar-scanner:latest
+#  stage: code check
+#  script: sonar-scanner -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectVersion=$CI_BUILD_ID -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.sources=src -Dsonar.coverage.exclusions=*.js,*.css,*.html,**Interface.php,**Kernel.php -Dsonar.php.tests.reportPath=build/index.xml -Dsonar.php.coverage.reportPaths=build/coverage/coverage_index.xml
