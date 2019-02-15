@@ -29,7 +29,7 @@ class PhpDeveloperLevel
     private $phpDeveloperRelations;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperLevelTest", mappedBy="phpDeveloperLevel")
+     * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperLevelTest", mappedBy="phpDeveloperLevel", cascade={"persist", "remove"})
      */
     private $phpDeveloperLevelTests;
 
