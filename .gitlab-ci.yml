@@ -18,6 +18,13 @@ cache:
 unit-tests:
   stage: testing
   image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
+  services:
+  - mysql:latest
+  variables:
+    MYSQL_ROOT_PASSWORD: password
+    MYSQL_DATABASE: test_db
+    MYSQL_USER: devuser
+    MYSQL_PASSWORD: devpass
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
