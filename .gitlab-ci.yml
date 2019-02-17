@@ -14,15 +14,16 @@ cache:
 #  script:
 #  - composer install --ignore-platform-reqs
 #  - phpunit --log-junit build/index.xml --coverage-xml build/coverage --coverage-clover build/coverage/coverage_index.xml
+services:
+  - mysql:latest
+variables:
+  MYSQL_ROOT_PASSWORD: password
+  MYSQL_DATABASE: test_db
 
 unit-tests:
   stage: testing
   image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
-  services:
-    - mysql:latest
-  variables:
-    MYSQL_ROOT_PASSWORD: password
-    MYSQL_DATABASE: test_db
+
 #    MYSQL_USER: devuser
 #    MYSQL_PASSWORD: devpass
   cache:
