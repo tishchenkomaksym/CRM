@@ -21,6 +21,18 @@ connect:
   script:
   - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=mysql "$MYSQL_DATABASE"
 
+connect2:
+  stage: testing
+  image: mysql
+  script:
+  - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=localhost "$MYSQL_DATABASE"
+
+connect3:
+  stage: testing
+  image: mysql
+  script:
+  - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=127.0.0.1 "$MYSQL_DATABASE"
+
 
 #unit-tests:
 #  stage: testing
