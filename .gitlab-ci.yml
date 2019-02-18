@@ -7,19 +7,19 @@ stages:
 cache:
   paths:
   - build
-
-
+services:
+- docker:dind
+- mysql:latest
+variables:
+  DOCKER_DRIVER: overlay2
+  MYSQL_ROOT_PASSWORD: password
+  MYSQL_DATABASE: test_db
 
 connect:
-  services:
-  - mysql:latest
-  variables:
-    MYSQL_ROOT_PASSWORD: password
-    MYSQL_DATABASE: test_db
   stage: testing
   image: mysql
   script:
-  - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=127.0.0.1 "$MYSQL_DATABASE"
+  - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=mysql "$MYSQL_DATABASE"
 
 
 #unit-tests:
