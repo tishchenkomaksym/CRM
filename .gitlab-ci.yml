@@ -16,29 +16,29 @@ variables:
 
 connect:
   stage: testing
-  image: mysql
+  image: 172.17.0.2
   script:
   - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=mysql "$MYSQL_DATABASE"
 
 
-unit-tests:
-  stage: testing
-  image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
-
-
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-    - vendor/
-#  before_script:
-#  - eval $(ssh-agent -s)
-#  - mkdir -p ~/.ssh
-#  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
-#  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-  script:
-  - export APP_ENV=test
-  # Install DEVELOPMENT dependencies
-  - composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
-  - cp ./phpunit.xml.dist ./phpunit.xml
-  - cp ./.env.test ./.env
-  - vendor/bin/phpunit --configuration ./phpunit.xml --coverage-text --colors=never ./tests
+#unit-tests:
+#  stage: testing
+#  image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
+#
+#
+#  cache:
+#    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+#    paths:
+#    - vendor/
+##  before_script:
+##  - eval $(ssh-agent -s)
+##  - mkdir -p ~/.ssh
+##  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
+##  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+#  script:
+#  - export APP_ENV=test
+#  # Install DEVELOPMENT dependencies
+#  - composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
+#  - cp ./phpunit.xml.dist ./phpunit.xml
+#  - cp ./.env.test ./.env
+#  - vendor/bin/phpunit --configuration ./phpunit.xml --coverage-text --colors=never ./tests
