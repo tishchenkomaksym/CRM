@@ -18,7 +18,7 @@ connect:
   stage: testing
   image: mysql
   script:
-  - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=172.17.0.2 "$MYSQL_DATABASE"
+  - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=172.17.0.1 "$MYSQL_DATABASE"
 
 
 #unit-tests:
