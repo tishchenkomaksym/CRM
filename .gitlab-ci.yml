@@ -8,12 +8,38 @@ cache:
   paths:
   - build
 services:
-- docker:dind
-- mysql:latest
+  - docker:dind
 variables:
   DOCKER_DRIVER: overlay2
   MYSQL_ROOT_PASSWORD: password
   MYSQL_DATABASE: test_db
+  MYSQL_IMAGE: mysql:latest
+.building: &building
+  stage: build
+  image: docker:stable
+  services:
+  - docker:dind
+  before_script:
+  - echo "${CI_JOB_TOKEN}" | docker login -u gitlab-ci-token --password-stdin "${CI_REGISTRY}"
+  only:
+  - master
+  - develop
+
+.building_script: &building_script |
+  docker build \
+      --pull \
+      --compress \
+      --cache-from ${IMAGE} \
+
+image:nginx:
+  <<: *building
+  variables:
+    DOCKERFILE: .docker/nginx/Dockerfile
+  script:
+  - export IMAGE=${MYSQL_IMAGE}
+#  - export IMAGE_LATEST=${NGINX_IMAGE_LATEST}
+  - *building_script
+
 
 connect:
   stage: testing
