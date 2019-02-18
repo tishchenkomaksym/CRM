@@ -22,7 +22,7 @@ image:mysql:
   stage: build
   services:
   - docker:dind
-  image: mysql:latest
+  image: mysql:5.7
   script:
     - mysqld --user=root
 
