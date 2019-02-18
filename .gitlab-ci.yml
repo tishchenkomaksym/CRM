@@ -24,7 +24,7 @@ image:mysql:
   - docker:dind
   image: mysql:latest
   script:
-    - mysqld
+    - mysqld --user=root
 
 
 connect:
