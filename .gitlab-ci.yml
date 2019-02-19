@@ -19,7 +19,7 @@ services:
 build:
   stage: build
   script:
-  - docker-compose -f docker/docker-compose-test.test.yml build
+  - docker-compose -f docker/docker-compose-test.test.yml up -d
 
 
 
