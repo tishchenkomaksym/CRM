@@ -1,39 +1,64 @@
 stages:
+- compile
 - build
-#- testing
-#- code check
-#  - test-api
-
-cache:
-  paths:
-  - build
-
-image: docker:latest
+- testing
+- deploy
 
 variables:
-  DOCKER_DRIVER: overlay
+  NGINX_IMAGE: ${CI_REGISTRY_IMAGE}/nginx:${CI_COMMIT_SHA}
+  NGINX_IMAGE_LATEST: ${CI_REGISTRY_IMAGE}/nginx:latest
+  PHP_IMAGE: ${CI_REGISTRY_IMAGE}/php:${CI_COMMIT_SHA}
+  PHP_IMAGE_LATEST: ${CI_REGISTRY_IMAGE}/php:latest
+  KUBECONFIG: /root/.kube/config
 
-services:
-- docker:dind
-
-before_script:
-- apk update
-- apk upgrade
-- apk add python python-dev py-pip build-base
-- pip install docker-compose
-- docker login -u ${CI_REGISTRY_USER} -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
-
-
-build:
-  stage: build
+compile:
+  stage: compile
+  image: ${CI_REGISTRY}/test-check/test-check-php:7.2-fpm-alpine
   script:
-  - docker-compose -f docker-compose.yml up -d
-  - docker-compose exec -T php-fpm-test-2 composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
-  - docker-compose exec -T php-fpm-test-2  cp ./phpunit.xml.dist ./phpunit.xml
-  - docker-compose exec -T php-fpm-test-2  ./.env.test ./.env
-  - docker-compose exec -T php-fpm-test-2 vendor/bin/phpunit --configuration ./phpunit.xml --coverage-text --colors=never ./tests
+  - printenv
+  only:
+  - master
+  - develop
 
+.building: &building
+  stage: build
+  image: docker:stable
+  services:
+  - docker:dind
+  before_script:
+  - docker login -u ${CI_REGISTRY_USER} -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
+  only:
+  - master
+  - develop
+.building_script: &building_script |
+  docker build \
+      --pull \
+      --compress \
+      --cache-from ${IMAGE} \
+      -f ${DOCKERFILE} \
+      -t ${IMAGE} \
+      .
+  docker tag ${IMAGE} ${IMAGE_LATEST}
+  docker push ${IMAGE}
+  docker push ${IMAGE_LATEST}
 
+image:nginx:
+  <<: *building
+  variables:
+    DOCKERFILE: .docker/nginx/Dockerfile
+  script:
+  - export IMAGE=${NGINX_IMAGE}
+  - export IMAGE_LATEST=${NGINX_IMAGE_LATEST}
+  - *building_script
+
+image:php-fpm:
+  <<: *building
+  variables:
+    DOCKERFILE: .docker/php/Dockerfile
+  script:
+  - export IMAGE=${PHP_IMAGE}
+  - export IMAGE_LATEST=${PHP_IMAGE_LATEST}
+  - *building_script
 
 
 #unit-tests:
