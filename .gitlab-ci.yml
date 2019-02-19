@@ -96,3 +96,35 @@ image:php-fpm:
 #  - cp ./phpunit.xml.dist ./phpunit.xml
 #  - cp ./.env.test ./.env
 #  - vendor/bin/phpunit --configuration ./phpunit.xml --coverage-text --colors=never ./tests
+
+.deployment_rancher: &deployment_rancher
+  stage: deploy
+  image: registry.devzone.net/rancher/rancher-cli:latest
+  variables:
+    RANCHER_SERVICE_NGINX: nginx
+    RANCHER_SERVICE_PHP_FPM: php-fpm
+
+.deployment_script_rancher: &deployment_script_rancher
+  bash deploy.sh \
+    --rancher-url ${RANCHER_URL} \
+    --rancher-key ${RANCHER_ACCESS_KEY} \
+    --rancher-secret ${RANCHER_SECRET_KEY} \
+    --project-id ${RANCHER_PROJECT_ID} \
+    --namespace ${RANCHER_NAMESPACE_NAME} \
+    --workload-name ${RANCHER_SERVICE_NGINX} \
+    --workload-image ${NGINX_IMAGE} \
+    --sidecar ${RANCHER_SERVICE_PHP_FPM} ${PHP_IMAGE}
+
+dev:stable:
+  <<: *deployment_rancher
+  script:
+    - export RANCHER_NAMESPACE_NAME=nexteum-user-app
+    - export RANCHER_PROJECT_ID=${DEV_RANCHER2_PROJECT_ID}
+    - export RANCHER_URL=${DEV_RANCHER2_URL}
+    - export RANCHER_ACCESS_KEY=${DEV_RANCHER2_ACCESS_KEY}
+    - export RANCHER_SECRET_KEY=${DEV_RANCHER2_SECRET_KEY}
+    - *deployment_script_rancher
+  environment:
+    name: staging
+  only:
+    - master    
