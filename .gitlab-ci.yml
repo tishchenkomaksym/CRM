@@ -105,16 +105,8 @@ image:php-fpm:
     RANCHER_SERVICE_PHP_FPM: php-fpm
 
 .deployment_script_rancher: &deployment_script_rancher
-  bash -x deploy.sh \
-    --rancher-url ${RANCHER_URL} \
-    --rancher-key ${RANCHER_ACCESS_KEY} \
-    --rancher-secret ${RANCHER_SECRET_KEY} \
-    --project-id ${RANCHER_PROJECT_ID} \
-    --namespace ${RANCHER_NAMESPACE_NAME} \
-    --workload-name ${RANCHER_SERVICE_NGINX} \
-    --workload-image ${NGINX_IMAGE} \
-    --sidecar ${RANCHER_SERVICE_PHP_FPM} ${PHP_IMAGE}
-
+  bash -x deploy.sh --rancher-url ${RANCHER_URL} --rancher-key ${RANCHER_ACCESS_KEY} --rancher-secret ${RANCHER_SECRET_KEY} --project-id ${RANCHER_PROJECT_ID} --namespace ${RANCHER_NAMESPACE_NAME}  --workload-name ${RANCHER_SERVICE_NGINX} --workload-image ${NGINX_IMAGE} --sidecar ${RANCHER_SERVICE_PHP_FPM} ${PHP_IMAGE}
+  
 dev:stable:
   <<: *deployment_rancher
   script:
