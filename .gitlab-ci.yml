@@ -1,55 +1,30 @@
 stages:
 - build
-- testing
+#- testing
 #- code check
 #  - test-api
 
 cache:
   paths:
   - build
-services:
-  - docker:dind
-  - mysql
+
+image: docker:latest
+
 variables:
-  DOCKER_DRIVER: overlay2
-  MYSQL_ROOT_PASSWORD: password
-  MYSQL_DATABASE: test_db
-  MYSQL_IMAGE: mysql:latest
+  DOCKER_DRIVER: overlay
 
+services:
+- docker:dind
 
+before_script:
+- docker inf
 
-image:mysql:
+build:
   stage: build
-  services:
-  - docker:dind
-  image: mysql:5.7
   script:
-    - mysqld --user=root
+  - docker-compose -f docker/docker-compose-test.test.yml build
 
 
-connect:
-  stage: testing
-  image: mysql
-  services:
-  - docker:dind
-  script:
-  - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=mysql "$MYSQL_DATABASE"
-
-connect2:
-  stage: testing
-  image: mysql
-  services:
-  - docker:dind
-  script:
-  - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=localhost "$MYSQL_DATABASE"
-
-connect3:
-  stage: testing
-  image: mysql
-  services:
-  - docker:dind
-  script:
-  - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=127.0.0.1 "$MYSQL_DATABASE"
 
 
 #unit-tests:
