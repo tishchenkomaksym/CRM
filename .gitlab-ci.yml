@@ -1,7 +1,7 @@
 stages:
-- compile
 - build
 - testing
+- compile
 - deploy
 
 variables:
@@ -11,14 +11,28 @@ variables:
   PHP_IMAGE_LATEST: ${CI_REGISTRY_IMAGE}/php:latest
   KUBECONFIG: /root/.kube/config
 
-compile:
+src:
   stage: compile
-  image: ${CI_REGISTRY}/test-check/test-check-php:7.2-fpm-alpine
+  image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+    - vendor/
+  artifacts:
+    name: src
+    expire_in: 2 days
+    paths:
+    - .
   script:
-  - printenv
+  # Setup application in production mode (required to install dependencies)
+  - export APP_ENV=prod
+  # Install ONLY PRODUCTION dependencies
+  - composer install --no-dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
   only:
   - master
   - develop
+
+
 
 .building: &building
   stage: build
