@@ -59,7 +59,8 @@ class SdtCalendarEventItemBuilder
                 $createDate,
                 $this->sdt->getCount(),
                 $this->holidayService
-            )->format('Y-m-d');
+            );
+            $calendarItem->end = $calendarItem->end->setTime(23, 59, 59)->format('Y-m-d H:i:s');
         }
         $calendarItem->title = 'SDT';
         //TODO: add TOM role check

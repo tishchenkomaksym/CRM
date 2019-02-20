@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Repository\PhpDeveloperLevelTestPassedRepository;
 use App\Service\PhpDeveloperTest\PhpDeveloperTestsInformationBuilder;
 use App\Service\UserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +22,7 @@ class PhpDeveloperProfileController extends AbstractController
             'php_developer_profile/index.html.twig',
             [
                 'userLevel' => $service->getPhpUserLevel($user),
-                'developerManager' => $manager
+                'developerManagers' => $manager
             ]
         );
     }

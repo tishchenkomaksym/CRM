@@ -15,7 +15,10 @@ class DateCalculatorWithWeekends
     public static function getDateWithOffset(\DateTimeInterface $startDate, int $offset, HolidayService $holidayService)
     {
         $calculatedSdtCount = $offset > 0 ? $offset : $offset * -1;
-
+        --$calculatedSdtCount;
+        if ($calculatedSdtCount === 0) {
+            return $startDate;
+        }
         /** @noinspection PhpParamsInspection */
         $endDate = date_modify(clone $startDate, '+' . $calculatedSdtCount . ' weekdays');
         $holidaysCount = \count($holidayService->getHolidayBetweenDate($startDate, $endDate));

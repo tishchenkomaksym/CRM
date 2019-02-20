@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Calendar\CalendarEventItemCollection;
+use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
 use App\Calendar\HolidayCalendarEventItemBuilder;
 use App\Calendar\SdtCalendarEventItemBuilder;
 use App\Data\Sdt\Mail\Adapter\DeleteSdtMailFromSdtAdapter;
@@ -12,13 +13,11 @@ use App\Data\Sdt\Mail\DeleteSdtMailData;
 use App\Data\Sdt\Mail\EditSdtMailData;
 use App\Data\Sdt\Mail\NewSdtMailData;
 use App\Entity\Sdt;
+use App\Form\SdtType;
 use App\Repository\SdtRepository;
 use App\Service\HolidayService;
 use App\Service\UserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -87,11 +86,8 @@ class SdtController extends AbstractController
     {
         $sdt = new Sdt();
         $sdt->setUser($this->getUser());
-        $form = $this->createFormBuilder($sdt)
-                     ->add('count', IntegerType::class)
-                     ->add('createDate', DateType::class, ['widget' => 'single_text'])
-                     ->add('acting', TextType::class)
-                     ->getForm();
+        $form = $this->createForm(SdtType::class, $sdt);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -118,11 +114,12 @@ class SdtController extends AbstractController
      * @param Sdt $sdt
      * @return Response
      */
-    public function show(Sdt $sdt): Response
+    public function show(Sdt $sdt, HolidayService $holidayService): Response
     {
         return $this->render(
             'sdt/show.html.twig',
             [
+                'endDate' => DateCalculatorWithWeekends::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount(), $holidayService),
                 'sdt' => $sdt,
             ]
         );
@@ -139,11 +136,7 @@ class SdtController extends AbstractController
      */
     public function edit(Request $request, Sdt $sdt, \Swift_Mailer $mailer, HolidayService $holidayService): Response
     {
-        $form = $this->createFormBuilder($sdt)
-                     ->add('count', IntegerType::class)
-                     ->add('createDate', DateType::class, ['widget' => 'single_text'])
-                     ->add('acting', TextType::class, ['label' => 'Acting person'])
-                     ->getForm();
+        $form = $this->createForm(SdtType::class, $sdt);
         $oldFromDate = $sdt->getCreateDate();
         $oldCount = $sdt->getCount();
         $form->handleRequest($request);

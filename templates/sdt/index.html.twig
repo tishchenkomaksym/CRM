@@ -17,6 +17,6 @@
     <div id="calendar"></div>
 
     <script>
-        $('#calendar').fullCalendar({{ calendarEvents|raw }});
+        $('#calendar').fullCalendar({events:{{ calendarEvents|raw }}, displayEventTime: false});
     </script>
 {% endblock %}

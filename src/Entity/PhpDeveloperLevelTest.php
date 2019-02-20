@@ -38,6 +38,11 @@ class PhpDeveloperLevelTest
      */
     private $phpDeveloperLevelTestPasseds;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $information;
+
     public function __construct()
     {
         $this->phpDeveloperLevelTestPasseds = new ArrayCollection();
@@ -111,6 +116,18 @@ class PhpDeveloperLevelTest
                 $phpDeveloperLevelTestPassed->setPhpDeveloperLevelTest(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getInformation(): ?string
+    {
+        return $this->information;
+    }
+
+    public function setInformation(string $information): self
+    {
+        $this->information = $information;
 
         return $this;
     }

@@ -24,8 +24,10 @@
                 <div class="card-body">
                     <h5 class="card-title">Your Manager</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                    <p class="card-text">Your manager is: <span
-                                class="badge badge-info">{{ developerManager.username }}</span></p>
+                    {% for developerManager in developerManagers %}
+                        <p class="card-text">Your manager is: <span
+                                    class="badge badge-info">{{ developerManager.username }}</span></p>
+                    {% endfor %}
                     {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
                     {#<a href="#" class="card-link">Another link</a>#}
                 </div>
@@ -54,6 +56,17 @@
                     <h6 class="card-subtitle mb-2 text-muted">Make SDT request</h6>
                     <p class="card-text">If you want to take sdt request click here</p>
                     <a href="{{ path('sdt_new') }}" class="card-link">Make request</a>
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Documentation</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Read documentation</h6>
+                    <p class="card-text">Here you can read documentation</p>
+                    <a href="https://docs.auto-toyz.com/documentation/" class="card-link">Details</a>
                     {#<a href="#" class="card-link">Another link</a>#}
                 </div>
             </div>

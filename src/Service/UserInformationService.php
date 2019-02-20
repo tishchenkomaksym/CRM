@@ -79,15 +79,15 @@ class UserInformationService
 
     /**
      * @param User $user
-     * @return User
+     * @return User[]
      */
-    public function getPhpDeveloperManager(User $user): ?User
+    public function getPhpDeveloperManager(User $user): array
     {
-        $manager = null;
+        $managers = null;
         foreach ($user->getPhpDeveloperManagerRelations() as $relation) {
-            $manager = $relation->getManager();
+            $managers[] = $relation->getManager();
         }
-        return $manager;
+        return $managers;
     }
 
     /**
