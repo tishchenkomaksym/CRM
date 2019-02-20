@@ -55,6 +55,9 @@
                     {% if is_granted('ROLE_PHP_MANAGER') %}
                         <li class="list-group-item"><a href="{{ path('php_manager') }}">Manage team</a></li>
                     {% endif %}
+                    {% if is_granted('ROLE_ACCOUNT_MANAGER') %}
+                        <li class="list-group-item"><a href="{{ path('user_index') }}">Users</a></li>
+                    {% endif %}
                     {% if is_granted('ROLE_MANAGE_HOLIDAYS') %}
                         <li class="list-group-item"><a href="{{ path('holiday_index') }}">Holidays</a></li>
                     {% endif %}
