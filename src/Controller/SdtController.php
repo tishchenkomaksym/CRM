@@ -95,8 +95,6 @@ class SdtController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-
             $this->sendNewSdtEmail($mailer, NewSdtMailFromSdtAdapter::getNewSdtMail($sdt, $holidayService));
 
             $entityManager = $this->getDoctrine()->getManager();

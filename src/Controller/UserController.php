@@ -30,7 +30,7 @@ class UserController extends AbstractController
         );
     }
 
-    /**
+   /**
 
      * @Route("/new", name="user_new", methods={"GET","POST"})
      */

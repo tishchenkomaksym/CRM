@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}UserPhpDeveloperLevelRelation index{% endblock %}
+
+{% block body %}
+    <h1>UserPhpDeveloperLevelRelation index</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>CreateDate</th>
+            <th>actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user_php_developer_level_relation in user_php_developer_level_relations %}
+            <tr>
+                <td>{{ user_php_developer_level_relation.id }}</td>
+                <td>{{ user_php_developer_level_relation.createDate ? user_php_developer_level_relation.createDate|date('Y-m-d') : '' }}</td>
+                <td>
+                    {#<a href="{{ path('user_php_developer_level_relation_show', {'id': user_php_developer_level_relation.id}) }}">show</a>#}
+                    <a href="{{ path('user_php_developer_level_relation_edit', {'id': user_php_developer_level_relation.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {#<a href="{{ path('user_php_developer_level_relation_new/{id}',{'id': contextUser.id}) }}">Create new</a>#}
+{% endblock %}

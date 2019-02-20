@@ -10,11 +10,11 @@ namespace App\Service\User\PhpDeveloperLevel;
 
 use App\Entity\User;
 
-class PhpDeveloperLevelService
+class PhpManagerService
 {
-    public static function resetPhpDeveloperRoles(User $user)
+    public static function resetPhpManagerRoles(User $user)
     {
-        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
+        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_MANAGER']);
         return $user;
     }
 }

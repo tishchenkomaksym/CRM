@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PhpDeveloperManagerRelation index{% endblock %}
+
+{% block body %}
+    <h1>PhpDeveloperManagerRelation index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for php_developer_manager_relation in php_developer_manager_relations %}
+            <tr>
+                <td>{{ php_developer_manager_relation.id }}</td>
+                <td>
+                    {#<a href="{{ path('php_developer_manager_relation_show', {'id': php_developer_manager_relation.id}) }}">show</a>#}
+                    <a href="{{ path('php_developer_manager_relation_edit', {'id': php_developer_manager_relation.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('php_developer_manager_relation_new') }}">Create new</a>
+{% endblock %}

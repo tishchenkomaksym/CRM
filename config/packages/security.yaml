@@ -48,7 +48,7 @@ security:
     - { path: ^/sdt, roles: ROLE_SDT_REQUEST }
     - { path: ^/holiday, roles: ROLE_MANAGE_HOLIDAYS }
     - { path: ^/monthly/sdt/, roles: ROLE_MANAGE_MONTHLY_SDT }
-    - { path: ^/php/developer/, roles: [ROLE_PHP_DEVELOPER,ROLE_PHP_MANAGER] }
+#    - { path: ^/php/developer/, roles: [ROLE_PHP_DEVELOPER,ROLE_PHP_MANAGER] }
 
     role_hierarchy:
       ROLE_USER: [ROLE_SDT_REQUEST]
