@@ -17,7 +17,7 @@ code check:
   stage: code check
   script: sonar-scanner -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectVersion=$CI_BUILD_ID -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.sources=src -Dsonar.coverage.exclusions=src/Migrations/**,src/DataFixtures/**,*.js,*.css,*.html,**Interface.php,**Kernel.php -Dsonar.php.tests.reportPath=build/index.xml -Dsonar.php.coverage.reportPaths=build/coverage/coverage_index.xml
 
-src:
+compile:
   stage: compile
   image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
   cache:
@@ -30,6 +30,12 @@ src:
     paths:
     - .
   script:
+  # If you need carid repositories you need to set up ssh keys
+  #  before_script:
+  #  - eval $(ssh-agent -s)
+  #  - mkdir -p ~/.ssh
+  #  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
+  #  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
   # Setup application in production mode (required to install dependencies)
   - export APP_ENV=prod
   # Install ONLY PRODUCTION dependencies
@@ -81,27 +87,28 @@ image:php-fpm:
   - *building_script
 
 
-#unit-tests:
-#  stage: testing
-#  image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
-#
-#
-#  cache:
-#    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-#    paths:
-#    - vendor/
-##  before_script:
-##  - eval $(ssh-agent -s)
-##  - mkdir -p ~/.ssh
-##  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
-##  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-#  script:
-#  - export APP_ENV=test
-#  # Install DEVELOPMENT dependencies
-#  - composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
-#  - cp ./phpunit.xml.dist ./phpunit.xml
-#  - cp ./.env.test ./.env
-#  - vendor/bin/phpunit --configuration ./phpunit.xml --coverage-text --colors=never ./tests
+unit-tests:
+  stage: testing
+  image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
+
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+    - vendor/
+# If you need carid repositories you need to set up ssh keys
+#  before_script:
+#  - eval $(ssh-agent -s)
+#  - mkdir -p ~/.ssh
+#  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
+#  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  script:
+  - export APP_ENV=test
+  # Install DEVELOPMENT dependencies
+  - composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
+  - cp ./phpunit.xml.dist ./phpunit.xml
+  - cp ./.env.test ./.env
+  - vendor/bin/phpunit --configuration ./phpunit.xml --coverage-text --colors=never ./tests
 
 .deployment_rancher: &deployment_rancher
   stage: deploy
