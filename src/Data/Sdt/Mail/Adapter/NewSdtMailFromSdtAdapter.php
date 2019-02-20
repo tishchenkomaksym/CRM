@@ -27,6 +27,7 @@ class NewSdtMailFromSdtAdapter
         if ($createDate !== null) {
             $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(), $holidayService);
             return new NewSdtMailData(
+                $sdt->getUser()->getName(),
                 $createDate->format('Y-m-d'),
                 $endDate->format('Y-m-d'),
                 $sdt->getActing(),

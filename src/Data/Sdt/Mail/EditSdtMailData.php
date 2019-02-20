@@ -21,6 +21,7 @@ class EditSdtMailData extends BaseSdtMailData
     private $daysCount;
 
     public function __construct(
+        $userName,
         string $oldFromDate,
         string $oldToDate,
         string $newFromDate,
@@ -28,6 +29,7 @@ class EditSdtMailData extends BaseSdtMailData
         string $actingPeople,
         int $daysCount
     ) {
+        parent::__construct($userName);
         $this->oldFromDate = $oldFromDate;
         $this->oldToDate = $oldToDate;
         $this->newFromDate = $newFromDate;

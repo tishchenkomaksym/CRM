@@ -39,6 +39,7 @@ class EditSdtMailFromSdtAdapter
             $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(), $holidayService);
 
             return new EditSdtMailData(
+                $sdt->getUser()->getName(),
                 $oldCreateDate->format('Y-m-d'),
                 $oldEndDate->format('Y-m-d'),
                 $createDate->format('Y-m-d'),

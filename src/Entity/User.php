@@ -71,6 +71,11 @@ class User implements UserInterface
      */
     private $phpDeveloperRiseRequests;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $name;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
@@ -348,6 +353,18 @@ class User implements UserInterface
                 $phpDeveloperRiseRequest->setPhpDeveloper(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
 
         return $this;
     }
