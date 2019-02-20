@@ -6,7 +6,7 @@
  * Time: 12:12
  */
 
-namespace App\Service\User\PhpDeveloperLevel;
+namespace App\Service\User\PhpManager;
 
 use App\Entity\User;
 
