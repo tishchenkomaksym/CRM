@@ -1,4 +1,5 @@
 stages:
+- code check
 - testing
 - compile
 - build
