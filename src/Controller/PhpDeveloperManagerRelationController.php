@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\PhpDeveloperManagerRelation;
 use App\Entity\User;
 use App\Form\PhpDeveloperManagerRelationType;
-use App\Service\User\PhpDeveloperLevel\PhpManagerService;
+use App\Service\User\PhpManager\PhpManagerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
