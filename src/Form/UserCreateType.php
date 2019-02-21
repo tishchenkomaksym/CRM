@@ -4,11 +4,12 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UserType extends AbstractType
+class UserCreateType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -21,9 +22,10 @@ class UserType extends AbstractType
                 TextType::class
             )
             ->add(
-                'name',
-                TextType::class
-            );
+                'password',
+                PasswordType::class
+            )
+        ;
 //            ->add('roles');
 //            ->add('password');
 //            ->add('phpDeveloperLevelRelation');

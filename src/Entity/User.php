@@ -72,7 +72,7 @@ class User implements UserInterface
     private $phpDeveloperRiseRequests;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, options={"default":""})
      */
     private $name;
 
