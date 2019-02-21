@@ -41,7 +41,7 @@ class PhpDeveloperLevelTest
     /**
      * @ORM\Column(type="text")
      */
-    private $information;
+    private $information='';
 
     public function __construct()
     {

@@ -74,7 +74,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255, options={"default":""})
      */
-    private $name;
+    private $name='';
 
     public function __construct()
     {
