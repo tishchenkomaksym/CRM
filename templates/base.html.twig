@@ -58,7 +58,7 @@
                     {% if is_granted('ROLE_MANAGE_HOLIDAYS') %}
                         <li class="list-group-item"><a href="{{ path('holiday_index') }}">Holidays</a></li>
                     {% endif %}
-                    {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
+                    {% if is_granted('ROLE_USER') %}
                     <li class="list-group-item"><a href="{{ path('monthly_sdt_index') }}">SDT monthly</a>
                         {% endif %}
                 </ul>

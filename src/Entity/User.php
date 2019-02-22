@@ -71,6 +71,11 @@ class User implements UserInterface
      */
     private $phpDeveloperRiseRequests;
 
+    /**
+     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     */
+    private $createDate;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
@@ -348,6 +353,18 @@ class User implements UserInterface
                 $phpDeveloperRiseRequest->setPhpDeveloper(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreateDate(): ?\DateTimeInterface
+    {
+        return $this->createDate;
+    }
+
+    public function setCreateDate(\DateTimeInterface $createDate): self
+    {
+        $this->createDate = $createDate;
 
         return $this;
     }
