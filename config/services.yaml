@@ -47,6 +47,6 @@ services:
       arguments:
         $ldap: '@Symfony\Component\Ldap\Ldap'
         $baseDn: "cn=users,cn=accounts,dc=onyxenterprises,dc=com"
-        $searchDn: "uid=ivan.melnichuk,cn=users,cn=accounts,dc=onyxenterprises,dc=com"
+        $searchDn: "uid={username},cn=users,cn=accounts,dc=onyxenterprises,dc=com"
         $defaultRoles: ['ROLE_USER']
         $uidKey: "uid"

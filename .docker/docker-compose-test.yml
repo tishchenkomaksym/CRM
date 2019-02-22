@@ -1,11 +1,8 @@
 php-fpm-test-2:
-  build: .
-  dockerfile: Dockerfile
+  restart: always
+  image: registry.devzone.net/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
   volumes:
-  - ./xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
-  - ./zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
-  - ../:/application
-  - phpsocket:/var/run
+    - ../:/application
   environment:
     XDEBUG_CONFIG: remote_enable=1 remote_host=host.docker.internal
     PHP_IDE_CONFIG: serverName=symfony-demo
