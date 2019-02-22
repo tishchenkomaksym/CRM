@@ -5,6 +5,11 @@ namespace App\Controller;
 use App\Entity\MonthlySdt;
 use App\Entity\User;
 use App\Form\MonthlySdtType;
+use App\Repository\MonthlySdtRepository;
+use App\Repository\UserRepository;
+use App\Service\MonthlySdt\Builder\PhpDeveloperMonthlySDTBuilder;
+use App\Service\MonthlySdt\MonthlySdtService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,6 +38,20 @@ class MonthlySdtController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_MANAGE_MONTHLY_SDT")
+     * @Route("/view/all", name="monthly_sdt_view_all", methods={"GET"})
+     */
+    public function viewAll(MonthlySdtRepository $repository): Response
+    {
+        return $this->render(
+            'monthly_sdt/index.html.twig',
+            [
+                'monthly_sdts' => $repository->findAll(),
+            ]
+        );
+    }
+
+    /**
      * @Route("/new", name="monthly_sdt_new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
@@ -56,6 +75,30 @@ class MonthlySdtController extends AbstractController
                 'form' => $form->createView(),
             ]
         );
+    }
+
+    /**
+     * @IsGranted("ROLE_MANAGE_MONTHLY_SDT")
+     * @Route("/generate", name="monthly_sdt_generate", methods={"GET","POST"})
+     * @throws \Exception
+     */
+    public function generate(UserRepository $userRepository, MonthlySdtRepository $monthlySdtRepository): Response
+    {
+        /** @var User[] $users */
+        $users = $userRepository->findAll();
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $now = new \DateTime();
+        if (MonthlySdtService::isAllowedToGenerate($now, $monthlySdtRepository)) {
+            foreach ($users as $user) {
+                $monthlySdt = PhpDeveloperMonthlySDTBuilder::build($user, $now);
+                $entityManager->persist($monthlySdt);
+            }
+        }
+
+        $entityManager->flush();
+        $entityManager->clear();
+        return $this->redirectToRoute('monthly_sdt_view_all');
     }
 
     /**

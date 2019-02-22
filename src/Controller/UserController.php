@@ -7,6 +7,7 @@ use App\Form\UserCreateType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use App\Service\User\Builder\RegistrationUserBuilder;
+use App\Service\User\UserBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,9 +34,10 @@ class UserController extends AbstractController
         );
     }
 
-   /**
 
+    /**
      * @Route("/new", name="user_new", methods={"GET","POST"})
+     * @throws \Exception
      */
     public function new(Request $request,UserPasswordEncoderInterface $passwordEncoder): Response
     {
