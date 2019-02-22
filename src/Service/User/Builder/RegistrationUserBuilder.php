@@ -16,6 +16,7 @@ class RegistrationUserBuilder
     public static function build(User $user, UserPasswordEncoderInterface $passwordEncoder)
     {
         $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST']);
+        $user->setCreateDate(new \DateTime());
         return $user->setPassword($passwordEncoder->encodePassword($user, $user->getPassword()));
     }
 }
