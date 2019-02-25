@@ -17,6 +17,8 @@ variables:
 
 code check:
   image: emeraldsquad/sonar-scanner:latest
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
   stage: code check
   script:
     - ls -la
@@ -109,13 +111,11 @@ unit-tests:
 #  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
 #  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
   script:
-  - ls -la
   - export APP_ENV=test
   # Install DEVELOPMENT dependencies
   - composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
   - cp ./phpunit.xml.dist ./phpunit.xml
   - vendor/bin/phpunit --configuration ./phpunit.xml --log-junit build/index.xml --coverage-xml build/coverage --coverage-clover build/coverage/coverage_index.xml --colors=never
-  - ls -la
 
 .deployment_rancher: &deployment_rancher
   stage: deploy
