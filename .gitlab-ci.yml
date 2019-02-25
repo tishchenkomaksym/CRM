@@ -21,8 +21,7 @@ code check:
   image: emeraldsquad/sonar-scanner:latest
   stage: code check
   script:
-    - ls -la build/
-    - ls -la build/coverage/
+    - pwd
     - sonar-scanner -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectVersion=$CI_BUILD_ID -Dsonar.projectKey=$CI_PROJECT_PATH_SLUG -Dsonar.sources=src -Dsonar.coverage.exclusions=**/Migrations/*.*,**/DataFixtures/*.*,*.js,*.css,*.html,**/*.twig,**Interface.php,**Kernel.php -Dsonar.php.tests.reportPath=build/index.xml -Dsonar.php.coverage.reportPaths=build/coverage/coverage_index.xml
 
 compile:
@@ -111,6 +110,7 @@ unit-tests:
 #  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
 #  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
   script:
+  - pwd
   - export APP_ENV=test
   # Install DEVELOPMENT dependencies
   - composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
