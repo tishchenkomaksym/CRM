@@ -5,9 +5,7 @@ stages:
 - build
 - deploy
 
-cache:
-  paths:
-  - build
+
 
 
 variables:
@@ -103,6 +101,7 @@ unit-tests:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
     - vendor/
+    - build
 # If you need carid repositories you need to set up ssh keys
 #  before_script:
 #  - eval $(ssh-agent -s)
