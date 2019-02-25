@@ -14,10 +14,10 @@ if (isset($_ENV['BOOTSTRAP_CLEAR_CACHE_ENV'])) {
 }
 $str = '';
 (new Dotenv())->loadEnv(dirname(__DIR__) . '/.env.test');
-passthru(
-    'php bin/console doctrine:migrations:migrate -n &
-php bin/console doctrine:fixtures:load -n', $str
-);
-echo $str;
+//passthru(
+//    'php bin/console doctrine:migrations:migrate -n &
+//php bin/console doctrine:fixtures:load -n', $str
+//);
+//echo $str;
 
 require __DIR__ . '/../vendor/autoload.php';
