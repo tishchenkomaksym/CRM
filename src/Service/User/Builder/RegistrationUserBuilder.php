@@ -13,10 +13,10 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class RegistrationUserBuilder
 {
-    public static function build(User $user, UserPasswordEncoderInterface $passwordEncoder)
+    public static function build(User $user, UserPasswordEncoderInterface $passwordEncoder, $password)
     {
         $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST']);
         $user->setCreateDate(new \DateTime());
-        return $user->setPassword($passwordEncoder->encodePassword($user, $user->getPassword()));
+        return $user->setPassword($passwordEncoder->encodePassword($user, $password));
     }
 }

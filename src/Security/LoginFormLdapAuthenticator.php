@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\User\Builder\RegistrationUserBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Security\User\EntityUserProvider;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -156,12 +157,7 @@ class LoginFormLdapAuthenticator extends AbstractFormLoginAuthenticator
         }
         $userEntity = new User();
         $userEntity->setEmail($ldapUserName . '@onyx.com');
-        $userEntity->setPassword(
-            $this->passwordEncoder->encodePassword(
-                $userEntity,
-                $credentialsPassword
-            )
-        );
+        $userEntity = RegistrationUserBuilder::build($userEntity, $this->passwordEncoder, $credentialsPassword);
         $this->entityManager->persist($userEntity);
         $this->entityManager->flush();
         return $userEntity;

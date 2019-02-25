@@ -7,7 +7,6 @@ use App\Form\UserCreateType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use App\Service\User\Builder\RegistrationUserBuilder;
-use App\Service\User\UserBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,7 +45,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user=RegistrationUserBuilder::build($user,$passwordEncoder);
+            $user=RegistrationUserBuilder::build($user,$passwordEncoder,$user->getPassword());
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
