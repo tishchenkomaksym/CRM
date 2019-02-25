@@ -1,6 +1,6 @@
 stages:
-- code check
 - testing
+- code check
 - compile
 - build
 - deploy
