@@ -107,7 +107,7 @@ unit-tests:
   # Install DEVELOPMENT dependencies
   - composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
   - cp ./phpunit.xml.dist ./phpunit.xml
-  - vendor/bin/phpunit --configuration ./phpunit.xml --coverage-text --colors=never ./tests
+  - vendor/bin/phpunit --configuration ./phpunit.xml --coverage-text --colors=never ./tests/Unit
 
 .deployment_rancher: &deployment_rancher
   stage: deploy
