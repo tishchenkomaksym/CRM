@@ -21,7 +21,7 @@ class MonthlySdtType extends AbstractType
                 EntityType::class,
                 [
                     'class' => User::class,
-                    'choice_label' => 'email'
+                    'choice_label' => 'name'
                 ]
             );
     }

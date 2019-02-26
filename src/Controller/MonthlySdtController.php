@@ -66,7 +66,7 @@ class MonthlySdtController extends AbstractController
             $entityManager->persist($monthlySdt);
             $entityManager->flush();
 
-            return $this->redirectToRoute('monthly_sdt_index');
+            return $this->redirectToRoute('monthly_sdt_view_all');
         }
 
         return $this->render(
