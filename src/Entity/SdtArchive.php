@@ -5,9 +5,9 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\SdtRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\SdtArchiveRepository")
  */
-class Sdt
+class SdtArchive
 {
     /**
      * @ORM\Id()
@@ -17,20 +17,20 @@ class Sdt
     private $id;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="sdtArchives")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $create_date;
+    private $user;
+
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private $createDate;
 
     /**
      * @ORM\Column(type="integer")
      */
     private $count;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="sdt")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $user;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -47,14 +47,26 @@ class Sdt
         return $this->id;
     }
 
-    public function getCreateDate(): ?\DateTimeInterface
+    public function getUser(): ?User
     {
-        return $this->create_date;
+        return $this->user;
     }
 
-    public function setCreateDate(\DateTimeInterface $create_date): self
+    public function setUser(?User $user): self
     {
-        $this->create_date = $create_date;
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getCreateDate(): ?\DateTimeImmutable
+    {
+        return $this->createDate;
+    }
+
+    public function setCreateDate(\DateTimeImmutable $createDate): self
+    {
+        $this->createDate = $createDate;
 
         return $this;
     }
@@ -67,18 +79,6 @@ class Sdt
     public function setCount(int $count): self
     {
         $this->count = $count;
-
-        return $this;
-    }
-
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
-    public function setUser(User $user): self
-    {
-        $this->user = $user;
 
         return $this;
     }

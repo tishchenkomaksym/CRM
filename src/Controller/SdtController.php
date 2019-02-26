@@ -10,12 +10,16 @@ use App\Data\Sdt\Mail\Adapter\DeleteSdtMailFromSdtAdapter;
 use App\Data\Sdt\Mail\Adapter\EditSdtMailFromSdtAdapter;
 use App\Data\Sdt\Mail\Adapter\NewSdtMailFromSdtAdapter;
 use App\Data\Sdt\Mail\DeleteSdtMailData;
-use App\Data\Sdt\Mail\EditSdtMailData;
-use App\Data\Sdt\Mail\NewSdtMailData;
 use App\Entity\Sdt;
 use App\Form\SdtType;
 use App\Repository\SdtRepository;
 use App\Service\HolidayService;
+use App\Service\Sdt\Create\BaseCreateContext;
+use App\Service\Sdt\Create\BaseCreateStrategy;
+use App\Service\Sdt\Create\NewSDTMessageBuilder;
+use App\Service\Sdt\Update\BaseUpdateContext;
+use App\Service\Sdt\Update\BaseUpdateStrategy;
+use App\Service\Sdt\Update\UpdateSDTMessageBuilder;
 use App\Service\UserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +31,17 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SdtController extends AbstractController
 {
+
+    /**
+     * @var \Twig_Environment
+     */
+    private $environment;
+
+    public function __construct(\Twig_Environment $environment)
+    {
+        $this->environment = $environment;
+    }
+
     /**
      * @Route("/", name="sdt_index", methods={"GET"})
      * @param SdtRepository $sdtRepository
@@ -81,6 +96,7 @@ class SdtController extends AbstractController
      * @param HolidayService $holidayService
      * @return Response
      * @throws \App\Data\Sdt\Mail\Adapter\NoDateException
+     * @throws \Exception
      */
     public function new(Request $request, \Swift_Mailer $mailer, HolidayService $holidayService): Response
     {
@@ -91,12 +107,18 @@ class SdtController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->sendNewSdtEmail($mailer, NewSdtMailFromSdtAdapter::getNewSdtMail($sdt, $holidayService));
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($sdt);
-            $entityManager->flush();
-
+            $context = new BaseCreateContext();
+            $messageBuilder = new NewSDTMessageBuilder(
+                NewSdtMailFromSdtAdapter::getNewSdtMail($sdt, $holidayService), $this->environment
+            );
+            $strategy = new BaseCreateStrategy(
+                $mailer,
+                $sdt,
+                $messageBuilder,
+                $this->getDoctrine()->getManager()
+            );
+            $context->setStrategy($strategy);
+            $context->createSdt();
             return $this->redirectToRoute('sdt_index');
         }
 
@@ -133,20 +155,31 @@ class SdtController extends AbstractController
      * @param HolidayService $holidayService
      * @return Response
      * @throws \App\Data\Sdt\Mail\Adapter\NoDateException
+     * @throws \Exception
      */
     public function edit(Request $request, Sdt $sdt, \Swift_Mailer $mailer, HolidayService $holidayService): Response
     {
         $form = $this->createForm(SdtType::class, $sdt);
+        $oldEntity = clone $sdt;
         $oldFromDate = $sdt->getCreateDate();
         $oldCount = $sdt->getCount();
         $form->handleRequest($request);
 
         if ($oldFromDate !== null && $form->isSubmitted() && $form->isValid()) {
-            $this->sendEditSdtEmail(
-                $mailer,
-                EditSdtMailFromSdtAdapter::getEditSdtMail($sdt, $oldFromDate, $oldCount, $holidayService)
+            $context = new BaseUpdateContext();
+            $messageBuilder = new UpdateSDTMessageBuilder(
+                EditSdtMailFromSdtAdapter::getEditSdtMail($sdt, $oldFromDate, $oldCount, $holidayService),
+                $this->environment
             );
-            $this->getDoctrine()->getManager()->flush();
+            $strategy = new BaseUpdateStrategy(
+                $mailer,
+                $sdt,
+                $oldEntity,
+                $messageBuilder,
+                $this->getDoctrine()->getManager()
+            );
+            $context->setStrategy($strategy);
+            $sdt = $context->updateSDT();
 
             return $this->redirectToRoute(
                 'sdt_index',
@@ -184,50 +217,6 @@ class SdtController extends AbstractController
         }
 
         return $this->redirectToRoute('sdt_index');
-    }
-
-    private function sendNewSdtEmail(\Swift_Mailer $mailer, NewSdtMailData $mailData): int
-    {
-        $message = (new \Swift_Message($mailData->getSubject()))
-            ->setFrom($mailData->getFromEmail())
-            ->setTo($mailData->getToEmails())
-            ->setBody(
-                $this->renderView(
-                    'emails/sdt/newSdt.twig',
-                    [
-                        'fromDate' => $mailData->getFromDate(),
-                        'toDate' => $mailData->getToDate(),
-                        'daysCount' => $mailData->getDaysCount(),
-                        'actingPeople' => $mailData->getActingPeople(),
-                    ]
-                ),
-                'text/html'
-            );
-
-        return $mailer->send($message);
-    }
-
-    private function sendEditSdtEmail(\Swift_Mailer $mailer, EditSdtMailData $mailData): int
-    {
-        $message = (new \Swift_Message($mailData->getSubject()))
-            ->setFrom($mailData->getFromEmail())
-            ->setTo($mailData->getToEmails())
-            ->setBody(
-                $this->renderView(
-                    'emails/sdt/editSdt.twig',
-                    [
-                        'oldFromDate' => $mailData->getOldFromDate(),
-                        'oldToDate' => $mailData->getOldToDate(),
-                        'newFromDate' => $mailData->getOldFromDate(),
-                        'newToDate' => $mailData->getNewToDate(),
-                        'actingPeople' => $mailData->getActingPeople(),
-                        'daysCount' => $mailData->getDaysCount(),
-                    ]
-                ),
-                'text/html'
-            );
-
-        return $mailer->send($message);
     }
 
     private function sendDeleteSdtEmail(\Swift_Mailer $mailer, DeleteSdtMailData $mailData): int

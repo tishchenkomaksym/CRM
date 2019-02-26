@@ -81,6 +81,11 @@ class User implements UserInterface
      */
     private $createDate;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\SdtArchive", mappedBy="user", orphanRemoval=true)
+     */
+    private $sdtArchives;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
@@ -88,6 +93,7 @@ class User implements UserInterface
         $this->phpDeveloperManagerRelations = new ArrayCollection();
         $this->phpManagerDeveloperRelations = new ArrayCollection();
         $this->phpDeveloperRiseRequests = new ArrayCollection();
+        $this->sdtArchives = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -382,6 +388,37 @@ class User implements UserInterface
     public function setCreateDate(\DateTimeInterface $createDate): self
     {
         $this->createDate = $createDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|SdtArchive[]
+     */
+    public function getSdtArchives(): Collection
+    {
+        return $this->sdtArchives;
+    }
+
+    public function addSdtArchive(SdtArchive $sdtArchive): self
+    {
+        if (!$this->sdtArchives->contains($sdtArchive)) {
+            $this->sdtArchives[] = $sdtArchive;
+            $sdtArchive->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSdtArchive(SdtArchive $sdtArchive): self
+    {
+        if ($this->sdtArchives->contains($sdtArchive)) {
+            $this->sdtArchives->removeElement($sdtArchive);
+            // set the owning side to null (unless already changed)
+            if ($sdtArchive->getUser() === $this) {
+                $sdtArchive->setUser(null);
+            }
+        }
 
         return $this;
     }
