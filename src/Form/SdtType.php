@@ -15,7 +15,7 @@ class SdtType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('count', IntegerType::class,['label' => 'Count of dates'])
+            ->add('count', IntegerType::class, ['label' => 'Count of dates', 'attr' => ['min' => 1]])
             ->add('createDate', DateType::class, ['widget' => 'single_text','label' => 'Date then your SDT starts'])
             ->add('acting', TextType::class, ['label' => 'Person who will change you for this period'])
         ;
