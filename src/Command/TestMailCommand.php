@@ -40,7 +40,7 @@ class TestMailCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $mailData = New BaseSdtMailData('ivan');
-        $this->mailer->send(
+        echo "Recepient:" . $this->mailer->send(
             $message = (new \Swift_Message('test message'))
                 ->setFrom($mailData->getFromEmail())
                 ->setTo('ivan.melnichuk@onyx.com')
