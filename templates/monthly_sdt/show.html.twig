@@ -23,8 +23,11 @@
     </table>
 
     <a href="{{ path('monthly_sdt_index') }}">back to list</a>
+    {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
+        <a href="{{ path('monthly_sdt_edit', {'id': monthly_sdt.id}) }}">edit</a>
+    {% endif %}
 
-    <a href="{{ path('monthly_sdt_edit', {'id': monthly_sdt.id}) }}">edit</a>
-
-    {{ include('monthly_sdt/_delete_form.html.twig') }}
+    {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
+        {{ include('monthly_sdt/_delete_form.html.twig') }}
+    {% endif %}
 {% endblock %}

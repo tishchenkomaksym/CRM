@@ -52,6 +52,7 @@ class MonthlySdtController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_MANAGE_MONTHLY_SDT")
      * @Route("/new", name="monthly_sdt_new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
@@ -115,6 +116,7 @@ class MonthlySdtController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_MANAGE_MONTHLY_SDT")
      * @Route("/{id}/edit", name="monthly_sdt_edit", methods={"GET","POST"})
      */
     public function edit(Request $request, MonthlySdt $monthlySdt): Response

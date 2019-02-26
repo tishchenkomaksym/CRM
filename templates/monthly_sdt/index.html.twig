@@ -26,7 +26,9 @@
                 <td>{{ monthly_sdt.createDate ? monthly_sdt.createDate|date('Y-m-d') : '' }}</td>
                 <td>
                     <a href="{{ path('monthly_sdt_show', {'id': monthly_sdt.id}) }}">show</a>
-                    <a href="{{ path('monthly_sdt_edit', {'id': monthly_sdt.id}) }}">edit</a>
+                    {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
+                        <a href="{{ path('monthly_sdt_edit', {'id': monthly_sdt.id}) }}">edit</a>
+                    {% endif %}
                 </td>
             </tr>
         {% else %}
