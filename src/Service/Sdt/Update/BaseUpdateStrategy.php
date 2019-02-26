@@ -11,6 +11,7 @@ namespace App\Service\Sdt\Update;
 use App\Entity\Sdt;
 use App\Entity\SdtArchive;
 use App\Service\Sdt\MessageBuilderInterface;
+use App\Service\SdtArchive\SdtArchiveBuilderFromSdt;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 use Swift_Mailer;
@@ -74,20 +75,13 @@ class BaseUpdateStrategy
      *
      * @throws \Exception
      */
-    public function createArchive(): void
+    public function createArchive(): SdtArchive
     {
         $archive = new SdtArchive();
-        $archive->setReportDate($this->oldEntity->getReportDate());
-        $archive->setUser($this->oldEntity->getUser());
-        $archive->setCount($this->oldEntity->getCount());
-        $createDate = $this->oldEntity->getCreateDate();
-        if ($createDate && $createDate instanceof \DateTime) {
-            $archive->setCreateDate(\DateTimeImmutable::createFromMutable($createDate));
-        } else {
-            $archive->setCreateDate(new \DateTimeImmutable());
-        }
-        $archive->setActing($this->oldEntity->getActing());
+        $builder = new SdtArchiveBuilderFromSdt();
+        $archive = $builder->build($this->oldEntity, $archive);
         $this->entityManager->persist($archive);
         $this->entityManager->flush();
+        return $archive;
     }
 }

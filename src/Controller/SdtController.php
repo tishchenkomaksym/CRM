@@ -11,6 +11,7 @@ use App\Data\Sdt\Mail\Adapter\EditSdtMailFromSdtAdapter;
 use App\Data\Sdt\Mail\Adapter\NewSdtMailFromSdtAdapter;
 use App\Data\Sdt\Mail\DeleteSdtMailData;
 use App\Entity\Sdt;
+use App\Entity\SdtArchive;
 use App\Form\SdtType;
 use App\Repository\SdtRepository;
 use App\Service\HolidayService;
@@ -20,6 +21,7 @@ use App\Service\Sdt\Create\NewSDTMessageBuilder;
 use App\Service\Sdt\Update\BaseUpdateContext;
 use App\Service\Sdt\Update\BaseUpdateStrategy;
 use App\Service\Sdt\Update\UpdateSDTMessageBuilder;
+use App\Service\SdtArchive\SdtArchiveBuilderFromSdt;
 use App\Service\UserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -206,12 +208,17 @@ class SdtController extends AbstractController
      * @param HolidayService $holidayService
      * @return Response
      * @throws \App\Data\Sdt\Mail\Adapter\NoDateException
+     * @throws \Exception
      */
     public function delete(Request $request, Sdt $sdt, \Swift_Mailer $mailer, HolidayService $holidayService): Response
     {
         if ($this->isCsrfTokenValid('delete' . $sdt->getId(), $request->request->get('_token'))) {
             $this->sendDeleteSdtEmail($mailer, DeleteSdtMailFromSdtAdapter::getNewSdtMail($sdt, $holidayService));
             $entityManager = $this->getDoctrine()->getManager();
+            $builder = new SdtArchiveBuilderFromSdt();
+            $archive = new SdtArchive();
+            $archive = $builder->build($sdt, $archive);
+            $entityManager->persist($archive);
             $entityManager->remove($sdt);
             $entityManager->flush();
         }
