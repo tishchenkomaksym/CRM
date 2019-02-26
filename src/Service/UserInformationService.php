@@ -83,7 +83,7 @@ class UserInformationService
      */
     public function getPhpDeveloperManager(User $user): array
     {
-        $managers = null;
+        $managers = [];
         foreach ($user->getPhpDeveloperManagerRelations() as $relation) {
             $managers[] = $relation->getManager();
         }
