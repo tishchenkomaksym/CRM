@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\MonthlySdt;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -21,6 +22,10 @@ class MonthlySdtType extends AbstractType
                 EntityType::class,
                 [
                     'class' => User::class,
+                    'query_builder' => function (UserRepository $er) {
+                        return $er->createQueryBuilder('u')
+                                  ->orderBy('u.name', 'ASC');
+                    },
                     'choice_label' => 'name'
                 ]
             );
