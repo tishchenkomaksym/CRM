@@ -10,6 +10,9 @@
     {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
         <a href="{{ path('monthly_sdt_view_all') }}">View all</a>
     {% endif %}
+    {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
+        <a href="{{ path('monthly_sdt_new') }}">Create new</a>
+    {% endif %}
     <table class="table">
         <thead>
         <tr>
@@ -40,7 +43,5 @@
         {% endfor %}
         </tbody>
     </table>
-    {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
-    <a href="{{ path('monthly_sdt_new') }}">Create new</a>
-    {% endif %}
+
 {% endblock %}
