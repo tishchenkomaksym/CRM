@@ -17,7 +17,7 @@ class MonthlySdtType extends AbstractType
         $builder
             ->add(
                 'count',
-                \Symfony\Component\Form\Extension\Core\Type\NumberType::class,
+                \Symfony\Component\Form\Extension\Core\Type\IntegerType::class,
                 ['attr' => ['min' => 1, 'step' => 0.1]]
             )
             ->add('create_date')
