@@ -16,8 +16,9 @@
     <table class="table">
         <thead>
         <tr>
-            <th>Id</th>
             <th>Count</th>
+            <th>Email</th>
+            <th>Name</th>
             <th>Create_date</th>
             <th>actions</th>
         </tr>
@@ -25,9 +26,9 @@
         <tbody>
         {% for monthly_sdt in monthly_sdts %}
             <tr>
-                <td>{{ monthly_sdt.id }}</td>
                 <td>{{ monthly_sdt.count }}</td>
                 <td>{{ monthly_sdt.userId }}</td>
+                <td>{{ monthly_sdt.userId.name }}</td>
                 <td>{{ monthly_sdt.createDate ? monthly_sdt.createDate|date('Y-m-d') : '' }}</td>
                 <td>
                     <a href="{{ path('monthly_sdt_show', {'id': monthly_sdt.id}) }}">show</a>
