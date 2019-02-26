@@ -11,11 +11,11 @@ namespace App\Data\Sdt\Mail;
 class BaseSdtMailData
 {
     private $toEmails = [
-//        'timerecords@onyx.com',
-//        'team.programmers@onyx.com',
-//        'valeriya.po@onyx.com',
-//        'dmitriy.la@onyx.com',
-//        'vitaliy.ko@onyx.com'
+        'timerecords@onyx.com',
+        'team.programmers@onyx.com',
+        'valeriya.po@onyx.com',
+        'dmitriy.la@onyx.com',
+        'vitaliy.ko@onyx.com',
         'ivan.melnichuk@onyx.com'
     ];
     private $userName;
