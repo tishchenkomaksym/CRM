@@ -92,6 +92,14 @@ class SendMailCommand extends Command
                 );
                 echo $this->mailer->send($messageBuilder->build());
             }
+            else
+            {
+                echo 'cant find sdt id';
+            }
+        }
+        else
+        {
+            echo 'cant find sdt param';
         }
     }
 }
