@@ -84,9 +84,7 @@ class SendMailCommand extends Command
         $sdtId=$input->getArgument('sdtId');
         if($sdtId) {
             $sdt = $this->sdtRepository->find($sdtId);
-            var_dump($sdt);
-            var_dump($sdtId);
-            if ($sdt) {
+                if ($sdt) {
                 $sendMail=NewSdtMailFromSdtAdapter::getNewSdtMail($sdt, $this->holidayService);
                 $sendMail->setToEmails(['ivan.melnichuk@onyx.com']);
                 $messageBuilder = new NewSDTMessageBuilder(
