@@ -7,6 +7,7 @@ use App\Entity\PhpDeveloperLevelTestPassed;
 use App\Entity\PhpDeveloperManagerRelation;
 use App\Entity\User;
 use App\Entity\UserPhpDeveloperLevelRelation;
+use App\Service\User\UserBuilder;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -101,11 +102,13 @@ class PhpDeveloperLevel extends Fixture
     /**
      * @param ObjectManager $manager
      * @param \App\Entity\PhpDeveloperLevel $phpDeveloperLevel
+     * @return User
      * @throws \Exception
      */
     private function juniorUser(ObjectManager $manager, \App\Entity\PhpDeveloperLevel $phpDeveloperLevel)
     {
         $user = new User();
+        UserBuilder::build($user);
         $user->setEmail('junior1@onyx.com');
         $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
         $user->setPassword(
@@ -116,6 +119,7 @@ class PhpDeveloperLevel extends Fixture
         );
         $manager->persist($user);
         $user2 = $this->juniorUser2($manager, $phpDeveloperLevel);
+        UserBuilder::build($user2);
         $this->juniorLvlOneTests($manager, $phpDeveloperLevel, $user, $user2);
 
         $relation = new UserPhpDeveloperLevelRelation();
@@ -127,7 +131,9 @@ class PhpDeveloperLevel extends Fixture
 
 
         $managerUser = new User();
+        UserBuilder::build($managerUser);
         $managerUser->setEmail('juniorPM@onyx.com');
+
         $managerUser->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_MANAGER']);
         $managerUser->setPassword(
             $this->passwordEncoder->encodePassword(
@@ -158,6 +164,7 @@ class PhpDeveloperLevel extends Fixture
     private function juniorUser2(ObjectManager $manager, \App\Entity\PhpDeveloperLevel $phpDeveloperLevel)
     {
         $user = new User();
+        UserBuilder::build($user);
         $user->setEmail('junior2@onyx.com');
         $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
         $user->setPassword(
