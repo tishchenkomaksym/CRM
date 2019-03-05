@@ -37,6 +37,8 @@ class UserFixtures extends Fixture
         $user = new User();
         UserBuilder::build($user);
         $user->setEmail('recrutier@onyx.com');
+        $user->setName('Recruter');
+
         $user->setPassword(
             $this->passwordEncoder->encodePassword(
                 $user,
@@ -53,6 +55,7 @@ class UserFixtures extends Fixture
 
 
         $user->setEmail('accountmanager@onyx.com');
+        $user->setName('Account manager');
         $user->setPassword(
             $this->passwordEncoder->encodePassword(
                 $user,
