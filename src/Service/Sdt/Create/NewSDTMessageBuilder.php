@@ -21,7 +21,6 @@ class NewSDTMessageBuilder implements MessageBuilderInterface
      */
     private $mailData;
 
-
     public function __construct(NewSdtMailData $mailData, Twig_Environment $templating)
     {
         $this->mailData = $mailData;
@@ -36,22 +35,20 @@ class NewSDTMessageBuilder implements MessageBuilderInterface
      */
     public function build()
     {
-        $mailData = $this->mailData;
-        $message = (new \Swift_Message($mailData->getSubject()))
-            ->setFrom($mailData->getFromEmail())
-            ->setTo($mailData->getToEmails())
+        return (new \Swift_Message($this->mailData->getSubject()))
+            ->setFrom($this->mailData->getFromEmail())
+            ->setTo($this->mailData->getToEmails())
             ->setBody(
                 $this->templating->render(
                     'emails/sdt/newSdt.twig',
                     [
-                        'fromDate' => $mailData->getFromDate(),
-                        'toDate' => $mailData->getToDate(),
-                        'daysCount' => $mailData->getDaysCount(),
-                        'actingPeople' => $mailData->getActingPeople(),
+                        'fromDate' => $this->mailData->getFromDate(),
+                        'toDate' => $this->mailData->getToDate(),
+                        'daysCount' => $this->mailData->getDaysCount(),
+                        'actingPeople' => $this->mailData->getActingPeople(),
                     ]
                 ),
                 'text/html'
             );
-        return $message;
     }
 }

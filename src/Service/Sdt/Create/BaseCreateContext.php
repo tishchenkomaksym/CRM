@@ -9,6 +9,7 @@
 namespace App\Service\Sdt\Create;
 
 use App\Entity\Sdt;
+use App\Service\Sdt\Exception\EmailServerNotWorking;
 
 class BaseCreateContext
 {
@@ -16,28 +17,25 @@ class BaseCreateContext
     private $strategy;
 
     /**
-     * @return mixed
+     * BaseCreateContext constructor.
+     * @param BaseCreateStrategy $strategy
      */
-    public function getStrategy()
-    {
-        return $this->strategy;
-    }
-
-    /**
-     * @param mixed $strategy
-     */
-    public function setStrategy($strategy): void
+    public function __construct(BaseCreateStrategy $strategy)
     {
         $this->strategy = $strategy;
     }
 
+
     /**
      * @return Sdt
+     * @throws EmailServerNotWorking
      * @throws \Exception
      */
     public function createSdt(): Sdt
     {
-        $this->strategy->sendEmail();
+        if ($this->strategy->sendEmail() === 0) {
+            throw  new EmailServerNotWorking(EmailServerNotWorking::MESSAGE);
+        }
         return $this->strategy->create();
     }
 }

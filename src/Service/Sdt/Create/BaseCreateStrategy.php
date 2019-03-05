@@ -57,9 +57,8 @@ class BaseCreateStrategy
     public function create(): Sdt
     {
         $sdt = BaseBuilder::build($this->entity);
-        $entityManager = $this->entityManager;
-        $entityManager->persist($sdt);
-        $entityManager->flush();
+        $this->entityManager->persist($sdt);
+        $this->entityManager->flush();
         return $sdt;
     }
 }

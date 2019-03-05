@@ -9,6 +9,7 @@
 namespace App\Service\Sdt\Update;
 
 use App\Entity\Sdt;
+use App\Service\Sdt\Exception\EmailServerNotWorking;
 
 class BaseUpdateContext
 {
@@ -16,29 +17,26 @@ class BaseUpdateContext
     private $strategy;
 
     /**
-     * @return mixed
+     * BaseUpdateContext constructor.
+     * @param BaseUpdateStrategy $strategy
      */
-    public function getStrategy()
-    {
-        return $this->strategy;
-    }
-
-    /**
-     * @param mixed $strategy
-     */
-    public function setStrategy($strategy): void
+    public function __construct(BaseUpdateStrategy $strategy)
     {
         $this->strategy = $strategy;
     }
 
+
     /**
      * @return Sdt
      * @throws \Exception
+     * @throws EmailServerNotWorking
      */
     public function updateSDT(): Sdt
     {
+        if ($this->strategy->sendEmail() === 0) {
+            throw new EmailServerNotWorking(EmailServerNotWorking::MESSAGE);
+        }
         $entity = $this->strategy->update();
-        $this->strategy->sendEmail();
         $this->strategy->createArchive();
         return $entity;
     }

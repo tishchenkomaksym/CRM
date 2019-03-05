@@ -18,6 +18,7 @@ use App\Service\HolidayService;
 use App\Service\Sdt\Create\BaseCreateContext;
 use App\Service\Sdt\Create\BaseCreateStrategy;
 use App\Service\Sdt\Create\NewSDTMessageBuilder;
+use App\Service\Sdt\Exception\EmailServerNotWorking;
 use App\Service\Sdt\Update\BaseUpdateContext;
 use App\Service\Sdt\Update\BaseUpdateStrategy;
 use App\Service\Sdt\Update\UpdateSDTMessageBuilder;
@@ -33,7 +34,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SdtController extends AbstractController
 {
-
+    public const SDT_INDEX_ROUTE = 'sdt_index';
     /**
      * @var \Twig_Environment
      */
@@ -109,7 +110,7 @@ class SdtController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $context = new BaseCreateContext();
+
             $messageBuilder = new NewSDTMessageBuilder(
                 NewSdtMailFromSdtAdapter::getNewSdtMail($sdt, $holidayService), $this->environment
             );
@@ -119,9 +120,9 @@ class SdtController extends AbstractController
                 $messageBuilder,
                 $this->getDoctrine()->getManager()
             );
-            $context->setStrategy($strategy);
+            $context = new BaseCreateContext($strategy);
             $context->createSdt();
-            return $this->redirectToRoute('sdt_index');
+            return $this->redirectToRoute(self::SDT_INDEX_ROUTE);
         }
 
         return $this->render(
@@ -168,7 +169,6 @@ class SdtController extends AbstractController
         $form->handleRequest($request);
 
         if ($oldFromDate !== null && $form->isSubmitted() && $form->isValid()) {
-            $context = new BaseUpdateContext();
             $messageBuilder = new UpdateSDTMessageBuilder(
                 EditSdtMailFromSdtAdapter::getEditSdtMail($sdt, $oldFromDate, $oldCount, $holidayService),
                 $this->environment
@@ -180,11 +180,12 @@ class SdtController extends AbstractController
                 $messageBuilder,
                 $this->getDoctrine()->getManager()
             );
-            $context->setStrategy($strategy);
+            $context = new BaseUpdateContext($strategy);
+
             $sdt = $context->updateSDT();
 
             return $this->redirectToRoute(
-                'sdt_index',
+                self::SDT_INDEX_ROUTE,
                 [
                     'id' => $sdt->getId(),
                 ]
@@ -213,7 +214,12 @@ class SdtController extends AbstractController
     public function delete(Request $request, Sdt $sdt, \Swift_Mailer $mailer, HolidayService $holidayService): Response
     {
         if ($this->isCsrfTokenValid('delete' . $sdt->getId(), $request->request->get('_token'))) {
-            $this->sendDeleteSdtEmail($mailer, DeleteSdtMailFromSdtAdapter::getNewSdtMail($sdt, $holidayService));
+            if ($this->sendDeleteSdtEmail(
+                    $mailer,
+                    DeleteSdtMailFromSdtAdapter::getNewSdtMail($sdt, $holidayService)
+                ) === 0) {
+                throw new EmailServerNotWorking(EmailServerNotWorking::MESSAGE);
+            }
             $entityManager = $this->getDoctrine()->getManager();
             $builder = new SdtArchiveBuilderFromSdt();
             $archive = new SdtArchive();
@@ -223,7 +229,7 @@ class SdtController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('sdt_index');
+        return $this->redirectToRoute(self::SDT_INDEX_ROUTE);
     }
 
     private function sendDeleteSdtEmail(\Swift_Mailer $mailer, DeleteSdtMailData $mailData): int
