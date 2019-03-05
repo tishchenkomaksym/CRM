@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Constants\FormType;
 use App\Entity\Sdt;
 use App\Repository\UserRepository;
 use Symfony\Component\Form\AbstractType;
@@ -24,14 +25,19 @@ class SdtType extends AbstractType
         }
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     * @throws \Exception
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add(
                 'count',
                 IntegerType::class,
                 [
-                    'label' => 'Count of dates',
+                    FormType::LABEL => 'Count of dates',
                     'attr' => ['min' => 1]
                 ]
             )
@@ -40,22 +46,23 @@ class SdtType extends AbstractType
                 DateType::class,
                 [
                     'widget' => 'single_text',
-                    'label' => 'Date then your SDT starts',
+                    FormType::LABEL => 'Date then your SDT starts',
                     'attr' => ['value' => (new \DateTime())->format('Y-m-d')]
                 ]
             )
             ->add(
                 'acting',
                 ChoiceType::class,
-                ['label' => 'Person who will change you for this period', 'choices' => $this->actingPeople]
-            )
-        ;
+                [FormType::LABEL => 'Person who will change you for this period', 'choices' => $this->actingPeople]
+            );
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            'data_class' => Sdt::class,
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => Sdt::class,
+            ]
+        );
     }
 }
