@@ -62,7 +62,7 @@ class PhpDeveloperTestsInformationBuilder
             $phpLevel = $phpDeveloperRelation->getPhpDeveloperLevel();
             if ($phpLevel) {
                 $nextLevel = $phpLevel->getNextLevel();
-                if ($nextLevel === null) {
+                if ($nextLevel !== null) {
                     $allTestsByLevel = $phpLevel->getPhpDeveloperLevelTests();
                 } else {
                     throw new NoExistsNewLevelOfDeveloper('No exists next level');
