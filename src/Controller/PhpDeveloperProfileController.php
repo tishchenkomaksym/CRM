@@ -4,9 +4,15 @@ namespace App\Controller;
 
 use App\Service\PhpDeveloperTest\PhpDeveloperTestsInformationBuilder;
 use App\Service\UserInformationService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @IsGranted("ROLE_PHP_DEVELOPER")
+ * Class PhpDeveloperProfileController
+ * @package App\Controller
+ */
 class PhpDeveloperProfileController extends AbstractController
 {
     /**
@@ -29,15 +35,15 @@ class PhpDeveloperProfileController extends AbstractController
 
     /**
      * @Route("/php/developer/profile/salary-raise", name="php_developer_salary_raise")
-     * @param UserInformationService $service
      * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \App\Service\PhpDeveloperTest\PhpDeveloperTestBuilderException
      */
-    public function salaryRaise(): \Symfony\Component\HttpFoundation\Response
-    {
+    public function salaryRaise(PhpDeveloperTestsInformationBuilder $builder
+    ): \Symfony\Component\HttpFoundation\Response {
         return $this->render(
             'php_developer_profile/salaryRaise.html.twig',
             [
-                'tests' => PhpDeveloperTestsInformationBuilder::build($this->getUser())
+                'tests' => $builder->build($this->getUser())
             ]
         );
     }

@@ -54,15 +54,6 @@ class UserInformationService
         return $user->getPhpDeveloperLevelRelation()->getPhpDeveloperLevel()->getTitle();
     }
 
-    public function getPhpUserLevelTests(User $user): array
-    {
-        if ($user->getPhpDeveloperLevelRelation() === null || $user->getPhpDeveloperLevelRelation(
-            )->getPhpDeveloperLevel() === null) {
-            return [];
-        }
-        return $user->getPhpDeveloperLevelRelation()->getPhpDeveloperLevel()->getPhpDeveloperLevelTests()->getValues();
-    }
-
     /**
      * @param User $user
      * @return User[]

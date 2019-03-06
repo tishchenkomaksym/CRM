@@ -24,26 +24,28 @@ class ElasticSearchClient
         $this->client = $clientBuilder->setHosts([$host])->build();
     }
 
-    public function getWorkLogFromDate($user, $dateFrom, $dateTo)
+    public function getTimePerComponent($component, $userName)
     {
         $params = [
             'index' => 'worklogs',
             'type' => 'worklog',
-            'scroll' => '1s',          // how long between scroll requests. should be small!
-            'size' => 1000,
+            'size' => 0,
             'body' => [
-//                'sort' => [
-//                    'assignee.keyword' => ['order' => 'asc'],
-//                    'taskGroup.title.keyword' => ['order' => 'asc'],
-//                    'capitalisationTitle.keyword' => ['order' => 'asc']
-//                ],
-//                'stored_fields' => ['assignee', 'taskGroup.title', 'capitalisationTitle'],
                 'query' => [
-//                    'range' => [
-//                        'started' => ['gte' => $dateFrom, 'lte' => $dateTo, 'format' => 'dd/MM/yyyy||yyyy']
-//                    ],
-                    'match' => [
-                        'author.userName' => $user
+                    'constant_score' => [
+                        'filter' => [
+                            'bool' =>
+                                [
+                                    'must' => [
+                                        [
+                                            'match' => ['author.userName' => $userName],
+                                        ],
+                                        [
+                                            'match' => ['technicalComponents' => $component],
+                                        ],
+                                    ]
+                                ]
+                        ]
                     ]
                 ],
                 'aggs' => [
@@ -55,6 +57,7 @@ class ElasticSearchClient
                 ]
             ]
         ];
-        return $this->client->search($params);
+        $data = $this->client->search($params);
+        return $data['aggregations']['time']['value'];
     }
 }

@@ -43,9 +43,16 @@ class PhpDeveloperLevelTest
      */
     private $information='';
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperLevelTestTechnicalComponent", mappedBy="phpDeveloperLevel",
+     *     orphanRemoval=true)
+     */
+    private $technicalComponents;
+
     public function __construct()
     {
         $this->phpDeveloperLevelTestPasseds = new ArrayCollection();
+        $this->technicalComponents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -128,6 +135,39 @@ class PhpDeveloperLevelTest
     public function setInformation(string $information): self
     {
         $this->information = $information;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PhpDeveloperLevelTestTechnicalComponent[]
+     */
+    public function getTechnicalComponents(): Collection
+    {
+        return $this->technicalComponents;
+    }
+
+    public function addTestTechnicalComponent(
+        PhpDeveloperLevelTestTechnicalComponent $phpDeveloperLevelTestTechnicalComponent
+    ): self {
+        if (!$this->technicalComponents->contains($phpDeveloperLevelTestTechnicalComponent)) {
+            $this->technicalComponents[] = $phpDeveloperLevelTestTechnicalComponent;
+            $phpDeveloperLevelTestTechnicalComponent->setPhpDeveloperLevel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTechnicalComponent(
+        PhpDeveloperLevelTestTechnicalComponent $phpDeveloperLevelTestTechnicalComponent
+    ): self {
+        if ($this->technicalComponents->contains($phpDeveloperLevelTestTechnicalComponent)) {
+            $this->technicalComponents->removeElement($phpDeveloperLevelTestTechnicalComponent);
+            // set the owning side to null (unless already changed)
+            if ($phpDeveloperLevelTestTechnicalComponent->getPhpDeveloperLevel() === $this) {
+                $phpDeveloperLevelTestTechnicalComponent->setPhpDeveloperLevel(null);
+            }
+        }
 
         return $this;
     }

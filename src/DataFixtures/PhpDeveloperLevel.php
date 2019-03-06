@@ -2,8 +2,10 @@
 
 namespace App\DataFixtures;
 
+use App\Constants\UserRoles;
 use App\Entity\PhpDeveloperLevelTest;
 use App\Entity\PhpDeveloperLevelTestPassed;
+use App\Entity\PhpDeveloperLevelTestTechnicalComponent;
 use App\Entity\PhpDeveloperManagerRelation;
 use App\Entity\User;
 use App\Entity\UserPhpDeveloperLevelRelation;
@@ -69,11 +71,14 @@ class PhpDeveloperLevel extends Fixture
         \App\Entity\PhpDeveloperLevel $phpDeveloperLevel,
         User $user,
         User $secondJuniour
-    )
-    {
+    ) {
+        $component = new PhpDeveloperLevelTestTechnicalComponent();
+        $component->setName('MySQL')->setJiraName('MySQL')->setRequiredHours(400);
+        $manager->persist($component);
         $test = new PhpDeveloperLevelTest();
         $test->setTitle('MySQL Level 1');
         $test->setLink('https://drive.google.com/open?id=17rYa4kxiGQzsmBh8zANz3B6PEQdBShVlHBGmctpKSEA');
+        $test->addTestTechnicalComponent($component);
         $test->setPhpDeveloperLevel($phpDeveloperLevel);
         $manager->persist($test);
         $passed = new PhpDeveloperLevelTestPassed();
@@ -110,7 +115,7 @@ class PhpDeveloperLevel extends Fixture
         $user = new User();
         UserBuilder::build($user);
         $user->setEmail('junior1@onyx.com');
-        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
+        $user->setRoles([UserRoles::ROLE_USER, UserRoles::ROLE_SDT_REQUEST, 'ROLE_PHP_DEVELOPER']);
         $user->setPassword(
             $this->passwordEncoder->encodePassword(
                 $user,
@@ -134,7 +139,7 @@ class PhpDeveloperLevel extends Fixture
         UserBuilder::build($managerUser);
         $managerUser->setEmail('juniorPM@onyx.com');
 
-        $managerUser->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_MANAGER']);
+        $managerUser->setRoles([UserRoles::ROLE_USER, 'ROLE_SDT_REQUEST', 'ROLE_PHP_MANAGER']);
         $managerUser->setPassword(
             $this->passwordEncoder->encodePassword(
                 $managerUser,
@@ -166,7 +171,7 @@ class PhpDeveloperLevel extends Fixture
         $user = new User();
         UserBuilder::build($user);
         $user->setEmail('junior2@onyx.com');
-        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
+        $user->setRoles([UserRoles::ROLE_USER, 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
         $user->setPassword(
             $this->passwordEncoder->encodePassword(
                 $user,

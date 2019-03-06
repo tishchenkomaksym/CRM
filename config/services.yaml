@@ -29,6 +29,7 @@ services:
     Elasticsearch\ClientBuilder:
 
     App\Service\ElasticSearchClient:
+      public: true
         arguments:
             $host: '%env(ELASTIC_URL)%'
 
