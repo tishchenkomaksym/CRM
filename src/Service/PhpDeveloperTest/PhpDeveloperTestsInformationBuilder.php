@@ -9,6 +9,7 @@
 namespace App\Service\PhpDeveloperTest;
 
 use App\Entity\User;
+use App\Service\PhpDeveloperTest\Exception\NoExistsNewLevelOfDeveloper;
 use App\Service\PhpDeveloperTest\TechnicalComponents\TechnicalComponentBuilder;
 
 class PhpDeveloperTestsInformationBuilder
@@ -28,6 +29,7 @@ class PhpDeveloperTestsInformationBuilder
      * @param User $user
      * @return PhpDeveloperTestInformation[] array
      * @throws PhpDeveloperTestBuilderException
+     * @throws NoExistsNewLevelOfDeveloper
      */
     public function build(User $user): array
     {
@@ -50,6 +52,7 @@ class PhpDeveloperTestsInformationBuilder
     /**
      * @param User $user
      * @return \App\Entity\PhpDeveloperLevelTest[]|array|\Doctrine\Common\Collections\Collection
+     * @throws NoExistsNewLevelOfDeveloper
      */
     private function getAllTestsByLevel(User $user)
     {
@@ -58,7 +61,12 @@ class PhpDeveloperTestsInformationBuilder
         if ($phpDeveloperRelation) {
             $phpLevel = $phpDeveloperRelation->getPhpDeveloperLevel();
             if ($phpLevel) {
-                $allTestsByLevel = $phpLevel->getPhpDeveloperLevelTests();
+                $nextLevel = $phpLevel->getNextLevel();
+                if ($nextLevel === null) {
+                    $allTestsByLevel = $phpLevel->getPhpDeveloperLevelTests();
+                } else {
+                    throw new NoExistsNewLevelOfDeveloper('No exists next level');
+                }
             }
         }
         return $allTestsByLevel;

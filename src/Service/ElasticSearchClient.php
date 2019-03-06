@@ -12,6 +12,7 @@ use Elasticsearch\ClientBuilder;
 
 class ElasticSearchClient
 {
+    public const MATCH='match';
     private $client;
 
     /**
@@ -38,10 +39,44 @@ class ElasticSearchClient
                                 [
                                     'must' => [
                                         [
-                                            'match' => ['author.userName' => $userName],
+                                            self::MATCH => ['author.userName' => $userName],
                                         ],
                                         [
-                                            'match' => ['technicalComponents' => $component],
+                                            self::MATCH => ['technicalComponents' => $component],
+                                        ],
+                                    ]
+                                ]
+                        ]
+                    ]
+                ],
+                'aggs' => [
+                    'time' => [
+                        'sum' => [
+                            'field' => 'time'
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $data = $this->client->search($params);
+        return $data['aggregations']['time']['value'];
+    }
+
+    public function getWorkLogTimePerDateRange($userName)
+    {
+        $params = [
+            'index' => 'worklogs',
+            'type' => 'worklog',
+            'size' => 0,
+            'body' => [
+                'query' => [
+                    'constant_score' => [
+                        'filter' => [
+                            'bool' =>
+                                [
+                                    'must' => [
+                                        [
+                                            self::MATCH => ['author.userName' => $userName],
                                         ],
                                     ]
                                 ]
