@@ -30,8 +30,8 @@ services:
 
     App\Service\ElasticSearchClient:
       public: true
-        arguments:
-            $host: '%env(ELASTIC_URL)%'
+      arguments:
+          $host: '%env(ELASTIC_URL)%'
 
 
     Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
