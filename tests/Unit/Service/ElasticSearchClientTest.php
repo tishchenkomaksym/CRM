@@ -36,7 +36,7 @@ class ElasticSearchClientTest extends KernelTestCase
                       ->willReturn($this->clientBuilder);
 
         $client = $this->createMock(Client::class);
-        $returnValue['aggregations']['time']['value'] = $value;
+        $returnValue['aggregations']['effectiveTime']['value'] = $value;
         $client->expects($this->once())
                ->method('search')
                ->willReturn($returnValue);

@@ -13,6 +13,7 @@ use Elasticsearch\ClientBuilder;
 class ElasticSearchClient
 {
     public const MATCH='match';
+    public const FIELD_EFFECTIVE_TIME='effectiveTime';
     private $client;
 
     /**
@@ -52,14 +53,14 @@ class ElasticSearchClient
                 'aggs' => [
                     'time' => [
                         'sum' => [
-                            'field' => 'time'
+                            'field' => self::FIELD_EFFECTIVE_TIME
                         ]
                     ]
                 ]
             ]
         ];
         $data = $this->client->search($params);
-        return $data['aggregations']['time']['value'];
+        return $data['aggregations'][self::FIELD_EFFECTIVE_TIME]['value'];
     }
 
     public function getWorkLogTimePerDateRange($userName)
@@ -93,6 +94,6 @@ class ElasticSearchClient
             ]
         ];
         $data = $this->client->search($params);
-        return $data['aggregations']['time']['value'];
+        return $data['aggregations']['effectiveTime']['value'];
     }
 }

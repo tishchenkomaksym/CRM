@@ -29,15 +29,15 @@ class PhpDeveloperManagerRelationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $manager = $phpDeveloperManagerRelation->getManager();
             if ($manager !== null && $manager->getPhpManagerDeveloperRelations()->count() === 0) {
-                $user = PhpManagerService::resetPhpManagerRoles($phpDeveloperManagerRelation->getManager());
-                $phpDeveloperManagerRelation->setManager($user);
+                $manager = PhpManagerService::resetPhpManagerRoles($phpDeveloperManagerRelation->getManager());
+                $phpDeveloperManagerRelation->setManager($manager);
             }
-            $phpDeveloperManagerRelation->setPhpDeveloper($user);
+            $phpDeveloperManagerRelation->setPhpDeveloper($manager);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($phpDeveloperManagerRelation);
             $entityManager->flush();
 
-            return $this->redirectToRoute('user_show', ['id' => $user->getId()]);
+            return $this->redirectToRoute(UserController::ROUTE_USER_SHOW, ['id' => $user->getId()]);
         }
 
         return $this->render(
