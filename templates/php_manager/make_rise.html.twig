@@ -35,11 +35,18 @@
                         {#<a href="#" class="card-link">Another link</a>#}
                     </div>
                     <ul class="list-group list-group-flush">
+                        {% for technicalComponent in test.requiredComponents %}
+                            <li class="list-group-item">Required Component: <b>{{ technicalComponent.name }}</b></li>
+                            <li class="list-group-item">Required Time: <b>{{ technicalComponent.requiredHours }}</b>
+                            </li>
+                            <li class="list-group-item">Spend Time:
+                                <b>{{ technicalComponent.spendHours|round(2, 'floor') }}</b></li>
+
+                        {% endfor %}
                         <li class="list-group-item">
                             Passed: {% if test.passed %}<span
                                     class="badge badge-success">Passed</span>{% else %}<span
                                     class="badge badge-secondary">Not Passed</span>{% endif %}</li>
-
                     </ul>
                     <div class="card-body">
                         <a href="{{ test.test.link }}" class="card-link">Get Test</a>

@@ -120,12 +120,12 @@ class PhpDeveloperLevel extends Fixture
     {
         $user = new User();
         UserBuilder::build($user);
-        $user->setEmail('junior1@onyx.com');
+        $user->setEmail('ivan.melnichuk@onyx.com');
         $user->setRoles([UserRoles::ROLE_USER, UserRoles::ROLE_SDT_REQUEST, 'ROLE_PHP_DEVELOPER']);
         $user->setPassword(
             $this->passwordEncoder->encodePassword(
                 $user,
-                'junior1@onyx.com'
+                'ivan.melnichuk@onyx.com'
             )
         );
         $manager->persist($user);
@@ -176,13 +176,13 @@ class PhpDeveloperLevel extends Fixture
     {
         $user = new User();
         UserBuilder::build($user);
-        $user->setEmail('ivan.melnichuk@onyx.com');
+        $user->setEmail('ivan.melnichuk1@onyx.com');
         $user->setRoles([UserRoles::ROLE_USER, 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
         $user->setName('Ivan Melnychuk');
         $user->setPassword(
             $this->passwordEncoder->encodePassword(
                 $user,
-                'ivan.melnichuk@onyx.com'
+                'ivan.melnichuk1@onyx.com'
             )
         );
         $manager->persist($user);
