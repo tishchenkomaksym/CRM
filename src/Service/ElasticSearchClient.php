@@ -60,6 +60,9 @@ class ElasticSearchClient
             ]
         ];
         $data = $this->client->search($params);
+        if (empty($data['aggregations'][self::FIELD_EFFECTIVE_TIME]['value'])) {
+            return 0;
+        }
         return $data['aggregations'][self::FIELD_EFFECTIVE_TIME]['value'];
     }
 

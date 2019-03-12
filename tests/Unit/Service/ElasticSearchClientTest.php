@@ -51,7 +51,8 @@ class ElasticSearchClientTest extends KernelTestCase
     {
         return [
             [0],
-            [132.22000004723668]
+            [132.22000004723668],
+            [null]
         ];
     }
 
