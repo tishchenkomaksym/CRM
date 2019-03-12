@@ -34,7 +34,9 @@
 
         </tbody>
     </table>
-    <a class="btn" href="{{ path('user_php_developer_level_relation_new',{'id':user.id}) }}">Add PHP Level</a>
+    {% if user.phpDeveloperLevelRelation is null %}
+        <a class="btn" href="{{ path('user_php_developer_level_relation_new',{'id':user.id}) }}">Add PHP Level</a>
+    {% endif %}
     <a class="btn" href="{{ path('php_developer_manager_relation_new',{'id':user.id}) }}">Add PHP Manager</a>
     <a href="{{ path('user_index') }}">back to list</a>
 
