@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Constants\UserRoles;
+use App\Entity\PhpDeveloperLevelHoursRequired;
 use App\Entity\PhpDeveloperLevelTest;
 use App\Entity\PhpDeveloperLevelTestPassed;
 use App\Entity\PhpDeveloperLevelTestTechnicalComponent;
@@ -33,9 +34,14 @@ class PhpDeveloperLevel extends Fixture
         $phpDeveloperJuniorLevel3->setTitle('PHP Junior Level 3');
         $manager->persist($phpDeveloperJuniorLevel3);
 
+        $levelRequirementHours = new PhpDeveloperLevelHoursRequired();
+        $levelRequirementHours->setEffectiveTime(600);
+        $levelRequirementHours->setEffectiveProjectTime(150);
+        $manager->persist($levelRequirementHours);
         $phpDeveloperJuniorLevel2 = new \App\Entity\PhpDeveloperLevel();
         $phpDeveloperJuniorLevel2->setTitle('PHP Junior Level 2');
         $phpDeveloperJuniorLevel2->setNextLevel($phpDeveloperJuniorLevel3);
+        $phpDeveloperJuniorLevel2->setPhpDeveloperLevelHoursRequired($levelRequirementHours);
         $manager->persist($phpDeveloperJuniorLevel2);
 
         $phpDeveloperLevel = new \App\Entity\PhpDeveloperLevel();
@@ -170,12 +176,13 @@ class PhpDeveloperLevel extends Fixture
     {
         $user = new User();
         UserBuilder::build($user);
-        $user->setEmail('junior2@onyx.com');
+        $user->setEmail('ivan.melnichuk@onyx.com');
         $user->setRoles([UserRoles::ROLE_USER, 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
+        $user->setName('Ivan Melnychuk');
         $user->setPassword(
             $this->passwordEncoder->encodePassword(
                 $user,
-                'junior2@onyx.com'
+                'ivan.melnichuk@onyx.com'
             )
         );
         $manager->persist($user);

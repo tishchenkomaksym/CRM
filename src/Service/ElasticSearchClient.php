@@ -51,7 +51,7 @@ class ElasticSearchClient
                     ]
                 ],
                 'aggs' => [
-                    'time' => [
+                    self::FIELD_EFFECTIVE_TIME => [
                         'sum' => [
                             'field' => self::FIELD_EFFECTIVE_TIME
                         ]
@@ -89,7 +89,7 @@ class ElasticSearchClient
                     ]
                 ],
                 'aggs' => [
-                    'time' => [
+                    self::FIELD_EFFECTIVE_TIME => [
                         'sum' => [
                             'field' => self::FIELD_EFFECTIVE_TIME
                         ]

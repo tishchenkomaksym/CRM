@@ -49,15 +49,14 @@
                 <p class="card-text">Это сколько эффективного времени нужно получиь что-бы получить повышение</p>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">Required time: <b>{{ effectiveTime.requiredTime }}</b></li>
-                    <li class="list-group-item">Spend time: <b>{{ effectiveTime.spendEffectiveTime }}</b>
+                    <li class="list-group-item">Spend time:
+                        <b>{{ effectiveTime.spendEffectiveTime|round(2, 'floor') }}</b>
                     </li>
                     <li class="list-group-item">
                         Passed: {% if effectiveTime.passed %}<span
                                 class="badge badge-success">Passed</span>{% else %}<span
                                 class="badge badge-secondary">Not Passed</span>{% endif %}</li>
                 </ul>
-                <a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>
-                {#<a href="#" class="card-link">Another link</a>#}
             </div>
         </div>
     </div>

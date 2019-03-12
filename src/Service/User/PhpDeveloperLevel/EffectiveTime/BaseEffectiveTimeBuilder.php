@@ -10,6 +10,7 @@ namespace App\Service\User\PhpDeveloperLevel\EffectiveTime;
 
 use App\Entity\User;
 use App\Service\ElasticSearchClient;
+use App\Service\UserInformationService;
 
 class BaseEffectiveTimeBuilder
 {
@@ -37,7 +38,7 @@ class BaseEffectiveTimeBuilder
         $time->setRequiredTime($requiredHoursObject->getEffectiveTime());
         $time->setSpendEffectiveTime(
             $this->searchClient
-                ->getEffectiveTimePerUser($user->getUsername())
+                ->getEffectiveTimePerUser(UserInformationService::getSystemName($user))
         );
         if ($time->getSpendEffectiveTime() >= $time->getRequiredTime()) {
             $time->setPassed(true);

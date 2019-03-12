@@ -26,6 +26,13 @@ class UserInformationService
 
     }
 
+    public static function getSystemName(User $user)
+    {
+        $email = $user->getEmail();
+        $position = strpos($email, '@onyx.com');
+        return substr($email, 0, $position);
+    }
+
     public function getAllUserSdt(SdtRepository $sdtRepository, int $userId): SdtCollection
     {
         return new SdtCollection($sdtRepository->findBy(['user' => $userId]));
