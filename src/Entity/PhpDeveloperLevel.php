@@ -38,6 +38,11 @@ class PhpDeveloperLevel
      */
     private $nextLevel;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\PhpDeveloperLevelHoursRequired", mappedBy="phpDeveloperLevel", cascade={"persist", "remove"})
+     */
+    private $phpDeveloperLevelHoursRequired;
+
     public function __construct()
     {
         $this->phpDeveloperLevelTests = new ArrayCollection();
@@ -115,6 +120,23 @@ class PhpDeveloperLevel
     public function setNextLevel(?self $nextLevel): self
     {
         $this->nextLevel = $nextLevel;
+
+        return $this;
+    }
+
+    public function getPhpDeveloperLevelHoursRequired(): ?PhpDeveloperLevelHoursRequired
+    {
+        return $this->phpDeveloperLevelHoursRequired;
+    }
+
+    public function setPhpDeveloperLevelHoursRequired(PhpDeveloperLevelHoursRequired $phpDeveloperLevelHoursRequired): self
+    {
+        $this->phpDeveloperLevelHoursRequired = $phpDeveloperLevelHoursRequired;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $phpDeveloperLevelHoursRequired->getPhpDeveloperLevel()) {
+            $phpDeveloperLevelHoursRequired->setPhpDeveloperLevel($this);
+        }
 
         return $this;
     }

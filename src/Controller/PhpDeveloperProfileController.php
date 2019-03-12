@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\PhpDeveloperTest\PhpDeveloperTestsInformationBuilder;
+use App\Service\User\PhpDeveloperLevel\EffectiveTime\BaseEffectiveTimeBuilder;
 use App\Service\UserInformationService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,15 +36,23 @@ class PhpDeveloperProfileController extends AbstractController
 
     /**
      * @Route("/php/developer/profile/salary-raise", name="php_developer_salary_raise")
+     * @param PhpDeveloperTestsInformationBuilder $builder
+     * @param BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder
      * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \App\Service\PhpDeveloperTest\Exception\NoExistsNewLevelOfDeveloper
      * @throws \App\Service\PhpDeveloperTest\PhpDeveloperTestBuilderException
+     * @throws \App\Service\User\PhpDeveloperLevel\EffectiveTime\NoRequiredHoursException
      */
-    public function salaryRaise(PhpDeveloperTestsInformationBuilder $builder
+    public function salaryRaise(
+        PhpDeveloperTestsInformationBuilder $builder,
+        BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder
     ): \Symfony\Component\HttpFoundation\Response {
         return $this->render(
             'php_developer_profile/salaryRaise.html.twig',
             [
-                'tests' => $builder->build($this->getUser())
+                'tests' => $builder->build($this->getUser()),
+                'effectiveTime' => $baseEffectiveTimeBuilder->build($this->getUser()),
+                'projectTime' => [],
             ]
         );
     }

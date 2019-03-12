@@ -26,7 +26,7 @@ class ElasticSearchClient
         $this->client = $clientBuilder->setHosts([$host])->build();
     }
 
-    public function getTimePerComponent($component, $userName)
+    public function getTimePerComponent(string $component, string $userName)
     {
         $params = [
             'index' => 'worklogs',
@@ -44,6 +44,44 @@ class ElasticSearchClient
                                         ],
                                         [
                                             self::MATCH => ['technicalComponents' => $component],
+                                        ],
+                                    ]
+                                ]
+                        ]
+                    ]
+                ],
+                'aggs' => [
+                    'time' => [
+                        'sum' => [
+                            'field' => self::FIELD_EFFECTIVE_TIME
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $data = $this->client->search($params);
+        if (empty($data['aggregations'][self::FIELD_EFFECTIVE_TIME]['value'])) {
+            return 0;
+        }
+        return $data['aggregations'][self::FIELD_EFFECTIVE_TIME]['value'];
+    }
+
+
+    public function getEffectiveTimePerUser(string $userName)
+    {
+        $params = [
+            'index' => 'worklogs',
+            'type' => 'worklog',
+            'size' => 0,
+            'body' => [
+                'query' => [
+                    'constant_score' => [
+                        'filter' => [
+                            'bool' =>
+                                [
+                                    'must' => [
+                                        [
+                                            self::MATCH => ['author.userName' => $userName],
                                         ],
                                     ]
                                 ]
