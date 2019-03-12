@@ -12,6 +12,7 @@ use App\Entity\PhpDeveloperLevelTest;
 use App\Entity\User;
 use App\Service\ElasticSearchClient;
 use App\Service\PhpDeveloperTest\PhpDeveloperTestBuilderException;
+use App\Service\UserInformationService;
 
 class TechnicalComponentBuilder
 {
@@ -44,7 +45,12 @@ class TechnicalComponentBuilder
                     throw new PhpDeveloperTestBuilderException('No jira name for component');
                 }
                 $component = new TechnicalComponent();
-                $component->setSpendHours($this->getSpendTime($technicalComponent->getJiraName(), $user->getEmail()));
+                $component->setSpendHours(
+                    $this->getSpendTime(
+                        $technicalComponent->getJiraName(),
+                        UserInformationService::getSystemName($user)
+                    )
+                );
                 $component->setName($technicalComponent->getName());
                 $component->setRequiredHours($technicalComponent->getRequiredHours());
                 $components[] = $component;
