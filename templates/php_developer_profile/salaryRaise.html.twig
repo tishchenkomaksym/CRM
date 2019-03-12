@@ -42,21 +42,23 @@
         <h2>Effective time required</h2>
     </div>
     <div class="row">
-        <div class="card" style="width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-title">All effective time</h5>
-                <h6 class="card-subtitle mb-2 text-muted"></h6>
-                <p class="card-text">Это сколько эффективного времени нужно получиь что-бы получить повышение</p>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Required time: <b>{{ effectiveTime.requiredTime }}</b></li>
-                    <li class="list-group-item">Spend time:
-                        <b>{{ effectiveTime.spendEffectiveTime|round(2, 'floor') }}</b>
-                    </li>
-                    <li class="list-group-item">
-                        Passed: {% if effectiveTime.passed %}<span
-                                class="badge badge-success">Passed</span>{% else %}<span
-                                class="badge badge-secondary">Not Passed</span>{% endif %}</li>
-                </ul>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">All effective time</h5>
+                    <h6 class="card-subtitle mb-2 text-muted"></h6>
+                    <p class="card-text">Это сколько эффективного времени нужно получиь что-бы получить повышение</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Required time: <b>{{ effectiveTime.requiredTime }}</b></li>
+                        <li class="list-group-item">Spend time:
+                            <b>{{ effectiveTime.spendEffectiveTime|round(2, 'floor') }}</b>
+                        </li>
+                        <li class="list-group-item">
+                            Passed: {% if effectiveTime.passed %}<span
+                                    class="badge badge-success">Passed</span>{% else %}<span
+                                    class="badge badge-secondary">Not Passed</span>{% endif %}</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Service\PhpDeveloperTest\PhpDeveloperTestsInformationBuilder;
+use App\Service\User\PhpDeveloperLevel\EffectiveTime\BaseEffectiveTimeBuilder;
 use App\Service\UserInformationService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,13 +36,22 @@ class PhpManagerController extends AbstractController
      * @Route("/php/manager/make/rise/{id}", name="php_manager_make_rise")
      * @param User $user
      * @param PhpDeveloperTestsInformationBuilder $builder
+     * @param BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \App\Service\PhpDeveloperTest\Exception\NoExistsNewLevelOfDeveloper
      * @throws \App\Service\PhpDeveloperTest\PhpDeveloperTestBuilderException
+     * @throws \App\Service\User\PhpDeveloperLevel\EffectiveTime\NoRequiredHoursException
      */
-    public function makeRise(User $user, PhpDeveloperTestsInformationBuilder $builder)
+    public function makeRise(
+        User $user,
+        PhpDeveloperTestsInformationBuilder $builder,
+        BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder
+    )
     {
         $tests = $builder->build($user);
-        return $this->render('php_manager/make_rise.html.twig', ['tests' => $tests]);
+        return $this->render(
+            'php_manager/make_rise.html.twig',
+            ['tests' => $tests, 'effectiveTime' => $baseEffectiveTimeBuilder->build($user),]
+        );
     }
 }
