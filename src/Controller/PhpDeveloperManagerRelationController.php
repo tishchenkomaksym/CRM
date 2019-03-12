@@ -5,7 +5,8 @@ namespace App\Controller;
 use App\Entity\PhpDeveloperManagerRelation;
 use App\Entity\User;
 use App\Form\PhpDeveloperManagerRelationType;
-use App\Service\User\PhpManager\PhpManagerService;
+use App\Service\PhpDeveloperManagerRelation\Create\PhpDeveloperManagerRelationCreateStrategy;
+use App\Service\PhpDeveloperManagerRelation\PhpDeveloperManagerRelationCRUDContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,24 +20,23 @@ class PhpDeveloperManagerRelationController extends AbstractController
 {
     /**
      * @Route("/new/{id}", name="php_developer_manager_relation_new", methods={"GET","POST"})
+     * @param User $user
+     * @param Request $request
+     * @param PhpDeveloperManagerRelationCreateStrategy $createStrategy
+     * @return Response
      */
-    public function new(User $user, Request $request): Response
+    public function new(
+        User $user,
+        Request $request,
+        PhpDeveloperManagerRelationCreateStrategy $createStrategy
+    ): Response
     {
         $phpDeveloperManagerRelation = new PhpDeveloperManagerRelation();
         $form = $this->createForm(PhpDeveloperManagerRelationType::class, $phpDeveloperManagerRelation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $manager = $phpDeveloperManagerRelation->getManager();
-            if ($manager !== null && $manager->getPhpManagerDeveloperRelations()->count() === 0) {
-                $manager = PhpManagerService::resetPhpManagerRoles($phpDeveloperManagerRelation->getManager());
-                $phpDeveloperManagerRelation->setManager($manager);
-            }
-            $phpDeveloperManagerRelation->setPhpDeveloper($manager);
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($phpDeveloperManagerRelation);
-            $entityManager->flush();
-
+            (new PhpDeveloperManagerRelationCRUDContext($createStrategy))->makeAction($phpDeveloperManagerRelation,$user);
             return $this->redirectToRoute(UserController::ROUTE_USER_SHOW, ['id' => $user->getId()]);
         }
 

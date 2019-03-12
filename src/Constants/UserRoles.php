@@ -12,4 +12,5 @@ interface UserRoles
 {
     public const ROLE_USER = 'ROLE_USER';
     public const ROLE_SDT_REQUEST = 'ROLE_SDT_REQUEST';
+    public const ROLE_PHP_MANAGER = 'ROLE_PHP_MANAGER';
 }

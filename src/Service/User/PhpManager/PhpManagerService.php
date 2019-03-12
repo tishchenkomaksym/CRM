@@ -8,13 +8,18 @@
 
 namespace App\Service\User\PhpManager;
 
+use App\Constants\UserRoles;
 use App\Entity\User;
 
 class PhpManagerService
 {
-    public static function resetPhpManagerRoles(User $user)
+    public function addManagerRole(User $user): User
     {
-        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_MANAGER']);
+        $roles = $user->getRoles();
+        if (!in_array(UserRoles::ROLE_PHP_MANAGER, $roles, true)) {
+            $roles[] = UserRoles::ROLE_PHP_MANAGER;
+            $user->setRoles($roles);
+        }
         return $user;
     }
 }
