@@ -33,10 +33,15 @@ class PhpManagerController extends AbstractController
 
     /**
      * @Route("/php/manager/make/rise/{id}", name="php_manager_make_rise")
+     * @param User $user
+     * @param PhpDeveloperTestsInformationBuilder $builder
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \App\Service\PhpDeveloperTest\Exception\NoExistsNewLevelOfDeveloper
+     * @throws \App\Service\PhpDeveloperTest\PhpDeveloperTestBuilderException
      */
-    public function makeRise(User $user)
+    public function makeRise(User $user, PhpDeveloperTestsInformationBuilder $builder)
     {
-        $tests = PhpDeveloperTestsInformationBuilder::build($user);
+        $tests = $builder->build($user);
         return $this->render('php_manager/make_rise.html.twig', ['tests' => $tests]);
     }
 }
