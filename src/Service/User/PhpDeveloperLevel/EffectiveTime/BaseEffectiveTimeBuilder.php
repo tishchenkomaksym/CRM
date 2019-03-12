@@ -37,7 +37,7 @@ class BaseEffectiveTimeBuilder
         $time->setRequiredTime($requiredHoursObject->getEffectiveTime());
         $time->setSpendEffectiveTime(
             $this->searchClient
-                ->getEffectiveTimePerUser($user->getEmail())
+                ->getEffectiveTimePerUser($user->getUsername())
         );
         if ($time->getSpendEffectiveTime() >= $time->getRequiredTime()) {
             $time->setPassed(true);
