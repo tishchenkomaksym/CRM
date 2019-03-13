@@ -8,6 +8,8 @@
 
 namespace App\Service\User\PhpDeveloper\Hours;
 
+use App\Entity\User;
+
 class WorkHoursInformation
 {
     /**
@@ -19,6 +21,10 @@ class WorkHoursInformation
      */
     private $loggedTime = 0;
 
+    /**
+     * @var User
+     */
+    private $user;
     /**
      * @return float
      */
@@ -49,5 +55,21 @@ class WorkHoursInformation
     public function setLoggedTime(float $loggedTime): void
     {
         $this->loggedTime = $loggedTime;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param User $user
+     */
+    public function setUser(User $user): void
+    {
+        $this->user = $user;
     }
 }

@@ -30,6 +30,7 @@ class ReportWorkHoursBuilderDecoratorTest extends TestCase
         $mockSalaryReport->method('findOneBy')->willReturn($salaryInfo);
         $workHoursBuilder = New ReportWorkHoursBuilderDecorator($mockBuilder, $mockSalaryReport);
         $user = new User();
+        $obj->setUser($user);
         $result = $workHoursBuilder->build($user);
         $this->assertEquals($obj, $result);
     }

@@ -78,6 +78,7 @@ class BaseWorkHoursInformationBuilderTest extends TestCase
         $information = new WorkHoursInformation();
         $information->setRequiredTime(5);
         $information->setLoggedTime(1 * 7.5+1);
+        $information->setUser($this->user);
         $resultInformation = $this->builder->build($from, $toDate, $this->user);
         $this->assertEquals($information, $resultInformation);
     }

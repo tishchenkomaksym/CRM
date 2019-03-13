@@ -54,6 +54,7 @@ class BaseWorkHoursInformationBuilder
         $information = new WorkHoursInformation();
         $information->setRequiredTime($this->getRequiredTimeInHours($from, $to));
         $information->setLoggedTime($this->getLoggedTimeInHours($from, $to, $user));
+        $information->setUser($user);
         return $information;
     }
 
