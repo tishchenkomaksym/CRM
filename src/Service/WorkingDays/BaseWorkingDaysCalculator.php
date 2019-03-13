@@ -32,7 +32,11 @@ class BaseWorkingDaysCalculator
 
     public function workDaysBetweenDates(DateTime $date1, DateTime $date2)
     {
-        $workdays = 1;
+        $workdays = 0;
+        $dayOfTheWeek = date('N', $date1->getTimestamp());
+        if ($dayOfTheWeek <= 5) {
+            $workdays++;
+        }
         $differenceInDays = $date1->diff($date2)->d;
         for ($i = 1; $i <= $differenceInDays; $i++) {
             $dayOfTheWeek = date('N', strtotime("+{$i} days", $date1->getTimestamp()));

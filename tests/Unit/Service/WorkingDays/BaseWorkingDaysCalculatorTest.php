@@ -52,6 +52,7 @@ class BaseWorkingDaysCalculatorTest extends TestCase
     public function dataProviderWorkDaysBetweenDates()
     {
         return [
+            [5, 7, 1],
             [1, 2, 2],
             [1, 3, 3],
             [1, 1, 1],
