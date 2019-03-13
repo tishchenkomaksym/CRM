@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -66,6 +66,9 @@
                         {% endif %}
                         {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
                     <li class="list-group-item"><a href="{{ path('sdt_archive_index') }}">SDT Archive</a>
+                        {% endif %}
+                        {% if is_granted('ROLE_PHP_MANAGER') %}
+                    <li class="list-group-item"><a href="{{ path('php_developer_salary_report') }}">SDT Archive</a>
                         {% endif %}
                 </ul>
             {% endblock %}

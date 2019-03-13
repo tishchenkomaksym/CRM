@@ -12,7 +12,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">PHP developer Lvl</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    {#<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
                     <p class="card-text">PHP developer level: <span class="badge badge-info">{{ userLevel }}</span></p>
                     {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
                     {#<a href="#" class="card-link">Another link</a>#}
@@ -23,11 +23,37 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Your Manager</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    {#<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
                     {% for developerManager in developerManagers %}
                         <p class="card-text">Your manager is: <span
                                     class="badge badge-info">{{ developerManager.username }}</span></p>
                     {% endfor %}
+                    {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">SDT Left</h5>
+                    {#<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
+                    <p class="card-text">Today you have: <span
+                                class="badge badge-info">{{ leftSdt}}</span></p>
+                    {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Working Hours information</h5>
+                    {#<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
+                    <p class="card-text">Начислено часов: <span
+                                class="badge badge-info">{{ workingHoursInformation.loggedTime|round(2, 'floor')}}</span></p>
+                    <p class="card-text">Требуеться часов: <span
+                                class="badge badge-info">{{ workingHoursInformation.requiredTime|round(2, 'floor')}}</span></p>
                     {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
                     {#<a href="#" class="card-link">Another link</a>#}
                 </div>

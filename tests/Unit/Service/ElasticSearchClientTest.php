@@ -47,6 +47,29 @@ class ElasticSearchClientTest extends KernelTestCase
         $this->assertEquals($value, $client->getTimePerComponent('php', 'ivan.melnichuk'));
     }
 
+    /**
+     * @dataProvider dataProviderGetTimePerComponent
+     * @param $value
+     * @throws \Exception
+     */
+    public function testGetTimeFromDateToDate($value)
+    {
+        $this->clientBuilder->expects($this->once())
+                            ->method('setHosts')
+                            ->willReturn($this->clientBuilder);
+
+        $client = $this->createMock(Client::class);
+        $returnValue['aggregations']['time']['value'] = $value;
+        $client->expects($this->once())
+               ->method('search')
+               ->willReturn($returnValue);
+        $this->clientBuilder->expects($this->once())
+                            ->method('build')
+                            ->willReturn($client);
+        $client = new ElasticSearchClient($this->clientBuilder, 'qwe');
+        $this->assertEquals($value, $client->getTimeFromDateToDate(new \DateTime(), new \DateTime(), 'ivan.melnichuk'));
+    }
+
      /**
      * @dataProvider dataProviderGetTimePerComponent
      * @param $value

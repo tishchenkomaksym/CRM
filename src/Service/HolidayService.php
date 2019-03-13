@@ -8,6 +8,7 @@
 
 namespace App\Service;
 
+use App\Entity\Holiday;
 use App\Repository\HolidayRepository;
 
 class HolidayService
@@ -22,6 +23,11 @@ class HolidayService
         $this->holidays = $holidayRepository->findAll();
     }
 
+    /**
+     * @param \DateTimeInterface $from
+     * @param \DateTimeInterface $to
+     * @return Holiday[]
+     */
     public function getHolidayBetweenDate(\DateTimeInterface $from, \DateTimeInterface $to): array
     {
         $holidayArray = [];

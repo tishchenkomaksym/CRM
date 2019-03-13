@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Repository\SdtRepository;
 use App\Service\PhpDeveloperTest\PhpDeveloperTestsInformationBuilder;
+use App\Service\User\PhpDeveloper\Hours\ReportWorkHoursBuilderDecorator;
 use App\Service\User\PhpDeveloperLevel\EffectiveTime\BaseEffectiveTimeBuilder;
 use App\Service\UserInformationService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -19,17 +21,33 @@ class PhpDeveloperProfileController extends AbstractController
     /**
      * @Route("/php/developer/profile", name="php_developer_profile")
      * @param UserInformationService $service
+     * @param UserInformationService $userInformationService
+     * @param SdtRepository $sdtRepository
+     * @param ReportWorkHoursBuilderDecorator $baseWorkHoursInformationBuilder
      * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
-    public function index(UserInformationService $service)
-    {
+    public function index(
+        UserInformationService $service,
+        UserInformationService $userInformationService,
+        SdtRepository $sdtRepository,
+        ReportWorkHoursBuilderDecorator $baseWorkHoursInformationBuilder
+    ) {
         $user = $this->getUser();
         $manager = $service->getPhpDeveloperManager($user);
+
+        $sdtCollection = $userInformationService->getAllUserSdt($sdtRepository, $this->getUser()->getId());
+
+        $leftSdt = $userInformationService->getSdtLeft($sdtCollection, $this->getUser());
+
+        $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser());
         return $this->render(
             'php_developer_profile/index.html.twig',
             [
                 'userLevel' => $service->getPhpUserLevel($user),
-                'developerManagers' => $manager
+                'developerManagers' => $manager,
+                'leftSdt' => $leftSdt,
+                'workingHoursInformation' => $workingHoursInformation
             ]
         );
     }

@@ -14,6 +14,7 @@ class ElasticSearchClient
 {
     public const MATCH='match';
     public const FIELD_EFFECTIVE_TIME='effectiveTime';
+    public const FIELD_TIME = 'time';
     private $client;
 
     /**
@@ -64,6 +65,49 @@ class ElasticSearchClient
             return 0;
         }
         return $data['aggregations'][self::FIELD_EFFECTIVE_TIME]['value'];
+    }
+
+    public function getTimeFromDateToDate(\DateTime $from, \DateTime $to, $userName)
+    {
+        $params = [
+            'index' => 'worklogs',
+            'type' => 'worklog',
+            'size' => 0,
+            'body' => [
+                'query' => [
+                    'bool' =>
+                        [
+                            'must' => [
+                                [
+                                    self::MATCH => ['author.userName' => $userName],
+                                ],
+                            ],
+                            'filter' => [
+                                'range' => [
+                                    'started' => [
+                                        'gte' => $from->format('Y-m-d'),
+                                        'lte' => $to->format('Y-m-d'),
+                                        'format'=>'yyyy-MM-dd'
+                                    ]
+                                ]
+                            ]
+                        ],
+
+                ],
+                'aggs' => [
+                    self::FIELD_TIME => [
+                        'sum' => [
+                            'field' => self::FIELD_TIME
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $data = $this->client->search($params);
+        if (empty($data['aggregations'][self::FIELD_TIME]['value'])) {
+            return 0;
+        }
+        return $data['aggregations'][self::FIELD_TIME]['value'];
     }
 
 
