@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\PhpDeveloperTest\PhpDeveloperTestsInformationBuilder;
 use App\Service\User\PhpDeveloperLevel\EffectiveTime\BaseEffectiveTimeBuilder;
+use App\Service\User\PhpDeveloperLevel\EffectiveTime\ProjectEffectiveTimeBuilder;
+use App\Service\User\PhpDeveloperLevel\ProjectEffectiveTime\UserToProjectTimeSpendBuilder;
 use App\Service\UserInformationService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,6 +39,8 @@ class PhpManagerController extends AbstractController
      * @param User $user
      * @param PhpDeveloperTestsInformationBuilder $builder
      * @param BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder
+     * @param ProjectEffectiveTimeBuilder $projectEffectiveTimeBuilder
+     * @param UserToProjectTimeSpendBuilder $projectTimeSpendBuilder
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \App\Service\PhpDeveloperTest\Exception\NoExistsNewLevelOfDeveloper
      * @throws \App\Service\PhpDeveloperTest\PhpDeveloperTestBuilderException
@@ -45,13 +49,21 @@ class PhpManagerController extends AbstractController
     public function makeRise(
         User $user,
         PhpDeveloperTestsInformationBuilder $builder,
-        BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder
+        BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder,
+        ProjectEffectiveTimeBuilder $projectEffectiveTimeBuilder,
+        UserToProjectTimeSpendBuilder $projectTimeSpendBuilder
     )
     {
+        $userProjects = $projectTimeSpendBuilder->build($user);
         $tests = $builder->build($user);
         return $this->render(
             'php_manager/make_rise.html.twig',
-            ['tests' => $tests, 'effectiveTime' => $baseEffectiveTimeBuilder->build($user),]
+            [
+                'tests' => $tests,
+                'effectiveTime' => $baseEffectiveTimeBuilder->build($user),
+                'projectTime' => $projectEffectiveTimeBuilder->build($user, $userProjects),
+                'projects' => $userProjects,
+            ]
         );
     }
 }
