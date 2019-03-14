@@ -49,8 +49,8 @@
                     {% if is_granted('ROLE_SDT_REQUEST') %}
                         <li class="list-group-item"><a href="{{ path('sdt_index') }}">SDT request</a></li>
                     {% endif %}
-                    {% if is_granted('ROLE_PHP_DEVELOPER') %}
-                        <li class="list-group-item"><a href="{{ path('php_developer_profile') }}">Profile</a></li>
+                    {% if is_granted('ROLE_USER') %}
+                        <li class="list-group-item"><a href="{{ path('profile') }}">Profile</a></li>
                     {% endif %}
                     {% if is_granted('ROLE_PHP_MANAGER') %}
                         <li class="list-group-item"><a href="{{ path('php_manager') }}">Manage team</a></li>

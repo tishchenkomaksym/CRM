@@ -56,7 +56,7 @@ class UserInformationService
     {
         if ($user->getPhpDeveloperLevelRelation() === null || $user->getPhpDeveloperLevelRelation(
             )->getPhpDeveloperLevel() === null) {
-            return 'Undefined';
+            return null;
         }
         return $user->getPhpDeveloperLevelRelation()->getPhpDeveloperLevel()->getTitle();
     }

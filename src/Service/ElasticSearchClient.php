@@ -13,8 +13,19 @@ use Elasticsearch\ClientBuilder;
 class ElasticSearchClient
 {
     public const MATCH='match';
+
     public const FIELD_EFFECTIVE_TIME='effectiveTime';
     public const FIELD_TIME = 'time';
+    public const FIELD_AUTHOR_USER_NAME = 'author.userName.keyword';
+
+    public const ELASTIC_INDEX_FIELD = 'index';
+    public const ELASTIC_TYPE_FIELD = 'type';
+    public const ELASTIC_QUERY_FIELD = 'query';
+    public const ELASTIC_CONSTANT_FIELD = 'constant_score';
+    public const ELASTIC_FILTER_FIELD = 'filter';
+    public const ELASTIC_AGGREGATIONS_FIELD = 'aggregations';
+    public const INDEX_WORK_LOGS_NAME = 'worklogs';
+    public const INDEX_TYPE_WORK_LOG_NAME = 'worklog';
     private $client;
 
     /**
@@ -30,18 +41,18 @@ class ElasticSearchClient
     public function getTimePerComponent(string $component, string $userName)
     {
         $params = [
-            'index' => 'worklogs',
-            'type' => 'worklog',
+            self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
+            self::ELASTIC_TYPE_FIELD => self::INDEX_TYPE_WORK_LOG_NAME,
             'size' => 0,
             'body' => [
-                'query' => [
-                    'constant_score' => [
-                        'filter' => [
+                self::ELASTIC_QUERY_FIELD => [
+                    self::ELASTIC_CONSTANT_FIELD => [
+                        self::ELASTIC_FILTER_FIELD => [
                             'bool' =>
                                 [
                                     'must' => [
                                         [
-                                            self::MATCH => ['author.userName' => $userName],
+                                            self::MATCH => [self::FIELD_AUTHOR_USER_NAME => $userName],
                                         ],
                                         [
                                             self::MATCH => ['technicalComponents' => $component],
@@ -61,28 +72,28 @@ class ElasticSearchClient
             ]
         ];
         $data = $this->client->search($params);
-        if (empty($data['aggregations'][self::FIELD_EFFECTIVE_TIME]['value'])) {
+        if (empty($data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME]['value'])) {
             return 0;
         }
-        return $data['aggregations'][self::FIELD_EFFECTIVE_TIME]['value'];
+        return $data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME]['value'];
     }
 
     public function getTimeFromDateToDate(\DateTime $from, \DateTime $to, $userName)
     {
         $params = [
-            'index' => 'worklogs',
-            'type' => 'worklog',
+            self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
+            self::ELASTIC_TYPE_FIELD => self::INDEX_TYPE_WORK_LOG_NAME,
             'size' => 0,
             'body' => [
-                'query' => [
+                self::ELASTIC_QUERY_FIELD => [
                     'bool' =>
                         [
                             'must' => [
                                 [
-                                    self::MATCH => ['author.userName' => $userName],
+                                    self::MATCH => [self::FIELD_AUTHOR_USER_NAME => $userName],
                                 ],
                             ],
-                            'filter' => [
+                            self::ELASTIC_FILTER_FIELD => [
                                 'range' => [
                                     'started' => [
                                         'gte' => $from->format('Y-m-d'),
@@ -104,28 +115,28 @@ class ElasticSearchClient
             ]
         ];
         $data = $this->client->search($params);
-        if (empty($data['aggregations'][self::FIELD_TIME]['value'])) {
+        if (empty($data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_TIME]['value'])) {
             return 0;
         }
-        return $data['aggregations'][self::FIELD_TIME]['value'];
+        return $data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_TIME]['value'];
     }
 
 
     public function getEffectiveTimePerUser(string $userName)
     {
         $params = [
-            'index' => 'worklogs',
-            'type' => 'worklog',
+            self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
+            self::ELASTIC_TYPE_FIELD => self::INDEX_TYPE_WORK_LOG_NAME,
             'size' => 0,
             'body' => [
-                'query' => [
-                    'constant_score' => [
-                        'filter' => [
+                self::ELASTIC_QUERY_FIELD => [
+                    self::ELASTIC_CONSTANT_FIELD => [
+                        self::ELASTIC_FILTER_FIELD => [
                             'bool' =>
                                 [
                                     'must' => [
                                         [
-                                            self::MATCH => ['author.userName' => $userName],
+                                            self::MATCH => [self::FIELD_AUTHOR_USER_NAME => $userName],
                                         ],
                                     ]
                                 ]
@@ -142,22 +153,61 @@ class ElasticSearchClient
             ]
         ];
         $data = $this->client->search($params);
-        if (empty($data['aggregations'][self::FIELD_EFFECTIVE_TIME]['value'])) {
+        if (empty($data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME]['value'])) {
             return 0;
         }
-        return $data['aggregations'][self::FIELD_EFFECTIVE_TIME]['value'];
+        return $data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME]['value'];
+    }
+
+    public function getEffectiveTimePerUserPerProjects(string $userName)
+    {
+        $params = [
+            self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
+            self::ELASTIC_TYPE_FIELD => self::INDEX_TYPE_WORK_LOG_NAME,
+            'size' => 0,
+            'body' => [
+                self::ELASTIC_QUERY_FIELD => [
+                    self::ELASTIC_CONSTANT_FIELD => [
+                        self::ELASTIC_FILTER_FIELD => [
+                            'bool' =>
+                                [
+                                    'must' => [
+                                        [
+                                            self::MATCH => ['author.userName' => $userName],
+                                        ],
+                                    ]
+                                ]
+                        ]
+                    ]
+                ],
+                'aggs' => [
+                    'project' => [
+                        'terms' => ['field' => 'taskGroup.title.keyword', 'size' => 10000],
+                        'aggs' => [
+                            self::FIELD_EFFECTIVE_TIME => [
+                                'sum' => [
+                                    'field' => self::FIELD_EFFECTIVE_TIME
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $data = $this->client->search($params);
+        return $data[self::ELASTIC_AGGREGATIONS_FIELD]['project']['buckets'];
     }
 
     public function getWorkLogTimePerDateRange($userName)
     {
         $params = [
-            'index' => 'worklogs',
-            'type' => 'worklog',
+            self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
+            self::ELASTIC_TYPE_FIELD => self::INDEX_TYPE_WORK_LOG_NAME,
             'size' => 0,
             'body' => [
-                'query' => [
-                    'constant_score' => [
-                        'filter' => [
+                self::ELASTIC_QUERY_FIELD => [
+                    self::ELASTIC_CONSTANT_FIELD => [
+                        self::ELASTIC_FILTER_FIELD => [
                             'bool' =>
                                 [
                                     'must' => [
@@ -179,6 +229,6 @@ class ElasticSearchClient
             ]
         ];
         $data = $this->client->search($params);
-        return $data['aggregations']['effectiveTime']['value'];
+        return $data[self::ELASTIC_AGGREGATIONS_FIELD]['effectiveTime']['value'];
     }
 }

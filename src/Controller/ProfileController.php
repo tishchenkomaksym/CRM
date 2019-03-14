@@ -6,20 +6,22 @@ use App\Repository\SdtRepository;
 use App\Service\PhpDeveloperTest\PhpDeveloperTestsInformationBuilder;
 use App\Service\User\PhpDeveloper\Hours\ReportWorkHoursBuilderDecorator;
 use App\Service\User\PhpDeveloperLevel\EffectiveTime\BaseEffectiveTimeBuilder;
+use App\Service\User\PhpDeveloperLevel\EffectiveTime\ProjectEffectiveTimeBuilder;
+use App\Service\User\PhpDeveloperLevel\ProjectEffectiveTime\UserToProjectTimeSpendBuilder;
 use App\Service\UserInformationService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @IsGranted("ROLE_PHP_DEVELOPER")
+ * @IsGranted("ROLE_USER")
  * Class PhpDeveloperProfileController
  * @package App\Controller
  */
-class PhpDeveloperProfileController extends AbstractController
+class ProfileController extends AbstractController
 {
     /**
-     * @Route("/php/developer/profile", name="php_developer_profile")
+     * @Route("/profile", name="profile")
      * @param UserInformationService $service
      * @param UserInformationService $userInformationService
      * @param SdtRepository $sdtRepository
@@ -42,7 +44,7 @@ class PhpDeveloperProfileController extends AbstractController
 
         $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser());
         return $this->render(
-            'php_developer_profile/index.html.twig',
+            'profile/index.html.twig',
             [
                 'userLevel' => $service->getPhpUserLevel($user),
                 'developerManagers' => $manager,
@@ -53,9 +55,12 @@ class PhpDeveloperProfileController extends AbstractController
     }
 
     /**
-     * @Route("/php/developer/profile/salary-raise", name="php_developer_salary_raise")
+     * @IsGranted("ROLE_PHP_DEVELOPER")
+     * @Route("/profile/salary-raise", name="salary_raise")
      * @param PhpDeveloperTestsInformationBuilder $builder
      * @param BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder
+     * @param ProjectEffectiveTimeBuilder $projectEffectiveTimeBuilder
+     * @param UserToProjectTimeSpendBuilder $projectTimeSpendBuilder
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \App\Service\PhpDeveloperTest\Exception\NoExistsNewLevelOfDeveloper
      * @throws \App\Service\PhpDeveloperTest\PhpDeveloperTestBuilderException
@@ -63,14 +68,20 @@ class PhpDeveloperProfileController extends AbstractController
      */
     public function salaryRaise(
         PhpDeveloperTestsInformationBuilder $builder,
-        BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder
+        BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder,
+        ProjectEffectiveTimeBuilder $projectEffectiveTimeBuilder,
+        UserToProjectTimeSpendBuilder $projectTimeSpendBuilder
     ): \Symfony\Component\HttpFoundation\Response {
+        $user = $this->getUser();
+        $userProjects = $projectTimeSpendBuilder->build($user);
         return $this->render(
-            'php_developer_profile/salaryRaise.html.twig',
+            'profile/salaryRaise.html.twig',
             [
-                'tests' => $builder->build($this->getUser()),
-                'effectiveTime' => $baseEffectiveTimeBuilder->build($this->getUser()),
-                'projectTime' => [],
+                'tests' => $builder->build($user),
+                'effectiveTime' => $baseEffectiveTimeBuilder->build($user),
+                'projectTime' => $projectEffectiveTimeBuilder->build($user, $userProjects),
+                //                'projects' => $userProjects,
+                'projects' => [],
             ]
         );
     }
