@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @IsGranted("ROLE_ACCOUNT_MANAGER")
+ * @IsGranted("ROLE_PHP_MANAGER")
  * @Route("/php/developer/level/test/passed")
  */
 class PhpDeveloperLevelTestPassedController extends AbstractController
