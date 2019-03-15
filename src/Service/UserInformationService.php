@@ -100,6 +100,7 @@ class UserInformationService
         $allTestsOfUserLevel = $user
             ->getPhpDeveloperLevelRelation()
             ->getPhpDeveloperLevel()
+            ->getNextLevel()
             ->getPhpDeveloperLevelTests()->getValues();
         $result = [];
 

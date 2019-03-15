@@ -57,7 +57,6 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($phpDeveloperLevelTestPassed);
             $entityManager->flush();
-
             return $this->redirectToRoute('php_developer_level_test_passed_index', ['id' => $user->getId()]);
         }
 
