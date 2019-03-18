@@ -29,7 +29,7 @@ class ElasticSearchClient
     public const ELASTIC_CONSTANT_FIELD = 'constant_score';
     public const ELASTIC_FILTER_FIELD = 'filter';
     public const ELASTIC_RANGE_FIELD = 'range';
-    public const ELASTIC_FORMAT_FIELD = 'range';
+    public const ELASTIC_FORMAT_FIELD = 'format';
     public const ELASTIC_FIELD_FIELD = 'field';
     public const ELASTIC_STARTED_FIELD = 'started';
     public const ELASTIC_AGGREGATIONS_FIELD = 'aggregations';
