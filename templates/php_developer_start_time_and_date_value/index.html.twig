@@ -11,6 +11,7 @@
                 <th>Id</th>
                 <th>EffectiveTime</th>
                 <th>EffectiveProjectTime</th>
+                <th>Person</th>
                 <th>CreateDate</th>
                 <th>actions</th>
             </tr>
@@ -22,6 +23,7 @@
                 <td>{{ php_developer_start_time_and_date_value.effectiveTime }}</td>
                 <td>{{ php_developer_start_time_and_date_value.effectiveProjectTime }}</td>
                 <td>{{ php_developer_start_time_and_date_value.createDate ? php_developer_start_time_and_date_value.createDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ php_developer_start_time_and_date_value.user.name }}</td>
                 <td>
                     <a href="{{ path('php_developer_start_time_and_date_value_show', {'id': php_developer_start_time_and_date_value.id}) }}">show</a>
                     <a href="{{ path('php_developer_start_time_and_date_value_edit', {'id': php_developer_start_time_and_date_value.id}) }}">edit</a>
