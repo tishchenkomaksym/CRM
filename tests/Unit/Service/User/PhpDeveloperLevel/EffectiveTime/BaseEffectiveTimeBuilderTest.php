@@ -8,10 +8,9 @@
 
 namespace App\Service\User\PhpDeveloperLevel\EffectiveTime;
 
-use App\Entity\PhpDeveloperLevel;
 use App\Entity\PhpDeveloperLevelHoursRequired;
 use App\Entity\User;
-use App\Entity\UserPhpDeveloperLevelRelation;
+use App\Service\User\PhpDeveloperLevel\EffectiveTime\HoursRequired\RequiredHoursCalculator;
 use App\Service\User\PhpDeveloperLevel\EffectiveTime\SpendEffectiveTime\BaseEffectiveTimeCalculator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -31,19 +30,12 @@ class BaseEffectiveTimeBuilderTest extends TestCase
         /** @var BaseEffectiveTimeCalculator|MockObject $mock */
         $mock = $this->createMock(BaseEffectiveTimeCalculator::class);
         $mock->expects($this->once())->method('calculate')->willReturn($spendEffectiveTime);
-        $builder = new BaseEffectiveTimeBuilder($mock);
-        $phpDeveloperLevelFirst = new PhpDeveloperLevel();
-
-        $phpDeveloperLevel = new PhpDeveloperLevel();
-        $phpDeveloperLevelFirst->setNextLevel($phpDeveloperLevel);
-        $hoursRequired = new PhpDeveloperLevelHoursRequired();
+        $requiredMock = $this->createMock(RequiredHoursCalculator::class);
+        $hoursRequired=new PhpDeveloperLevelHoursRequired();
         $hoursRequired->setEffectiveTime($requiredTime);
-        $phpDeveloperLevel->setPhpDeveloperLevelHoursRequired($hoursRequired);
+        $requiredMock->expects($this->once())->method('calculate')->willReturn($hoursRequired);
+        $builder = new BaseEffectiveTimeBuilder($mock, $requiredMock);
         $user = new User();
-        $user->setEmail('qwe');
-        $userLevelRelation = new UserPhpDeveloperLevelRelation();
-        $user->setPhpDeveloperLevelRelation($userLevelRelation);
-        $userLevelRelation->setPhpDeveloperLevel($phpDeveloperLevelFirst);
         $result = $builder->build($user);
         $this->assertEquals($result->getRequiredTime(), $requiredTime);
         $this->assertEquals($result->getSpendEffectiveTime(), $spendEffectiveTime);
@@ -59,20 +51,5 @@ class BaseEffectiveTimeBuilderTest extends TestCase
         ];
     }
 
-    /**
-     * @throws NoRequiredHoursException
-     */
-    public function testBuildException()
-    {
-        /** @var BaseEffectiveTimeCalculator|MockObject $mock */
-        $mock = $this->createMock(BaseEffectiveTimeCalculator::class);
-        $mock->expects($this->never())->method('calculate')->willReturn(1);
-        $builder = new BaseEffectiveTimeBuilder($mock);
-        $user = new User();
-        $user->setEmail('qwe');
 
-        /** @noinspection PhpParamsInspection */
-        $this->expectException(NoRequiredHoursException::class);
-        $builder->build($user);
-    }
 }

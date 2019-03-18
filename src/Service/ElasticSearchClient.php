@@ -16,6 +16,7 @@ class ElasticSearchClient
     public const MATCH='match';
 
     public const DEFAULT_DATE_FORMAT='Y-m-d';
+    public const DEFAULT_ELASTIC_DATE_FORMAT = 'yyyy-MM-dd';
 
     public const FIELD_EFFECTIVE_TIME='effectiveTime';
     public const FIELD_TIME = 'time';
@@ -27,7 +28,10 @@ class ElasticSearchClient
     public const ELASTIC_VALUE_FIELD = 'value';
     public const ELASTIC_CONSTANT_FIELD = 'constant_score';
     public const ELASTIC_FILTER_FIELD = 'filter';
+    public const ELASTIC_RANGE_FIELD = 'range';
+    public const ELASTIC_FORMAT_FIELD = 'range';
     public const ELASTIC_FIELD_FIELD = 'field';
+    public const ELASTIC_STARTED_FIELD = 'started';
     public const ELASTIC_AGGREGATIONS_FIELD = 'aggregations';
     public const INDEX_WORK_LOGS_NAME = 'worklogs';
     public const INDEX_TYPE_WORK_LOG_NAME = 'worklog';
@@ -99,11 +103,11 @@ class ElasticSearchClient
                                 ],
                             ],
                             self::ELASTIC_FILTER_FIELD => [
-                                'range' => [
-                                    'started' => [
+                                self::ELASTIC_RANGE_FIELD => [
+                                    self::ELASTIC_STARTED_FIELD => [
                                         'gte' => $from->format(self::DEFAULT_DATE_FORMAT),
                                         'lte' => $to->format(self::DEFAULT_DATE_FORMAT),
-                                        'format'=>'yyyy-MM-dd'
+                                        self::ELASTIC_FORMAT_FIELD => self::DEFAULT_ELASTIC_DATE_FORMAT
                                     ]
                                 ]
                             ]
@@ -151,11 +155,11 @@ class ElasticSearchClient
                                         ],
                                     ],
                                     self::ELASTIC_FILTER_FIELD => [
-                                        'range' => [
-                                            'started' => [
+                                        self::ELASTIC_RANGE_FIELD => [
+                                            self::ELASTIC_STARTED_FIELD => [
                                                 'gte' => $startDate->format(self::DEFAULT_DATE_FORMAT),
                                                 'lte' => (new DateTime())->format(self::DEFAULT_DATE_FORMAT),
-                                                'format' => 'yyyy-MM-dd'
+                                                self::ELASTIC_FORMAT_FIELD => self::DEFAULT_ELASTIC_DATE_FORMAT
                                             ]
                                         ]
                                     ]
@@ -179,7 +183,13 @@ class ElasticSearchClient
         return $data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME][self::ELASTIC_VALUE_FIELD];
     }
 
-    public function getEffectiveTimePerUserPerProjects(string $userName)
+    /**
+     * @param string $userName
+     * @param DateTime $startDate
+     * @return array
+     * @throws \Exception
+     */
+    public function getEffectiveTimePerUserPerProjects(string $userName, DateTime $startDate)
     {
         $params = [
             self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
@@ -195,6 +205,15 @@ class ElasticSearchClient
                                         [
                                             self::MATCH => ['author.userName' => $userName],
                                         ],
+                                    ],
+                                    self::ELASTIC_FILTER_FIELD => [
+                                        self::ELASTIC_RANGE_FIELD => [
+                                            self::ELASTIC_STARTED_FIELD => [
+                                                'gte' => $startDate->format(self::DEFAULT_DATE_FORMAT),
+                                                'lte' => (new DateTime())->format(self::DEFAULT_DATE_FORMAT),
+                                                self::ELASTIC_FORMAT_FIELD => self::DEFAULT_ELASTIC_DATE_FORMAT
+                                            ]
+                                        ]
                                     ]
                                 ]
                         ]

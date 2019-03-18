@@ -9,6 +9,7 @@
 namespace App\Service\User\PhpDeveloperLevel\EffectiveTime;
 
 use App\Entity\User;
+use App\Service\User\PhpDeveloperLevel\EffectiveTime\HoursRequired\RequiredHoursCalculator;
 use App\Service\User\PhpDeveloperLevel\EffectiveTime\SpendEffectiveTime\BaseEffectiveTimeCalculator;
 
 class BaseEffectiveTimeBuilder
@@ -17,10 +18,18 @@ class BaseEffectiveTimeBuilder
      * @var BaseEffectiveTimeCalculator
      */
     private $baseEffectiveTimeCalculator;
+    /**
+     * @var RequiredHoursCalculator
+     */
+    private $requiredHoursCalculator;
 
-    public function __construct(BaseEffectiveTimeCalculator $baseEffectiveTimeCalculator)
+    public function __construct(
+        BaseEffectiveTimeCalculator $baseEffectiveTimeCalculator,
+        RequiredHoursCalculator $requiredHoursCalculator
+    )
     {
         $this->baseEffectiveTimeCalculator = $baseEffectiveTimeCalculator;
+        $this->requiredHoursCalculator = $requiredHoursCalculator;
     }
 
     /**
@@ -33,7 +42,7 @@ class BaseEffectiveTimeBuilder
         User $user
     ): BaseEffectiveTime {
         $time = new BaseEffectiveTime();
-        $requiredHoursObject = $this->getPhpDeveloperHoursRequired($user);
+        $requiredHoursObject =$this->requiredHoursCalculator->calculate($user);
         $time->setRequiredTime($requiredHoursObject->getEffectiveTime());
         $spendTime = $this->baseEffectiveTimeCalculator->calculate($user);
         $time->setSpendEffectiveTime($spendTime);
@@ -43,22 +52,5 @@ class BaseEffectiveTimeBuilder
             $time->setPassed(false);
         }
         return $time;
-    }
-
-    /**
-     * @param User $user
-     * @return \App\Entity\PhpDeveloperLevelHoursRequired
-     * @throws NoRequiredHoursException
-     */
-    private function getPhpDeveloperHoursRequired(User $user): \App\Entity\PhpDeveloperLevelHoursRequired
-    {
-        $phpDeveloperRelation = $user->getPhpDeveloperLevelRelation();
-        if ($phpDeveloperRelation === null || $phpDeveloperRelation->getPhpDeveloperLevel(
-            ) === null || $phpDeveloperRelation->getPhpDeveloperLevel()->getNextLevel(
-            ) === null || $phpDeveloperRelation->getPhpDeveloperLevel()->getNextLevel(
-            )->getPhpDeveloperLevelHoursRequired() === null) {
-            throw new NoRequiredHoursException(NoRequiredHoursException::MESSAGE);
-        }
-        return $phpDeveloperRelation->getPhpDeveloperLevel()->getNextLevel()->getPhpDeveloperLevelHoursRequired();
     }
 }
