@@ -8,11 +8,14 @@
 
 namespace App\Service;
 
+use DateTime;
 use Elasticsearch\ClientBuilder;
 
 class ElasticSearchClient
 {
     public const MATCH='match';
+
+    public const DEFAULT_DATE_FORMAT='Y-m-d';
 
     public const FIELD_EFFECTIVE_TIME='effectiveTime';
     public const FIELD_TIME = 'time';
@@ -21,8 +24,10 @@ class ElasticSearchClient
     public const ELASTIC_INDEX_FIELD = 'index';
     public const ELASTIC_TYPE_FIELD = 'type';
     public const ELASTIC_QUERY_FIELD = 'query';
+    public const ELASTIC_VALUE_FIELD = 'value';
     public const ELASTIC_CONSTANT_FIELD = 'constant_score';
     public const ELASTIC_FILTER_FIELD = 'filter';
+    public const ELASTIC_FIELD_FIELD = 'field';
     public const ELASTIC_AGGREGATIONS_FIELD = 'aggregations';
     public const INDEX_WORK_LOGS_NAME = 'worklogs';
     public const INDEX_TYPE_WORK_LOG_NAME = 'worklog';
@@ -65,17 +70,17 @@ class ElasticSearchClient
                 'aggs' => [
                     self::FIELD_EFFECTIVE_TIME => [
                         'sum' => [
-                            'field' => self::FIELD_EFFECTIVE_TIME
+                            self::ELASTIC_FIELD_FIELD => self::FIELD_EFFECTIVE_TIME
                         ]
                     ]
                 ]
             ]
         ];
         $data = $this->client->search($params);
-        if (empty($data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME]['value'])) {
+        if (empty($data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME][self::ELASTIC_VALUE_FIELD])) {
             return 0;
         }
-        return $data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME]['value'];
+        return $data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME][self::ELASTIC_VALUE_FIELD];
     }
 
     public function getTimeFromDateToDate(\DateTime $from, \DateTime $to, $userName)
@@ -96,8 +101,8 @@ class ElasticSearchClient
                             self::ELASTIC_FILTER_FIELD => [
                                 'range' => [
                                     'started' => [
-                                        'gte' => $from->format('Y-m-d'),
-                                        'lte' => $to->format('Y-m-d'),
+                                        'gte' => $from->format(self::DEFAULT_DATE_FORMAT),
+                                        'lte' => $to->format(self::DEFAULT_DATE_FORMAT),
                                         'format'=>'yyyy-MM-dd'
                                     ]
                                 ]
@@ -108,21 +113,27 @@ class ElasticSearchClient
                 'aggs' => [
                     self::FIELD_TIME => [
                         'sum' => [
-                            'field' => self::FIELD_TIME
+                            self::ELASTIC_FIELD_FIELD => self::FIELD_TIME
                         ]
                     ]
                 ]
             ]
         ];
         $data = $this->client->search($params);
-        if (empty($data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_TIME]['value'])) {
+        if (empty($data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_TIME][self::ELASTIC_VALUE_FIELD])) {
             return 0;
         }
-        return $data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_TIME]['value'];
+        return $data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_TIME][self::ELASTIC_VALUE_FIELD];
     }
 
 
-    public function getEffectiveTimePerUser(string $userName)
+    /**
+     * @param string $userName
+     * @param DateTime $startDate
+     * @return float
+     * @throws \Exception
+     */
+    public function getEffectiveTimePerUserDate(string $userName, \DateTime $startDate): float
     {
         $params = [
             self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
@@ -138,6 +149,15 @@ class ElasticSearchClient
                                         [
                                             self::MATCH => [self::FIELD_AUTHOR_USER_NAME => $userName],
                                         ],
+                                    ],
+                                    self::ELASTIC_FILTER_FIELD => [
+                                        'range' => [
+                                            'started' => [
+                                                'gte' => $startDate->format(self::DEFAULT_DATE_FORMAT),
+                                                'lte' => (new DateTime())->format(self::DEFAULT_DATE_FORMAT),
+                                                'format' => 'yyyy-MM-dd'
+                                            ]
+                                        ]
                                     ]
                                 ]
                         ]
@@ -146,17 +166,17 @@ class ElasticSearchClient
                 'aggs' => [
                     self::FIELD_EFFECTIVE_TIME => [
                         'sum' => [
-                            'field' => self::FIELD_EFFECTIVE_TIME
+                            self::ELASTIC_FIELD_FIELD => self::FIELD_EFFECTIVE_TIME
                         ]
                     ]
                 ]
             ]
         ];
         $data = $this->client->search($params);
-        if (empty($data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME]['value'])) {
+        if (empty($data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME][self::ELASTIC_VALUE_FIELD])) {
             return 0;
         }
-        return $data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME]['value'];
+        return $data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME][self::ELASTIC_VALUE_FIELD];
     }
 
     public function getEffectiveTimePerUserPerProjects(string $userName)
@@ -182,11 +202,11 @@ class ElasticSearchClient
                 ],
                 'aggs' => [
                     'project' => [
-                        'terms' => ['field' => 'taskGroup.title.keyword', 'size' => 10000],
+                        'terms' => [self::ELASTIC_FIELD_FIELD => 'taskGroup.title.keyword', 'size' => 10000],
                         'aggs' => [
                             self::FIELD_EFFECTIVE_TIME => [
                                 'sum' => [
-                                    'field' => self::FIELD_EFFECTIVE_TIME
+                                    self::ELASTIC_FIELD_FIELD => self::FIELD_EFFECTIVE_TIME
                                 ]
                             ]
                         ]
@@ -222,13 +242,13 @@ class ElasticSearchClient
                 'aggs' => [
                     'time' => [
                         'sum' => [
-                            'field' => 'time'
+                            self::ELASTIC_FIELD_FIELD => 'time'
                         ]
                     ]
                 ]
             ]
         ];
         $data = $this->client->search($params);
-        return $data[self::ELASTIC_AGGREGATIONS_FIELD]['effectiveTime']['value'];
+        return $data[self::ELASTIC_AGGREGATIONS_FIELD]['effectiveTime'][self::ELASTIC_VALUE_FIELD];
     }
 }

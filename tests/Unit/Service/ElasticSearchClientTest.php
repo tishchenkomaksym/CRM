@@ -70,9 +70,10 @@ class ElasticSearchClientTest extends KernelTestCase
         $this->assertEquals($value, $client->getTimeFromDateToDate(new \DateTime(), new \DateTime(), 'ivan.melnichuk'));
     }
 
-     /**
+    /**
      * @dataProvider dataProviderGetTimePerComponent
      * @param $value
+     * @throws \Exception
      */
     public function testGetEffectiveTimePerUser($value)
     {
@@ -89,7 +90,7 @@ class ElasticSearchClientTest extends KernelTestCase
                             ->method('build')
                             ->willReturn($client);
         $client = new ElasticSearchClient($this->clientBuilder, 'qwe');
-        $this->assertEquals($value, $client->getEffectiveTimePerUser('ivan.melnichuk'));
+        $this->assertEquals($value, $client->getEffectiveTimePerUserDate('ivan.melnichuk', new \DateTime()));
     }
 
     public function dataProviderGetTimePerComponent(): array

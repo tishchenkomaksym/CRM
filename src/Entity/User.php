@@ -86,6 +86,11 @@ class User implements UserInterface
      */
     private $sdtArchives;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\PhpDeveloperStartTimeAndDateValue", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $phpDeveloperStartTimeAndDateValue;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
@@ -418,6 +423,23 @@ class User implements UserInterface
             if ($sdtArchive->getUser() === $this) {
                 $sdtArchive->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    public function getPhpDeveloperStartTimeAndDateValue(): ?PhpDeveloperStartTimeAndDateValue
+    {
+        return $this->phpDeveloperStartTimeAndDateValue;
+    }
+
+    public function setPhpDeveloperStartTimeAndDateValue(PhpDeveloperStartTimeAndDateValue $phpDeveloperStartTimeAndDateValue): self
+    {
+        $this->phpDeveloperStartTimeAndDateValue = $phpDeveloperStartTimeAndDateValue;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $phpDeveloperStartTimeAndDateValue->getUser()) {
+            $phpDeveloperStartTimeAndDateValue->setUser($this);
         }
 
         return $this;

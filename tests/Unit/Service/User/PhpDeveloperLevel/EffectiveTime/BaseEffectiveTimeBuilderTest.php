@@ -12,7 +12,7 @@ use App\Entity\PhpDeveloperLevel;
 use App\Entity\PhpDeveloperLevelHoursRequired;
 use App\Entity\User;
 use App\Entity\UserPhpDeveloperLevelRelation;
-use App\Service\ElasticSearchClient;
+use App\Service\User\PhpDeveloperLevel\EffectiveTime\SpendEffectiveTime\BaseEffectiveTimeCalculator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -28,9 +28,9 @@ class BaseEffectiveTimeBuilderTest extends TestCase
      */
     public function testBuild($spendEffectiveTime, $requiredTime, $isPassed): void
     {
-        /** @var ElasticSearchClient|MockObject $mock */
-        $mock = $this->createMock(ElasticSearchClient::class);
-        $mock->expects($this->once())->method('getEffectiveTimePerUser')->willReturn($spendEffectiveTime);
+        /** @var BaseEffectiveTimeCalculator|MockObject $mock */
+        $mock = $this->createMock(BaseEffectiveTimeCalculator::class);
+        $mock->expects($this->once())->method('calculate')->willReturn($spendEffectiveTime);
         $builder = new BaseEffectiveTimeBuilder($mock);
         $phpDeveloperLevelFirst = new PhpDeveloperLevel();
 
@@ -64,12 +64,14 @@ class BaseEffectiveTimeBuilderTest extends TestCase
      */
     public function testBuildException()
     {
-        /** @var ElasticSearchClient|MockObject $mock */
-        $mock = $this->createMock(ElasticSearchClient::class);
-        $mock->expects($this->never())->method('getEffectiveTimePerUser')->willReturn(1);
+        /** @var BaseEffectiveTimeCalculator|MockObject $mock */
+        $mock = $this->createMock(BaseEffectiveTimeCalculator::class);
+        $mock->expects($this->never())->method('calculate')->willReturn(1);
         $builder = new BaseEffectiveTimeBuilder($mock);
         $user = new User();
         $user->setEmail('qwe');
+
+        /** @noinspection PhpParamsInspection */
         $this->expectException(NoRequiredHoursException::class);
         $builder->build($user);
     }

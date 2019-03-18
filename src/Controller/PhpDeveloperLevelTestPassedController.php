@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PhpDeveloperLevelTestPassedController extends AbstractController
 {
+    public const PHP_DEVELOPER_LEVEL_TEST_PASSED_INDEX = 'php_developer_level_test_passed_index';
     /**
      * @Route("/index/{id}", name="php_developer_level_test_passed_index", methods={"GET"})
      * @param User $user
@@ -57,7 +58,7 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($phpDeveloperLevelTestPassed);
             $entityManager->flush();
-            return $this->redirectToRoute('php_developer_level_test_passed_index', ['id' => $user->getId()]);
+            return $this->redirectToRoute(self::PHP_DEVELOPER_LEVEL_TEST_PASSED_INDEX, ['id' => $user->getId()]);
         }
 
         return $this->render(
@@ -98,7 +99,8 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute(
-                'php_developer_level_test_passed_index', [
+                self::PHP_DEVELOPER_LEVEL_TEST_PASSED_INDEX,
+                [
                                                            'id' => $phpDeveloperLevelTestPassed->getId(),
                                                        ]
             );
@@ -132,7 +134,7 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
         }
         if ($user !== null) {
             $userId = $user->getId();
-            return $this->redirectToRoute('php_developer_level_test_passed_index', ['id' => $userId]);
+            return $this->redirectToRoute(self::PHP_DEVELOPER_LEVEL_TEST_PASSED_INDEX, ['id' => $userId]);
         }
         return $this->redirectToRoute('default');
     }

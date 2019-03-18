@@ -4,9 +4,9 @@
 
 {% block body %}
     <h1>MonthlySdt index</h1>
-    {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
-        <a href="{{ path('monthly_sdt_generate') }}">Generate sdt</a>
-    {% endif %}
+    {#{% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}#}
+        {#<a href="{{ path('monthly_sdt_generate') }}">Generate sdt</a>#}
+    {#{% endif %}#}
     {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
         <a href="{{ path('monthly_sdt_view_all') }}">View all</a>
     {% endif %}

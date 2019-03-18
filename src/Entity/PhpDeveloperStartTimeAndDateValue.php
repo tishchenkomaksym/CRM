@@ -29,7 +29,13 @@ class PhpDeveloperStartTimeAndDateValue
     /**
      * @ORM\Column(type="datetime_immutable")
      */
-    private $reateDate;
+    private $createDate;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy="phpDeveloperStartTimeAndDateValue", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
 
     public function getId(): ?int
     {
@@ -60,14 +66,26 @@ class PhpDeveloperStartTimeAndDateValue
         return $this;
     }
 
-    public function getReateDate(): ?\DateTimeImmutable
+    public function getCreateDate(): ?\DateTimeImmutable
     {
-        return $this->reateDate;
+        return $this->createDate;
     }
 
-    public function setReateDate(\DateTimeImmutable $reateDate): self
+    public function setCreateDate(\DateTimeImmutable $createDate): self
     {
-        $this->reateDate = $reateDate;
+        $this->createDate = $createDate;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
