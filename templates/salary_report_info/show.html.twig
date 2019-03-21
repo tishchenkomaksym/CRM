@@ -7,14 +7,36 @@
 
     <table class="table">
         <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ salary_report_info.id }}</td>
+        </tr>
+        <tr>
+            <th>CreateDate</th>
+            <td>{{ salary_report_info.createDate ? salary_report_info.createDate|date('Y-m-d H:i:s') : '' }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>User</th>
+        </tr>
+        <tr>
+            <th>Working Days</th>
+        </tr>
+        <tr>
+            <th>SDT left</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in salaryReportItems %}
             <tr>
-                <th>Id</th>
-                <td>{{ salary_report_info.id }}</td>
+                <th>{{ item.user.name }}</th>
+                <td>{{ item.calendarWorkingDays }}</td>
+                <td>{{ item.sdtCount }}</td>
             </tr>
-            <tr>
-                <th>CreateDate</th>
-                <td>{{ salary_report_info.createDate ? salary_report_info.createDate|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
+        {% endfor %}
         </tbody>
     </table>
 

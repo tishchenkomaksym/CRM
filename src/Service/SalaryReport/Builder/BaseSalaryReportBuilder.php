@@ -43,6 +43,7 @@ class BaseSalaryReportBuilder
         /** @noinspection NullPointerExceptionInspection */
         $dateTime->setTimestamp($newReport->getCreateDate()->getTimestamp());
         $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateTime, $user);
+        $returnObject->user = $user;
         return $returnObject;
     }
 

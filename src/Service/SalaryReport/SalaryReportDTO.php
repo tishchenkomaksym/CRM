@@ -9,9 +9,13 @@
 namespace App\Service\SalaryReport;
 
 
+use App\Entity\User;
+
 class SalaryReportDTO
 {
     public $calendarWorkingDays;
     public $sdtCount;
     public $salarySize;
+    /** @var User */
+    public $user;
 }
