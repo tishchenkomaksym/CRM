@@ -1,5 +1,4 @@
 php-fpm-test-2:
-  restart: always
   image: registry.devzone.net/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
   volumes:
     - ../:/application

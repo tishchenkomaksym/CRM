@@ -13,7 +13,6 @@ use App\Data\Sdt\Mail\DeleteSdtMailData;
 use App\Entity\Sdt;
 use App\Entity\SdtArchive;
 use App\Form\SdtType;
-use App\Repository\SdtRepository;
 use App\Service\HolidayService;
 use App\Service\Sdt\Create\BaseCreateContext;
 use App\Service\Sdt\Create\BaseCreateStrategy;
@@ -23,6 +22,7 @@ use App\Service\Sdt\Update\BaseUpdateContext;
 use App\Service\Sdt\Update\BaseUpdateStrategy;
 use App\Service\Sdt\Update\UpdateSDTMessageBuilder;
 use App\Service\SdtArchive\SdtArchiveBuilderFromSdt;
+use App\Service\User\Sdt\LeftSdtCalculator;
 use App\Service\UserInformationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,19 +47,18 @@ class SdtController extends AbstractController
 
     /**
      * @Route("/", name="sdt_index", methods={"GET"})
-     * @param SdtRepository $sdtRepository
      * @param HolidayService $holidayService
      * @param UserInformationService $userInformationService
      * @return Response
      */
     public function index(
-        SdtRepository $sdtRepository,
         HolidayService $holidayService,
-        UserInformationService $userInformationService
+        UserInformationService $userInformationService,
+        LeftSdtCalculator $leftSdtCalculator
     ): Response
     {
         $sdtCollection = $userInformationService
-            ->getAllUserSdt($sdtRepository, $this->getUser()->getId());
+            ->getAllUserSdt($this->getUser());
 
         $calendarEventItemCollection = new CalendarEventItemCollection();
         foreach ($sdtCollection->getItems() as $sdt) {
@@ -87,7 +86,7 @@ class SdtController extends AbstractController
             [
                 'sdts' => $sdtCollection->getItems(),
                 'calendarEvents' => $calendarEventItemCollection->toJson(),
-                'leftSdt' => $userInformationService->getSdtLeft($sdtCollection, $this->getUser())
+                'leftSdt' => $leftSdtCalculator->calculate($this->getUser())
             ]
         );
     }

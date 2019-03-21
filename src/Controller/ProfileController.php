@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use App\Repository\SdtRepository;
 use App\Service\PhpDeveloperTest\PhpDeveloperTestsInformationBuilder;
 use App\Service\User\PhpDeveloper\Hours\ReportWorkHoursBuilderDecorator;
 use App\Service\User\PhpDeveloperLevel\EffectiveTime\BaseEffectiveTimeBuilder;
 use App\Service\User\PhpDeveloperLevel\EffectiveTime\ProjectEffectiveTimeBuilder;
 use App\Service\User\PhpDeveloperLevel\ProjectEffectiveTime\UserToProjectTimeSpendBuilder;
+use App\Service\User\Sdt\LeftSdtCalculator;
 use App\Service\UserInformationService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,24 +23,20 @@ class ProfileController extends AbstractController
     /**
      * @Route("/profile", name="profile")
      * @param UserInformationService $service
-     * @param UserInformationService $userInformationService
-     * @param SdtRepository $sdtRepository
+     * @param LeftSdtCalculator $leftSdtCalculator
      * @param ReportWorkHoursBuilderDecorator $baseWorkHoursInformationBuilder
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
     public function index(
         UserInformationService $service,
-        UserInformationService $userInformationService,
-        SdtRepository $sdtRepository,
+        LeftSdtCalculator $leftSdtCalculator,
         ReportWorkHoursBuilderDecorator $baseWorkHoursInformationBuilder
-    ) {
+    )
+    {
         $user = $this->getUser();
         $manager = $service->getPhpDeveloperManager($user);
-
-        $sdtCollection = $userInformationService->getAllUserSdt($sdtRepository, $this->getUser()->getId());
-
-        $leftSdt = $userInformationService->getSdtLeft($sdtCollection, $this->getUser());
+        $leftSdt = $leftSdtCalculator->calculate($this->getUser());
 
         $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser());
         return $this->render(
@@ -65,13 +61,15 @@ class ProfileController extends AbstractController
      * @throws \App\Service\PhpDeveloperTest\Exception\NoExistsNewLevelOfDeveloper
      * @throws \App\Service\PhpDeveloperTest\PhpDeveloperTestBuilderException
      * @throws \App\Service\User\PhpDeveloperLevel\EffectiveTime\NoRequiredHoursException
+     * @throws \Exception
      */
     public function salaryRaise(
         PhpDeveloperTestsInformationBuilder $builder,
         BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder,
         ProjectEffectiveTimeBuilder $projectEffectiveTimeBuilder,
         UserToProjectTimeSpendBuilder $projectTimeSpendBuilder
-    ): \Symfony\Component\HttpFoundation\Response {
+    ): \Symfony\Component\HttpFoundation\Response
+    {
         $user = $this->getUser();
         $userProjects = $projectTimeSpendBuilder->build($user);
         return $this->render(

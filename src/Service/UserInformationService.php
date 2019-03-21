@@ -12,20 +12,9 @@ use App\Data\Sdt\SdtCollection;
 use App\Entity\PhpDeveloperLevelTest;
 use App\Entity\PhpDeveloperLevelTestPassed;
 use App\Entity\User;
-use App\Repository\SdtRepository;
 
 class UserInformationService
 {
-    /**
-     * UserInformationService constructor.
-     * @param SdtRepository $sdtRepository
-     * @param int $userId
-     */
-    public function __construct()
-    {
-
-    }
-
     public static function getSystemName(User $user)
     {
         $email = $user->getEmail();
@@ -33,23 +22,9 @@ class UserInformationService
         return substr($email, 0, $position);
     }
 
-    public function getAllUserSdt(SdtRepository $sdtRepository, int $userId): SdtCollection
+    public function getAllUserSdt(User $user): SdtCollection
     {
-        return new SdtCollection($sdtRepository->findBy(['user' => $userId]));
-    }
-
-    /**
-     * @param SdtCollection $sdtCollection
-     * @param User $user
-     * @return int
-     */
-    public function getSdtLeft(SdtCollection $sdtCollection, User $user): int
-    {
-        $existSDT = 0;
-        foreach ($user->getMonthlySdts() as $monthlySdt) {
-            $existSDT += $monthlySdt->getCount();
-        }
-        return $existSDT - $sdtCollection->getCountSum();
+        return new SdtCollection($user->getSdt());
     }
 
     public function getPhpUserLevel(User $user): ?string
@@ -97,6 +72,7 @@ class UserInformationService
         /** @var PhpDeveloperLevelTestPassed[] $passedTests */
         $passedTests = $user->getPhpDeveloperLevelTestsPassed()->getValues();
         /** @var PhpDeveloperLevelTest[] $allTestsOfUserLevel */
+        /** @noinspection NullPointerExceptionInspection */
         $allTestsOfUserLevel = $user
             ->getPhpDeveloperLevelRelation()
             ->getPhpDeveloperLevel()
@@ -107,6 +83,7 @@ class UserInformationService
         foreach ($allTestsOfUserLevel as $allTest) {
             $add = true;
             foreach ($passedTests as $passedTest) {
+                /** @noinspection NullPointerExceptionInspection */
                 if ($passedTest->getPhpDeveloperLevelTest()->getId()=== $allTest->getId()) {
                     $add = false;
                     break;

@@ -1,0 +1,43 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: rubay
+ * Date: 3/20/2019
+ * Time: 6:52 PM
+ */
+
+namespace App\Service\SalaryReport\Builder\WorkingDays;
+
+use App\Entity\SalaryReportInfo;
+use App\Service\WorkingDays\BaseWorkingDaysCalculator;
+use DateTime;
+
+class WorkingDaysCalculator
+{
+    /**
+     * @var BaseWorkingDaysCalculator
+     */
+    private $workingDaysCalculator;
+
+    public function __construct(BaseWorkingDaysCalculator $workingDaysCalculator)
+    {
+        $this->workingDaysCalculator = $workingDaysCalculator;
+    }
+
+    /**
+     * @param SalaryReportInfo $salaryReportInfo
+     * @return float|int
+     * @throws \Exception
+     */
+    public function calculate(SalaryReportInfo $salaryReportInfo)
+    {
+        $date = $salaryReportInfo->getCreateDate();
+        $monthStartDate = new DateTime();
+        /** @noinspection NullPointerExceptionInspection */
+        $monthStartDate->setDate((int)$date->format('Y'), 01, 01);
+        $monthStartDate->setTime(0, 0, 0);
+        $toDate = clone $monthStartDate;
+        $toDate = date_modify($toDate, '+1 month');
+        return $this->workingDaysCalculator->getWorkingDaysBetweenDates($monthStartDate, $toDate);
+    }
+}

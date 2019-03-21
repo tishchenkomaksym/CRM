@@ -74,7 +74,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255, options={"default":""})
      */
-    private $name='';
+    private $name = '';
 
     /**
      * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
@@ -94,6 +94,7 @@ class User implements UserInterface
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
+        $this->sdt = new ArrayCollection();
         $this->phpDeveloperLevelTestsPassed = new ArrayCollection();
         $this->phpDeveloperManagerRelations = new ArrayCollection();
         $this->phpManagerDeveloperRelations = new ArrayCollection();
@@ -125,7 +126,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -152,7 +153,7 @@ class User implements UserInterface
      */
     public function getPassword(): string
     {
-        return (string) $this->password;
+        return (string)$this->password;
     }
 
     public function setPassword(string $password): self
@@ -179,18 +180,32 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
-    public function getSdt(): ?Sdt
+    /**
+     * @return Collection|Sdt[]
+     */
+    public function getSdt(): Collection
     {
         return $this->sdt;
     }
 
-    public function setSdt(Sdt $sdt): self
+    public function addSdt(Sdt $sdt): self
     {
-        $this->sdt = $sdt;
-
-        // set the owning side of the relation if necessary
-        if ($this !== $sdt->getUser()) {
+        if (!$this->sdt->contains($sdt)) {
+            $this->sdt[] = $sdt;
             $sdt->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSdt(Sdt $sdt): self
+    {
+        if ($this->sdt->contains($sdt)) {
+            $this->sdt->removeElement($sdt);
+            // set the owning side to null (unless already changed)
+            if ($sdt->getUser() === $this) {
+                $sdt->setUser(null);
+            }
         }
 
         return $this;

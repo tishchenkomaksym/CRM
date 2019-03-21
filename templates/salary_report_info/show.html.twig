@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SalaryReportInfo{% endblock %}
+
+{% block body %}
+    <h1>SalaryReportInfo</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ salary_report_info.id }}</td>
+            </tr>
+            <tr>
+                <th>CreateDate</th>
+                <td>{{ salary_report_info.createDate ? salary_report_info.createDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('salary_report_info_index') }}">back to list</a>
+
+    <a href="{{ path('salary_report_info_edit', {'id': salary_report_info.id}) }}">edit</a>
+
+    {{ include('salary_report_info/_delete_form.html.twig') }}
+{% endblock %}

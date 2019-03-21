@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New SalaryReportInfo{% endblock %}
+
+{% block body %}
+    <h1>Create new SalaryReportInfo</h1>
+
+    {{ include('salary_report_info/_form.html.twig') }}
+
+    <a href="{{ path('salary_report_info_index') }}">back to list</a>
+{% endblock %}

@@ -23,11 +23,17 @@ class BaseWorkingDaysCalculator
     {
         $this->holidayService = $holidayService;
     }
-    public function getWorkingHoursBetweenDates(DateTime $from, DateTime $to)
+
+    public function getWorkingHoursBetweenDates(DateTime $from, DateTime $to): float
+    {
+        return $this->getWorkingDaysBetweenDates($from, $to) * BaseWorkHoursInformationBuilder::HOURS_IN_WORKING_DAY;
+    }
+
+    public function getWorkingDaysBetweenDates(DateTime $from, DateTime $to): int
     {
         $daysCount = $this->workDaysBetweenDates($from, $to);
         $holidaysCount = count($this->holidayService->getHolidayBetweenDate($from, $to));
-        return ($daysCount - $holidaysCount) * BaseWorkHoursInformationBuilder::HOURS_IN_WORKING_DAY;
+        return ($daysCount - $holidaysCount);
     }
 
     public function workDaysBetweenDates(DateTime $date1, DateTime $date2)
