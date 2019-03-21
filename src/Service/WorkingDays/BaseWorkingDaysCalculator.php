@@ -43,7 +43,7 @@ class BaseWorkingDaysCalculator
         if ($dayOfTheWeek <= 5) {
             $workdays++;
         }
-        $differenceInDays = $date1->diff($date2)->d;
+        $differenceInDays = $date1->diff($date2)->days;
         for ($i = 1; $i <= $differenceInDays; $i++) {
             $dayOfTheWeek = date('N', strtotime("+{$i} days", $date1->getTimestamp()));
             if ($dayOfTheWeek <= 5) {
