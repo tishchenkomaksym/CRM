@@ -19,6 +19,7 @@ class ElasticSearchClient
     public const DEFAULT_ELASTIC_DATE_FORMAT = 'yyyy-MM-dd';
 
     public const FIELD_EFFECTIVE_TIME='effectiveTime';
+    public const FIELD_COMPONENTS_EFFECTIVE_TIME='technicalComponentsEffectiveTime';
     public const FIELD_TIME = 'time';
     public const FIELD_AUTHOR_USER_NAME = 'author.userName.keyword';
 
@@ -74,7 +75,7 @@ class ElasticSearchClient
                 'aggs' => [
                     self::FIELD_EFFECTIVE_TIME => [
                         'sum' => [
-                            self::ELASTIC_FIELD_FIELD => self::FIELD_EFFECTIVE_TIME
+                            self::ELASTIC_FIELD_FIELD => self::FIELD_COMPONENTS_EFFECTIVE_TIME
                         ]
                     ]
                 ]
