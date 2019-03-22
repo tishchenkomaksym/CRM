@@ -57,7 +57,7 @@ class SdtDaysCalculator
     {
         /** @var \DateTime $date */
         $date = $sdt->getCreateDate();
-        return $date->diff($to)->days >= $sdt->getCount();
+        return $date->diff($to)->days <= $sdt->getCount();
     }
 
 }

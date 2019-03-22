@@ -58,4 +58,25 @@ class SdtDaysCalculatorTest extends TestCase
         $this->assertEquals(9.5, $return);
 
     }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function testCalculateSdtWitoutLine()
+    {
+        $toTime = new DateTime('2019-03-18');
+
+        $user = new User();
+        $sdt = new Sdt();
+        $createDate = new DateTime('2019-03-01');
+
+        $sdt->setCreateDate($createDate);
+        $sdt->setCount(3);
+        $user->addSdt($sdt);
+
+        $return = $this->calculator->calculate($toTime, $user);
+        $this->assertEquals(10.5, $return);
+
+    }
 }
