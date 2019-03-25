@@ -24,7 +24,7 @@ class UserInformationService
 
     public function getAllUserSdt(User $user): SdtCollection
     {
-        return new SdtCollection($user->getSdt());
+        return new SdtCollection($user->getSdt()->toArray());
     }
 
     public function getPhpUserLevel(User $user): ?string
