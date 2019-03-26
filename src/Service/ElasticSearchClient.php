@@ -13,13 +13,13 @@ use Elasticsearch\ClientBuilder;
 
 class ElasticSearchClient
 {
-    public const MATCH='match';
+    public const MATCH = 'match';
 
-    public const DEFAULT_DATE_FORMAT='Y-m-d';
+    public const DEFAULT_DATE_FORMAT = 'Y-m-d';
     public const DEFAULT_ELASTIC_DATE_FORMAT = 'yyyy-MM-dd';
 
-    public const FIELD_EFFECTIVE_TIME='effectiveTime';
-    public const FIELD_COMPONENTS_EFFECTIVE_TIME='technicalComponentsEffectiveTime';
+    public const FIELD_EFFECTIVE_TIME = 'effectiveTime';
+    public const FIELD_COMPONENTS_EFFECTIVE_TIME = 'technicalComponentsEffectiveTime';
     public const FIELD_TIME = 'time';
     public const FIELD_AUTHOR_USER_NAME = 'author.userName.keyword';
 
@@ -202,20 +202,23 @@ class ElasticSearchClient
                         self::ELASTIC_FILTER_FIELD => [
                             'bool' =>
                                 [
-                                    'should' => [
-                                        [
-                                            self::MATCH => ['author.userName.keyword' => $userName],
-                                        ],
-                                        [
-                                            self::MATCH => ['taskGroup.components.keywords' => 'Bonus project'],
-                                        ],
-                                    ],
                                     self::ELASTIC_FILTER_FIELD => [
-                                        self::ELASTIC_RANGE_FIELD => [
+                                        [self::ELASTIC_RANGE_FIELD => [
                                             self::ELASTIC_STARTED_FIELD => [
                                                 'gte' => $startDate->format(self::DEFAULT_DATE_FORMAT),
                                                 'lte' => (new DateTime())->format(self::DEFAULT_DATE_FORMAT),
                                                 self::ELASTIC_FORMAT_FIELD => self::DEFAULT_ELASTIC_DATE_FORMAT
+                                            ]
+                                        ]],
+                                        [
+                                            'term' => [
+                                                'taskGroup.components.keyword' => 'Bonus project',
+                                            ]
+                                        ],
+                                        [
+                                            ['term' => [
+                                                'author.userName.keyword' => $userName,
+                                            ]
                                             ]
                                         ]
                                     ]
