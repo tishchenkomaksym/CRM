@@ -202,9 +202,12 @@ class ElasticSearchClient
                         self::ELASTIC_FILTER_FIELD => [
                             'bool' =>
                                 [
-                                    'must' => [
+                                    'should' => [
                                         [
-                                            self::MATCH => ['author.userName' => $userName],
+                                            self::MATCH => ['author.userName.keyword' => $userName],
+                                        ],
+                                        [
+                                            self::MATCH => ['taskGroup.components.keywords' => 'Bonus project'],
                                         ],
                                     ],
                                     self::ELASTIC_FILTER_FIELD => [

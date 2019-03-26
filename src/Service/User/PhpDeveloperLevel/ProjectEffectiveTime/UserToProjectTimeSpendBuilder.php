@@ -10,6 +10,7 @@ namespace App\Service\User\PhpDeveloperLevel\ProjectEffectiveTime;
 
 use App\Entity\User;
 use App\Service\ElasticSearchClient;
+use App\Service\UserInformationService;
 
 class UserToProjectTimeSpendBuilder
 {
@@ -38,7 +39,7 @@ class UserToProjectTimeSpendBuilder
         if (($startDateAndValues !== null) && $startDateAndValues->getCreateDate()) {
             $startDate->setTimestamp($startDateAndValues->getCreateDate()->getTimestamp());
         }
-        $projects = $this->searchClient->getEffectiveTimePerUserPerProjects($user, $startDate);
+        $projects = $this->searchClient->getEffectiveTimePerUserPerProjects(UserInformationService::getSystemName($user), $startDate);
         foreach ($projects as $project) {
             $array[] = $item = new UserToProjectTimeSpendDTO();
             $item->projectTitle = $project['key'];
