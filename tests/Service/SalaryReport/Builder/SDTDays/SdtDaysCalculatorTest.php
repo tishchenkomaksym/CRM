@@ -55,7 +55,7 @@ class SdtDaysCalculatorTest extends TestCase
         $user->addSdt($sdt);
 
         $return = $this->calculator->calculate($toTime, $user);
-        $this->assertEquals(9.5, $return);
+        $this->assertEquals(11.5, $return);
 
     }
 
