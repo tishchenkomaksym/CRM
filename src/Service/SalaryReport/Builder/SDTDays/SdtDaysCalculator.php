@@ -8,7 +8,6 @@
 
 namespace App\Service\SalaryReport\Builder\SDTDays;
 
-use App\Entity\Sdt;
 use App\Entity\User;
 use App\Service\Sdt\Interval\EndDateOfSdtCalculator;
 use App\Service\User\Sdt\LeftSdtForPeriodCalculator;
@@ -42,22 +41,14 @@ class SdtDaysCalculator
         $leftSdt = $this->leftSdtCalculator->calculate($user, $to);
         $sdtArray = $user->getSdt();
         foreach ($sdtArray as $sdt) {
-            if ($this->checkIsDateTimeToCalculate($sdt, $to)) {
-                $endDate = $this->endDateOfSdtCalculator->calculate($sdt);
+            $endDate = $this->endDateOfSdtCalculator->calculate($sdt);
+            if ($endDate > $to) {
                 $diffBetweenEndDate = $to->diff($endDate);
                 if ($diffBetweenEndDate->days > 0) {
-                    $leftSdt -= $diffBetweenEndDate->days;
+                    $leftSdt += $diffBetweenEndDate->days;
                 }
             }
         }
         return $leftSdt;
     }
-
-    private function checkIsDateTimeToCalculate(Sdt $sdt, \DateTime $to): bool
-    {
-        /** @var \DateTime $date */
-        $date = $sdt->getCreateDate();
-        return $date->diff($to)->days <= $sdt->getCount();
-    }
-
 }
