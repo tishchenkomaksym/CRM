@@ -4,7 +4,7 @@ services:
     networks:
       - new
     restart: always
-    image: registry.devzone.net/mygarage/mygarage-nginx:1-alpine
+    image: registry.devzone.net/nexteum-user/nexteum-user-nginx:nginx
     volumes:
     - ../:/application
     - "phpsocket:/var/run"
