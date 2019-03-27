@@ -23,7 +23,7 @@ class UsedSdtDaysCalculator
         $this->sdtRequestDaysCalculator = $sdtRequestDaysCalculator;
     }
 
-    public function calculate(\DateTime $startPeriod, \DateTime $endPeriod, User $user): int
+    public function calculate(\DateTimeImmutable $startPeriod, \DateTime $endPeriod, User $user): int
     {
         $sdtArray = $user->getSdt();
         $calculateArray = [];

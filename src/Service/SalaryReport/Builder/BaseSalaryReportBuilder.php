@@ -16,6 +16,7 @@ use App\Service\SalaryReport\Builder\SDTDays\SdtDaysCalculator;
 use App\Service\SalaryReport\Builder\WorkingDays\WorkingDaysCalculator;
 use App\Service\SalaryReport\SalaryReportDTO;
 use App\Service\User\Sdt\UsedSdtDaysCalculator;
+use Doctrine\ORM\NonUniqueResultException;
 
 class BaseSalaryReportBuilder
 {
@@ -66,6 +67,13 @@ class BaseSalaryReportBuilder
         return $returnObject;
     }
 
+    /**
+     * @param SalaryReportInfo $newReport
+     * @param \DateTime $nowTime
+     * @param User $user
+     * @return int
+     * @throws NonUniqueResultException
+     */
     private function getSdtCountUsed(SalaryReportInfo $newReport, \DateTime $nowTime, User $user): int
     {
         $previousReport = $this->salaryReportInfoRepository->getPreviousReport($newReport);

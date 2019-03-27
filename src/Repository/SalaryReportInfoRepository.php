@@ -19,12 +19,18 @@ class SalaryReportInfoRepository extends ServiceEntityRepository
         parent::__construct($registry, SalaryReportInfo::class);
     }
 
+    /**
+     * @param SalaryReportInfo $salaryReportInfo
+     * @return SalaryReportInfo
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function getPreviousReport(SalaryReportInfo $salaryReportInfo): SalaryReportInfo
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.createDate < :date')
             ->setParameter('date', $salaryReportInfo->getCreateDate())
             ->orderBy('p.createDate', 'DESC')
-            ->getQuery()->execute();
+            ->setMaxResults(1)
+            ->getQuery()->getOneOrNullResult();
     }
 }
