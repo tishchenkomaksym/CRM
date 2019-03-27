@@ -18,4 +18,13 @@ class SalaryReportInfoRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, SalaryReportInfo::class);
     }
+
+    public function getPreviousReport(SalaryReportInfo $salaryReportInfo): SalaryReportInfo
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.createDate < :date')
+            ->setParameter('date', $salaryReportInfo->getCreateDate())
+            ->orderBy('p.createDate', 'DESC')
+            ->getQuery()->execute();
+    }
 }

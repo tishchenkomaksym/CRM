@@ -22,6 +22,7 @@
         <tr>
             <th>User</th>
             <th>Working Days</th>
+            <th>SDT used</th>
             <th>SDT left</th>
         </tr>
         </thead>
@@ -30,6 +31,7 @@
             <tr>
                 <th>{{ item.user.name }}</th>
                 <td>{{ item.calendarWorkingDays }}</td>
+                <td>{{ item.sdtCountUsed }}</td>
                 <td>{{ item.sdtCount }}</td>
             </tr>
         {% endfor %}
