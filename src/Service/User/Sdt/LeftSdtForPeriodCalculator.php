@@ -34,7 +34,7 @@ class LeftSdtForPeriodCalculator
         }
         $sdtArray = [];
         foreach ($user->getSdt() as $sdt) {
-            if ($sdt->getCreateDate() < $toPeriod) {
+            if ($sdt->getCreateDate() <= $toPeriod) {
                 $sdtArray[] = $sdt;
             }
         }
