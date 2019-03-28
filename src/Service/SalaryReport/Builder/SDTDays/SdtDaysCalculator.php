@@ -42,7 +42,7 @@ class SdtDaysCalculator
         $sdtArray = $user->getSdt();
         foreach ($sdtArray as $sdt) {
             $endDate = $this->endDateOfSdtCalculator->calculate($sdt);
-            if ($endDate > $to) {
+            if ($endDate > $to && $sdt->getCreateDate() <= $to) {
                 $diffBetweenEndDate = $to->diff($endDate);
                 if ($diffBetweenEndDate->days > 0) {
                     $leftSdt += $diffBetweenEndDate->days;
