@@ -59,6 +59,46 @@ class SdtDaysCalculatorTest extends TestCase
 
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function testCalculateFuture()
+    {
+        $toTime = new DateTime('2019-03-26');
+
+        $user = new User();
+        $sdt = new Sdt();
+        $createDate = new DateTime('2019-03-28');
+
+        $sdt->setCreateDate($createDate);
+        $sdt->setCount(3);
+        $user->addSdt($sdt);
+
+        $return = $this->calculator->calculate($toTime, $user);
+        $this->assertEquals(10.5, $return);
+
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testCalculateFitureWithOneDayIn()
+    {
+        $toTime = new DateTime('2019-03-26');
+
+        $user = new User();
+        $sdt = new Sdt();
+        $createDate = new DateTime('2019-03-26');
+
+        $sdt->setCreateDate($createDate);
+        $sdt->setCount(3);
+        $user->addSdt($sdt);
+
+        $return = $this->calculator->calculate($toTime, $user);
+        $this->assertEquals(12.5, $return);
+
+    }
+
 
     /**
      * @throws \Exception
