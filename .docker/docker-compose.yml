@@ -26,8 +26,19 @@ services:
       - ../:/application
       - "phpsocket:/var/run"
     environment:
-      XDEBUG_CONFIG: remote_enable=1 remote_host=host.docker.internal
+      XDEBUG_CONFIG: remote_enable=1 remote_host=10.0.5.169
       PHP_IDE_CONFIG: serverName=symfony-demo
+
+  php-cli:
+    restart: always
+    image: registry.devzone.net/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
+    volumes:
+      - ~/.ssh/id_rsa:/root/.ssh/id_rsa
+      - ../:/application
+      - phpsocket:/var/run
+    command: php
+    stdin_open: true
+    tty: true
 
   db:
     image: mysql:5.7

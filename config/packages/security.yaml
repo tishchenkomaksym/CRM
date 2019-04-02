@@ -33,6 +33,7 @@ security:
     - { path: ^/default, roles: IS_AUTHENTICATED_FULLY }
     - { path: ^/sdt, roles: ROLE_SDT_REQUEST }
     - { path: ^/holiday, roles: ROLE_MANAGE_HOLIDAYS }
+#    - { path: ^/roles, roles: ROLE_DEPARTMENT_MANAGER }
 
     role_hierarchy:
       ROLE_USER: [ROLE_SDT_REQUEST]
