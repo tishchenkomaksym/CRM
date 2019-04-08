@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,9 +24,21 @@ class Department
     private $name;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Office", inversedBy="departments")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $office_id;
+    private $office;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Team", mappedBy="department")
+     */
+    private $teams;
+
+    public function __construct()
+    {
+        $this->teams = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -43,14 +57,45 @@ class Department
         return $this;
     }
 
-    public function getOfficeId(): ?int
+    public function getOffice(): ?Office
     {
-        return $this->office_id;
+        return $this->office;
     }
 
-    public function setOfficeId(int $office_id): self
+    public function setOffice(?Office $office): self
     {
-        $this->office_id = $office_id;
+        $this->office = $office;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Team[]
+     */
+    public function getTeams(): Collection
+    {
+        return $this->teams;
+    }
+
+    public function addTeam(Team $team): self
+    {
+        if (!$this->teams->contains($team)) {
+            $this->teams[] = $team;
+            $team->setDepartment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTeam(Team $team): self
+    {
+        if ($this->teams->contains($team)) {
+            $this->teams->removeElement($team);
+            // set the owning side to null (unless already changed)
+            if ($team->getDepartment() === $this) {
+                $team->setDepartment(null);
+            }
+        }
 
         return $this;
     }

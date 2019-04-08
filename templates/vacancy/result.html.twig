@@ -7,7 +7,7 @@
             <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
         {% endif %}
         {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
-            <li class="list-group-item"><a href="{{ path('candidate_index') }}">Candidate Database</a></li>
+            <li class="list-group-item"><a href="#">Candidate Database</a></li>
         {% endif %}
     </ul>
 {% endblock %}

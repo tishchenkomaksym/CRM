@@ -22,9 +22,9 @@ class Team
     private $name;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Department", inversedBy="teams")
      */
-    private $department_id;
+    private $department;
 
 
     public function getId(): ?int
@@ -49,19 +49,16 @@ class Team
         return $this->name;
     }
 
-    public function setDepartmentId(int $department_id): self
+    public function getDepartment(): ?Department
     {
-        $this->department_id = $department_id;
-
-        return $this;
+        return $this->department;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDepartmentId()
+    public function setDepartment(?Department $department): self
     {
-        return $this->department_id;
+        $this->department = $department;
+
+        return $this;
     }
 
 }
