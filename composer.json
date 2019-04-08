@@ -5,6 +5,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
+        "ext-ldap": "*",
         "elasticsearch/elasticsearch": "~6.0",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/asset": "4.2.*",
@@ -14,6 +15,8 @@
         "symfony/flex": "^1.1",
         "symfony/form": "4.2.*",
         "symfony/framework-bundle": "4.2.*",
+        "symfony/http-foundation": "4.2.*",
+        "symfony/http-kernel": "4.2.*",
         "symfony/ldap": "4.2.*",
         "symfony/monolog-bundle": "^3.1",
         "symfony/orm-pack": "1.0.6",
@@ -26,7 +29,7 @@
         "symfony/validator": "4.2.*",
         "symfony/web-link": "4.2.*",
         "symfony/yaml": "4.2.*",
-      "ext-ldap": "*"
+        "ext-http": "*"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.1",

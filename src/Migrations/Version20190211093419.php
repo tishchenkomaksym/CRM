@@ -28,10 +28,10 @@ final class Version20190211093419 extends AbstractMigration
             $this->connection->getDatabasePlatform()->getName() !== 'mysql',
             'Migration can only be executed safely on \'mysql\'.'
         );
-
-        $this->addSql(
-            'INSERT INTO user (email, roles, password) VALUES (\'accountmanager@onyx.com\', \'["ROLE_USER", "ROLE_ACCOUNT_MANAGER"]\', \'$argon2i$v=19$m=1024,t=2,p=2$WWM3dEhNeUtZTTRFT0I4Mw$ZPoR+cHVSedUlFI1RRsIBkIexZFxOzIU4LUWCntPlCM\');'
-        );
+//
+//        $this->addSql(
+//            'INSERT INTO user (email, roles, password) VALUES (\'accountmanager@onyx.com\', \'["ROLE_USER", "ROLE_ACCOUNT_MANAGER"]\', \'$argon2i$v=19$m=1024,t=2,p=2$WWM3dEhNeUtZTTRFT0I4Mw$ZPoR+cHVSedUlFI1RRsIBkIexZFxOzIU4LUWCntPlCM\');'
+//        );
     }
 
     /**

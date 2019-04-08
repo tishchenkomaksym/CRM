@@ -29,7 +29,7 @@ final class Version20190222095216 extends AbstractMigration
             'Migration can only be executed safely on \'mysql\'.'
         );
 
-        $this->addSql('ALTER TABLE user ADD create_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL');
+//        $this->addSql('ALTER TABLE user ADD create_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL');
     }
 
     /**
