@@ -51,6 +51,12 @@ class QaComponents
      */
     private $fiveLvlHours;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Team")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $team;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -136,6 +142,18 @@ class QaComponents
     public function setFiveLvlHours(int $fiveLvlHours): self
     {
         $this->fiveLvlHours = $fiveLvlHours;
+
+        return $this;
+    }
+
+    public function getTeam(): ?Team
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?Team $team): self
+    {
+        $this->team = $team;
 
         return $this;
     }
