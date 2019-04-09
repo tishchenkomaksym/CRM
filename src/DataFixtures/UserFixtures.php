@@ -70,6 +70,22 @@ class UserFixtures extends Fixture
         $user = new User();
         UserBuilder::build($user);
 
+
+        $user->setEmail('departmentmanager@onyx.com');
+        $user->setName('Department manager');
+        $user->setPassword(
+            $this->passwordEncoder->encodePassword(
+                $user,
+                'departmentmanager@onyx.com'
+            )
+        );
+        $user->setRoles(['ROLE_USER', 'ROLE_RECRUITING_DEPARTMENT_MANAGER']);
+        $manager->persist($user);
+        $manager->flush();
+
+        $user = new User();
+        UserBuilder::build($user);
+
         $user->setEmail('hr@onyx.com');
         $user->setPassword(
             $this->passwordEncoder->encodePassword(

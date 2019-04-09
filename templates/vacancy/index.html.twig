@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy index{% endblock %}
+{% block menu %}
+    <ul class="list-group list-group-flush">
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+            <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
+        {% endif %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+            <li class="list-group-item"><a href="#">Candidate Database</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Vacancies</li>
+            <li class="breadcrumb-item active" aria-current="page">Request</li>
+        </ol>
+    </nav>
+{% endblock %}
+{% block body %}
+    <h1>Vacancy index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Position</th>
+                <th>Salary</th>
+                <th>Test</th>
+                <th>English</th>
+                <th>Amount</th>
+                <th>Bonus</th>
+                <th>Responsibilities</th>
+                <th>Requirements</th>
+                <th>Plus</th>
+                <th>Reason</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for vacancy in vacancies %}
+            <tr>
+                <td>{{ vacancy.id }}</td>
+                <td>{{ vacancy.position }}</td>
+                <td>{{ vacancy.salary }}</td>
+                <td>{{ vacancy.test }}</td>
+                <td>{{ vacancy.english }}</td>
+                <td>{{ vacancy.amount }}</td>
+                <td>{{ vacancy.bonus }}</td>
+                <td>{{ vacancy.responsibilities }}</td>
+                <td>{{ vacancy.requirements }}</td>
+                <td>{{ vacancy.plus }}</td>
+                <td>{{ vacancy.reason }}</td>
+                <td>
+                    <a href="{{ path('vacancy_show', {'id': vacancy.id}) }}">show</a>
+                    <a href="{{ path('vacancy_edit', {'id': vacancy.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="12">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('vacancy_new') }}">Create new</a>
+{% endblock %}

@@ -16,12 +16,14 @@
     {% block script %}
         <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.js"></script>
+        <script type="text/javascript" src="/js/script.js"></script>
     {% endblock %}
     {% block css %}
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.css">
         {#<link rel="stylesheet"#}
         {#href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.print.css">#}
+        <link rel="stylesheet" href="/assets/css/main.css">
     {% endblock %}
 
     <title>{% block title %}Welcome!{% endblock %}</title>
@@ -29,7 +31,7 @@
 </head>
 <body>
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Company name</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ path('default') }}">Nexteum</a>
     <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
             <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
@@ -48,6 +50,12 @@
                 <ul class="list-group list-group-flush">
                     {% if is_granted('ROLE_SDT_REQUEST') %}
                         <li class="list-group-item"><a href="{{ path('sdt_index') }}">SDT request</a></li>
+                    {% endif %}
+                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+                        <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+                    {% endif %}
+                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+                        <li class="list-group-item"><a href="#">Employees</a></li>
                     {% endif %}
                     {% if is_granted('ROLE_USER') %}
                         <li class="list-group-item"><a href="{{ path('profile') }}">Profile</a></li>
