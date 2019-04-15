@@ -1,0 +1,46 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+    <h1>Vacancy index</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Office</th>
+            <th>Department</th>
+            <th>Team</th>
+            <th>Position</th>
+            <th>Salary</th>
+            <th>Test</th>
+            <th>English</th>
+            <th>Amount</th>
+            <th>Bonus</th>
+            <th>Responsibilities</th>
+            <th>Requirements</th>
+            <th>Plus</th>
+            <th>Reason</th>
+            <th>actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ vacancy.id }}</td>
+                <td>{{ vacancy.office.name }}</td>
+                <td>{{ vacancy.department.name }}</td>
+                <td>{{ vacancy.team.name }}</td>
+                <td>{{ vacancy.position }}</td>
+                <td>{{ vacancy.salary }}</td>
+                <td>{{ vacancy.test }}</td>
+                <td>{{ vacancy.english }}</td>
+                <td>{{ vacancy.amount }}</td>
+                <td>{{ vacancy.bonus }}</td>
+                <td>{{ vacancy.responsibilities }}</td>
+                <td>{{ vacancy.requirements }}</td>
+                <td>{{ vacancy.reason }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="{{ path('approved',{'id': vacancy.id}) }}">Approved</a>
+    <a href="{{ path('denied',{'id': vacancy.id})}}">Denied</a>
+{% endblock %}

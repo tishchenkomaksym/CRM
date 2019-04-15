@@ -2,14 +2,42 @@
 
 {% block title %}Vacancy{% endblock %}
 
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Request</a></li>
+            <li class="breadcrumb-item active" aria-current="page">View Request</li>
+        </ol>
+    </nav>
+{% endblock %}
+
 {% block body %}
     <h1>Vacancy</h1>
-
+    {% if is_granted('ROLE_HR', 'ROLE_VACANCY_VIEWER_USER') %}
+        {{ include('vacancy/recruiterForm.html.twig') }}
+    {% endif %}
+    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER','ROLE_VACANCY_VIEWER_USER') %}
+        {{ include('vacancy/userForm.html.twig') }}
+    {% endif %}
     <table class="table">
         <tbody>
             <tr>
                 <th>Id</th>
                 <td>{{ vacancy.id }}</td>
+            </tr>
+            <tr>
+                <th>Office</th>
+                <td>{{ vacancy.office.name }}</td>
+            </tr>
+            <tr>
+                <th>Department</th>
+                <td>{{ vacancy.department.name }}</td>
+            </tr>
+            <tr>
+                <th>Team</th>
+                <td>{{ vacancy.team.name }}</td>
             </tr>
             <tr>
                 <th>Position</th>
@@ -51,12 +79,44 @@
                 <th>Reason</th>
                 <td>{{ vacancy.reason }}</td>
             </tr>
+            <tr>
+                <th>By</th>
+                <td>{{ vacancy.createdBy }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+            </tr>
         </tbody>
     </table>
 
     <a href="{{ path('vacancy_index') }}">back to list</a>
+{#    <a href="{{ path('vacancy_edit', {'id': vacancy.id}) }}">edit</a>#}
+    <br>
+    {% if vacancy.assignee is null %}
+        <span>no assignee</span>
+    {% else %}
+        <span>{{ vacancy.assignee }}</span>
+    {% endif %}
 
-    <a href="{{ path('vacancy_edit', {'id': vacancy.id}) }}">edit</a>
+    {% if vacancy.isApproved is null %}
+       <p>Status:<span>Waiting for approval</span></p>
 
-    {{ include('vacancy/_delete_form.html.twig') }}
+    {% elseif vacancy.isApproved == true and vacancy.assignee is null %}
+        <p>Status: <span>no assignee</span></p>
+    {% elseif vacancy.isApproved == false and vacancy.isApproved is not null %}
+        <p>Status: <span>Request denied</span></p>
+    {% elseif vacancy.isApproved == true and vacancy.assignee is not null %}
+        <p>Status: <span>Issue have been assigned</span></p>
+    {% endif %}
+
+    {% if vacancy.isApproved == false and vacancy.isApproved is not null %}
+        {{ include('vacancy/_delete_form.html.twig') }}
+        Denied
+    {% elseif vacancy.isApproved == true %}
+        <span>Approved {{ vacancy.approveDate|date("m/d/Y") }}</span>
+    {% else %}
+        <span>Waiting for approval</span>
+    {% endif %}
+
 {% endblock %}

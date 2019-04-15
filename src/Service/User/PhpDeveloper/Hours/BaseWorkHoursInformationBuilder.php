@@ -8,7 +8,7 @@
 
 namespace App\Service\User\PhpDeveloper\Hours;
 
-use App\Data\Sdt\SdtCollection;
+use App\Data\Sdt\VacancyCollection;
 use App\Entity\User;
 use App\Repository\SdtRepository;
 use App\Service\ElasticSearchClient;
@@ -61,7 +61,7 @@ class BaseWorkHoursInformationBuilder
     private function getLoggedTimeInHours(DateTime $from, DateTime $to, User $user)
     {
         $time = $this->searchClient->getTimeFromDateToDate($from, $to, UserInformationService::getSystemName($user));
-        $sdtCollection = new SdtCollection($this->sdtRepository->getSDTFromDateToDate($from, $to, $user));
+        $sdtCollection = new VacancyCollection($this->sdtRepository->getSDTFromDateToDate($from, $to, $user));
         return $time + $sdtCollection->getCountSum() * self::HOURS_IN_WORKING_DAY;
     }
 

@@ -39,7 +39,7 @@ class MailCheckCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $mailData = New BaseSdtMailData('ivan');
+        $mailData = New BaseVacancyMailData('ivan');
         echo "Recepient:" . $this->mailer->send(
             $message = (new \Swift_Message('test message'))
                 ->setFrom($mailData->getFromEmail())

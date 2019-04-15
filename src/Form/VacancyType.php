@@ -5,7 +5,10 @@ namespace App\Form;
 use App\Entity\Department;
 use App\Entity\Office;
 use App\Entity\Team;
+use App\Entity\User;
 use App\Entity\Vacancy;
+use Doctrine\DBAL\Types\DateType;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -57,19 +60,19 @@ class VacancyType extends AbstractType
             ->add('test', ChoiceType::class, [
                     'placeholder' => 'Is there a test task?',
                     'choices' => [
-                        'Yes' => true,
-                        'No' => false,
+                        'Yes' => 'yes',
+                        'No' => 'no',
                     ],
                 ]
             )
             ->add('english', ChoiceType::class, [
                     'placeholder' => 'English',
                     'choices' => [
-                        'Elementary' => true,
-                        'Pre-intermediate' => true,
-                        'Intermediate' => true,
-                        'Upper-Intermediate' => true,
-                        'Advanced' => true,
+                        'Elementary' => 'Elementary',
+                        'Pre-intermediate' => 'Pre-intermediate',
+                        'Intermediate' => 'Intermediate',
+                        'Upper-Intermediate' => 'Upper-Intermediate',
+                        'Advanced' => 'Advanced',
                     ],
                 ]
             )
@@ -97,7 +100,19 @@ class VacancyType extends AbstractType
             ->add('reason', null, [
                     'attr' => ['placeholder' => 'Enter request reason']
                 ]
-            );
+            )
+            ->add('createdAt');
+
+//            ->add('assignee', EntityType::class, [
+//                'class' => User::class,
+//                'placeholder' => 'Select Recruiter',
+//                'query_builder' => static function (EntityRepository $er) {
+//                    return $er->createQueryBuilder('u')
+//                        ->where('recrutier@onyx.com');
+//                },
+//                'choice_label' => 'name',
+//            ]
+//        );
     }
 
 

@@ -1,0 +1,14 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+        <p>
+            Your request #{{ vacancy.id }}
+
+            {% if vacancy.isApproved == true %}
+                have been successfully approved
+            {% else %}
+                have been denied
+            {% endif %}
+        </p>
+    <a href="{{ path('vacancy_show',{'id': vacancy.id}) }}">Open request</a>
+{% endblock %}

@@ -8,7 +8,7 @@
 
 namespace App\Service;
 
-use App\Data\Sdt\SdtCollection;
+use App\Data\Sdt\VacancyCollection;
 use App\Entity\PhpDeveloperLevelTest;
 use App\Entity\PhpDeveloperLevelTestPassed;
 use App\Entity\User;
@@ -22,9 +22,9 @@ class UserInformationService
         return substr($email, 0, $position);
     }
 
-    public function getAllUserSdt(User $user): SdtCollection
+    public function getAllUserSdt(User $user): VacancyCollection
     {
-        return new SdtCollection($user->getSdt()->toArray());
+        return new VacancyCollection($user->getSdt()->toArray());
     }
 
     public function getPhpUserLevel(User $user): ?string
