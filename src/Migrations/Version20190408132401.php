@@ -36,15 +36,16 @@ final class Version20190408132401 extends AbstractMigration
                 (\'Chigrina (Nikolaev, Ukraine)\'),(\'Spasskaya (Nikolaev, Ukraine)\'),
             (\'Dormashina (Nikolaev, Ukraine)\'),(\'Gomel (Belarus)\')                   
         ');
-        $this->addSql("INSERT INTO department (name, office_id) VALUES ('Development team', 1),('Maintenance Team', 1), ('Product development', 1), ('Display team', 7), 
-          ('SEL team', 7), ('WFM', 4), ('VOICE', 4), ('Digital', 4), ('Accountant', 5), ('Billing', 5), ('Purchasing', 5), ('Wheels&Warehouse', 5), ('Бухгалтер', 6), ('Development team', 2), 
+        $this->addSql("INSERT INTO department (name, office_id) VALUES ('Development team', 1),('Maintenance Team', 1), ('Product development', 1), ('Development team', 7), 
+         ('WFM', 4), ('VOICE', 4), ('Digital', 4), ('Accountant', 5), ('Billing', 5), ('Purchasing', 5), ('Wheels&Warehouse', 5), ('Maintenance', 6), ('Development team', 2), 
           ('Development team', 3), ('Maintenance', 2), ('Maintenance', 3), ('Maintenance', 4), ('Maintenance', 5), ('Product development', 2)
                         ");
-        $this->addSql("INSERT INTO team (name, department_id) VALUES ('Display', 1), ('Create Team', 1), ('SELL Team', 1), ('NOC Team', 1),
-            ('Admins', 2), ('HR', 2), ('Security', 2), ('PPC Team', 3), ('Display team', 14), ('Create team', 14), ('SELL team', 14), ('NOC team', 14),
-            ('Data Mining Team', 14), ('WEB UI Team', 14), ('Import', 20), ('PM', 20), ('Design', 20), ('PQA', 20), ('Massload', 20), ('PPC Team', 20), ('Secondary', 20),
-            ('Moto Team', 20), ('SEO', 2), ('Wheels&Tires Team', 20), ('Admins', 16), ('HR', 16), ('Security', 16), ('Accounting Team', 16), ('Display team', 15), 
-            ('SELL team', 15), ('Admins', 17), ('HR', 17), ('Security', 17), ('Admins', 18), ('HR', 18), ('Security', 18), ('Admins', 19), ('HR', 19), ('Security', 19)                     
+        $this->addSql("INSERT INTO team (name, department_id) VALUES ('Display Team', 1), ('Create Team', 1), ('SELL Team', 1), ('NOC Team', 1),
+            ('Admins', 2), ('HR', 2), ('Security', 2), ('PPC Team', 3), ('Display team', 13), ('Create team', 13), ('SELL team', 13), ('NOC team', 13),
+            ('Data Mining Team', 13), ('WEB UI Team', 13), ('Import', 19), ('PM', 19), ('Design', 19), ('PQA', 19), ('Massload', 19), ('PPC Team', 19), ('Secondary', 19),
+            ('Moto Team', 19), ('Wheels&Tires Team', 19), ('Admins', 15), ('HR', 15), ('Security', 15), ('Accounting Team', 15), ('Display team', 14), 
+            ('SELL team', 14), ('Admins', 16), ('HR', 16), ('WFM', 5), ('VOICE', 6), ('Digital', 7), ('Security', 16), ('Admins', 17), ('HR', 17), ('Security', 17), ('Admins', 18), ('HR', 18), ('Accountant', 12), ('Display team', 4), 
+          ('SEL team', 4), ('Security', 18)                     
                ");
     }
 

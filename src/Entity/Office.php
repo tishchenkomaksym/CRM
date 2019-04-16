@@ -28,6 +28,11 @@ class Office
      */
     private $departments;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="offices")
+     */
+    private $topManager;
+
     public function __construct()
     {
         $this->departments = new ArrayCollection();
@@ -78,6 +83,18 @@ class Office
                 $department->setOffice(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTopManager(): ?User
+    {
+        return $this->topManager;
+    }
+
+    public function setTopManager(?User $topManager): self
+    {
+        $this->topManager = $topManager;
 
         return $this;
     }

@@ -1,0 +1,8 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+    <p>
+        Request #{{ vacancy.id }} have appeared in request list
+    </p>
+    <a href="{{ path('vacancy_show',{'id': vacancy.id}) }}">Open request</a>
+{% endblock %}

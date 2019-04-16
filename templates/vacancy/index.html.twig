@@ -3,10 +3,10 @@
 {% block title %}Vacancy index{% endblock %}
 {% block menu %}
     <ul class="list-group list-group-flush">
-        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
             <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
         {% endif %}
-        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
             <li class="list-group-item"><a href="#">Candidate Database</a></li>
         {% endif %}
     </ul>
@@ -14,7 +14,7 @@
 {% block breadcrumbs %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ path('default') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
             <li class="breadcrumb-item active" aria-current="page">Vacancies</li>
             <li class="breadcrumb-item active" aria-current="page">Request</li>
         </ol>
@@ -22,41 +22,36 @@
 {% endblock %}
 {% block body %}
     <h1>Vacancy index</h1>
-
-    <table class="table">
+    <a href="{{ path('vacancy_new') }}">Create new</a>
+    <table class="table" id="menu">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Position</th>
-                <th>Salary</th>
-                <th>Test</th>
-                <th>English</th>
                 <th>Amount</th>
-                <th>Bonus</th>
-                <th>Responsibilities</th>
-                <th>Requirements</th>
-                <th>Plus</th>
-                <th>Reason</th>
-                <th>actions</th>
+                <th>Status</th>
+                <th>Created date</th>
             </tr>
         </thead>
         <tbody>
-        {% for vacancy in vacancies %}
+        {% for vacancy in vacancies|reverse  %}
             <tr>
-                <td>{{ vacancy.id }}</td>
-                <td>{{ vacancy.position }}</td>
-                <td>{{ vacancy.salary }}</td>
-                <td>{{ vacancy.test }}</td>
-                <td>{{ vacancy.english }}</td>
-                <td>{{ vacancy.amount }}</td>
-                <td>{{ vacancy.bonus }}</td>
-                <td>{{ vacancy.responsibilities }}</td>
-                <td>{{ vacancy.requirements }}</td>
-                <td>{{ vacancy.plus }}</td>
-                <td>{{ vacancy.reason }}</td>
+                <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.id }}</a></td>
+                <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.position }}</a></td>
+                <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.amount }}</a></td>
                 <td>
-                    <a href="{{ path('vacancy_show', {'id': vacancy.id}) }}">show</a>
-                    <a href="{{ path('vacancy_edit', {'id': vacancy.id}) }}">edit</a>
+                    <a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">
+                    {% if vacancy.isApproved == false and vacancy.isApproved is not null %}
+                        Denied
+                    {% elseif vacancy.isApproved == true %}
+                        <span>Approved</span>
+                    {% else %}
+                        <span>Waiting for approval</span>
+                    {% endif %}
+                    </a>
+                </td>
+                <td>
+                    {{ vacancy.createdAt|date('Y-m-d')}}
                 </td>
             </tr>
         {% else %}
@@ -67,5 +62,4 @@
         </tbody>
     </table>
 
-    <a href="{{ path('vacancy_new') }}">Create new</a>
 {% endblock %}
