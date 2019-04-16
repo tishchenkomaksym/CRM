@@ -9,7 +9,6 @@
 namespace App\Service\User\PhpDeveloper\Hours;
 
 use App\Data\Sdt\SdtCollection;
-use App\Data\Sdt\VacancyCollection;
 use App\Entity\User;
 use App\Repository\SdtRepository;
 use App\Service\ElasticSearchClient;

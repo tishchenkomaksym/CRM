@@ -18,7 +18,7 @@ class SdtCollection
     private $items = [];
 
     /**
-     * VacancyCollection constructor.
+     * SdtCollection constructor.
      * @param Sdt[] $items
      */
     public function __construct(array $items = [])

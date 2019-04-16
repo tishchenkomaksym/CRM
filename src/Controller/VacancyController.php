@@ -234,7 +234,7 @@ class VacancyController extends AbstractController
      */
     public function delete(Request $request, Vacancy $vacancy): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $vacancy->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$vacancy->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($vacancy);
             $entityManager->flush();

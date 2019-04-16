@@ -168,7 +168,7 @@ class SdtController extends AbstractController
         $form->handleRequest($request);
 
         if ($oldFromDate !== null && $form->isSubmitted() && $form->isValid()) {
-            $messageBuilder = new UpdateVacancyMessageBuilder(
+            $messageBuilder = new UpdateSdtMessageBuilder(
                 EditSdtMailFromSdtAdapter::getEditSdtMail($sdt, $oldFromDate, $oldCount, $holidayService),
                 $this->environment
             );
