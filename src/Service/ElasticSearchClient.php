@@ -10,6 +10,7 @@ namespace App\Service;
 
 use DateTime;
 use Elasticsearch\ClientBuilder;
+use Exception;
 
 class ElasticSearchClient
 {
@@ -88,7 +89,7 @@ class ElasticSearchClient
         return $data[self::ELASTIC_AGGREGATIONS_FIELD][self::FIELD_EFFECTIVE_TIME][self::ELASTIC_VALUE_FIELD];
     }
 
-    public function getTimeFromDateToDate(\DateTime $from, \DateTime $to, $userName)
+    public function getTimeFromDateToDate(DateTime $from, DateTime $to, $userName)
     {
         $params = [
             self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
@@ -136,9 +137,9 @@ class ElasticSearchClient
      * @param string $userName
      * @param DateTime $startDate
      * @return float
-     * @throws \Exception
+     * @throws Exception
      */
-    public function getEffectiveTimePerUserDate(string $userName, \DateTime $startDate): float
+    public function getEffectiveTimePerUserDate(string $userName, DateTime $startDate): float
     {
         $params = [
             self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
@@ -153,6 +154,9 @@ class ElasticSearchClient
                                     'must' => [
                                         [
                                             self::MATCH => [self::FIELD_AUTHOR_USER_NAME => $userName],
+                                        ],
+                                        [
+                                            self::MATCH => ['issueStatus' => 'Closed'],
                                         ],
                                     ],
                                     self::ELASTIC_FILTER_FIELD => [
@@ -188,7 +192,7 @@ class ElasticSearchClient
      * @param string $userName
      * @param DateTime $startDate
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function getEffectiveTimePerUserPerProjects(string $userName, DateTime $startDate)
     {
