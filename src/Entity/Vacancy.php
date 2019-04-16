@@ -83,6 +83,44 @@ class Vacancy
      */
     private $reason;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $reasonDenied;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isApproved;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="vacancies")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $createdBy;
+
+    /**
+     * @ORM\Column(type="date_immutable")
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $assignee;
+
+    /**
+     * @ORM\Column(type="date_immutable", nullable=true)
+     */
+    private $approveDate;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\VacancyViewerUser", inversedBy="vacancies")
+     */
+    private $vacancyViewerUser;
+
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -243,4 +281,90 @@ class Vacancy
 
         return $this;
     }
+
+    public function getReasonDenied(): ?string
+    {
+        return $this->reasonDenied;
+    }
+
+    public function setReasonDenied(?string $reasonDenied): self
+    {
+        $this->reasonDenied = $reasonDenied;
+
+        return $this;
+    }
+
+    public function getIsApproved(): ?bool
+    {
+        return $this->isApproved;
+    }
+
+    public function setIsApproved(?bool $isApproved): self
+    {
+        $this->isApproved = $isApproved;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(User $createdBy): self
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getAssignee(): ?string
+    {
+        return $this->assignee;
+    }
+
+    public function setAssignee(?string $assignee): self
+    {
+        $this->assignee = $assignee;
+
+        return $this;
+    }
+
+    public function getApproveDate(): ?\DateTimeImmutable
+    {
+        return $this->approveDate;
+    }
+
+    public function setApproveDate(?\DateTimeImmutable $approveDate): self
+    {
+        $this->approveDate = $approveDate;
+
+        return $this;
+    }
+
+    public function getVacancyViewerUser(): ?VacancyViewerUser
+    {
+        return $this->vacancyViewerUser;
+    }
+
+    public function setVacancyViewerUser(?VacancyViewerUser $vacancyViewerUser): self
+    {
+        $this->vacancyViewerUser = $vacancyViewerUser;
+
+        return $this;
+    }
+
+
 }

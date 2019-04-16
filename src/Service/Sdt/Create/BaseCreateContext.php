@@ -17,7 +17,7 @@ class BaseCreateContext
     private $strategy;
 
     /**
-     * BaseCreateContext constructor.
+     * BaseCreateContextVacancy constructor.
      * @param BaseCreateStrategy $strategy
      */
     public function __construct(BaseCreateStrategy $strategy)
