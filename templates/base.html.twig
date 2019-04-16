@@ -57,10 +57,10 @@
                     {% if is_granted('ROLE_SDT_REQUEST') %}
                         <li class="list-group-item"><a href="{{ path('sdt_index') }}">SDT request</a></li>
                     {% endif %}
-                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
                         <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
                     {% endif %}
-                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER')  %}
                         <li class="list-group-item"><a href="#">Employees</a></li>
                     {% endif %}
                     {% if is_granted('ROLE_USER') %}

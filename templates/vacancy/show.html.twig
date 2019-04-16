@@ -15,10 +15,10 @@
 
 {% block body %}
     <h1>Vacancy</h1>
-    {% if is_granted('ROLE_HR', 'ROLE_VACANCY_VIEWER_USER') %}
+    {% if is_granted('ROLE_HR') and is_granted('ROLE_VACANCY_VIEWER_USER') %}
         {{ include('vacancy/recruiterForm.html.twig') }}
     {% endif %}
-    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER','ROLE_VACANCY_VIEWER_USER') %}
+    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') and is_granted('ROLE_VACANCY_VIEWER_USER') %}
         {{ include('vacancy/userForm.html.twig') }}
     {% endif %}
     <table class="table">

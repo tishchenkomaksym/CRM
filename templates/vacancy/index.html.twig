@@ -3,10 +3,10 @@
 {% block title %}Vacancy index{% endblock %}
 {% block menu %}
     <ul class="list-group list-group-flush">
-        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
             <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
         {% endif %}
-        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
             <li class="list-group-item"><a href="#">Candidate Database</a></li>
         {% endif %}
     </ul>
@@ -23,7 +23,7 @@
 {% block body %}
     <h1>Vacancy index</h1>
     <a href="{{ path('vacancy_new') }}">Create new</a>
-    <table class="table">
+    <table class="table" id="menu">
         <thead>
             <tr>
                 <th>Id</th>
@@ -34,7 +34,7 @@
             </tr>
         </thead>
         <tbody>
-        {% for vacancy in vacancies %}
+        {% for vacancy in vacancies|reverse  %}
             <tr>
                 <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.id }}</a></td>
                 <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.position }}</a></td>
