@@ -57,19 +57,19 @@ class VacancyType extends AbstractType
             ->add('test', ChoiceType::class, [
                     'placeholder' => 'Is there a test task?',
                     'choices' => [
-                        'Yes' => true,
-                        'No' => false,
+                        'Yes' => 'yes',
+                        'No' => 'no',
                     ],
                 ]
             )
             ->add('english', ChoiceType::class, [
                     'placeholder' => 'English',
                     'choices' => [
-                        'Elementary' => true,
-                        'Pre-intermediate' => true,
-                        'Intermediate' => true,
-                        'Upper-Intermediate' => true,
-                        'Advanced' => true,
+                        'Elementary' => 'Elementary',
+                        'Pre-intermediate' => 'Pre-intermediate',
+                        'Intermediate' => 'Intermediate',
+                        'Upper-Intermediate' => 'Upper-Intermediate',
+                        'Advanced' => 'Advanced',
                     ],
                 ]
             )
@@ -98,6 +98,7 @@ class VacancyType extends AbstractType
                     'attr' => ['placeholder' => 'Enter request reason']
                 ]
             );
+            
     }
 
 

@@ -91,6 +91,21 @@ class User implements UserInterface
      */
     private $phpDeveloperStartTimeAndDateValue;
 
+//    /**
+//     * @ORM\OneToMany(targetEntity="App\Entity\Vacancy", mappedBy="user")
+//     */
+//    private $vacancies;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Office", mappedBy="topManager")
+     */
+    private $offices;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Vacancy", mappedBy="createdBy")
+     */
+    private $vacancies;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
@@ -100,6 +115,8 @@ class User implements UserInterface
         $this->phpManagerDeveloperRelations = new ArrayCollection();
         $this->phpDeveloperRiseRequests = new ArrayCollection();
         $this->sdtArchives = new ArrayCollection();
+        $this->vacancies = new ArrayCollection();
+        $this->offices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -459,4 +476,36 @@ class User implements UserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection|Vacancy[]
+     */
+    public function getVacancies(): Collection
+    {
+        return $this->vacancies;
+    }
+
+    public function addVacancy(Vacancy $vacancy): self
+    {
+        if (!$this->vacancies->contains($vacancy)) {
+            $this->vacancies[] = $vacancy;
+            $vacancy->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVacancy(Vacancy $vacancy): self
+    {
+        if ($this->vacancies->contains($vacancy)) {
+            $this->vacancies->removeElement($vacancy);
+            // set the owning side to null (unless already changed)
+            if ($vacancy->getCreatedBy() === $this) {
+                $vacancy->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

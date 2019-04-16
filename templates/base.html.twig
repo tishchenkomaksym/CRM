@@ -31,17 +31,23 @@
 </head>
 <body>
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ path('default') }}">Nexteum</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Nexteum</a>
     <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap">
-            <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
-        </li>
+        {% if is_granted('ROLE_USER') == false %}
+            <li class="nav-item text-nowrap">
+                <a class="nav-link" href="{{ path('default') }}">Log in</a>
+            </li>
+            {% else %}
+                <li class="nav-item text-nowrap">
+                    <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
+                </li>
+        {% endif %}
     </ul>
 </nav>
 <div class="container" style="padding-top: 48px">
 
     <div class="row">
-
+{#        <a href="{{ path('action_approve') }}">we</a>#}
     </div>
     <div class="row">
         <div class="col-2">
@@ -51,10 +57,10 @@
                     {% if is_granted('ROLE_SDT_REQUEST') %}
                         <li class="list-group-item"><a href="{{ path('sdt_index') }}">SDT request</a></li>
                     {% endif %}
-                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
                         <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
                     {% endif %}
-                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') %}
+                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER')  %}
                         <li class="list-group-item"><a href="#">Employees</a></li>
                     {% endif %}
                     {% if is_granted('ROLE_USER') %}
