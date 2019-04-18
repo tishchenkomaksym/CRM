@@ -16,17 +16,17 @@ class UserType extends AbstractType
             ->add(
                 'email',
                 TextType::class
-            )->add(
+            )
+            ->add(
                 'name',
                 TextType::class
+            )->add(
+                'createDate'
             )
             ->add(
                 'name',
                 TextType::class
             );
-//            ->add('roles');
-//            ->add('password');
-//            ->add('phpDeveloperLevelRelation');
     }
 
     public function configureOptions(OptionsResolver $resolver)
