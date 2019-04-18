@@ -26,19 +26,29 @@
     <table class="table" id="menu">
         <thead>
             <tr>
-                <th>Id</th>
+                <th>Request#</th>
+{#                <th>Team</th>#}
                 <th>Position</th>
                 <th>Amount</th>
+{#                <th>Assignee</th>#}
+                <th>Approve date</th>
                 <th>Status</th>
-                <th>Created date</th>
             </tr>
         </thead>
         <tbody>
-        {% for vacancy in vacancies|reverse  %}
+        {% for vacancy in vacancies %}
+{#            {% if vacancy.isApproved == false %}#}
+{#            {% else %}#}
             <tr>
                 <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.id }}</a></td>
+{#                <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.team.name }}</a></td>#}
                 <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.position }}</a></td>
                 <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.amount }}</a></td>
+{#                <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{% if vacancy.assignee is null %}#}
+{#                            <span>no assignee</span>#}
+{#                        {% else %}#}
+{#                            <span>{{ vacancy.assignee }}</span>#}
+{#                        {% endif %}</a></td>#}
                 <td>
                     <a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">
                     {% if vacancy.isApproved == false and vacancy.isApproved is not null %}
@@ -51,9 +61,14 @@
                     </a>
                 </td>
                 <td>
-                    {{ vacancy.createdAt|date('Y-m-d')}}
+                    <a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.approveDate|date('Y-m-d')}}</a>
+                    {% if date(vacancy.approveDate|date('Y-m-d')) < date('+1days') %}
+                    {% else %}
+                        <span>expired in status</span>
+                    {% endif %}
                 </td>
             </tr>
+{#            {% endif %}#}
         {% else %}
             <tr>
                 <td colspan="12">no records found</td>

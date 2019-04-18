@@ -5,10 +5,7 @@ namespace App\Form;
 use App\Entity\Department;
 use App\Entity\Office;
 use App\Entity\Team;
-use App\Entity\User;
 use App\Entity\Vacancy;
-use Doctrine\DBAL\Types\DateType;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -100,19 +97,7 @@ class VacancyType extends AbstractType
             ->add('reason', null, [
                     'attr' => ['placeholder' => 'Enter request reason']
                 ]
-            )
-            ->add('createdAt');
-
-//            ->add('assignee', EntityType::class, [
-//                'class' => User::class,
-//                'placeholder' => 'Select Recruiter',
-//                'query_builder' => static function (EntityRepository $er) {
-//                    return $er->createQueryBuilder('u')
-//                        ->where('recrutier@onyx.com');
-//                },
-//                'choice_label' => 'name',
-//            ]
-//        );
+            );
     }
 
 

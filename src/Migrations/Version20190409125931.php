@@ -49,12 +49,12 @@ VALUES (101, \'topManager1@onyx.com\', \'[
         \'2019-04-05 10:59:26\')');
 
         $this->addSql('UPDATE office SET top_manager_id = 101 where id = 1');
-        $this->addSql('UPDATE office SET top_manager_id = 101 where id = 1');
-        $this->addSql('UPDATE office SET top_manager_id = 102 where id = 1');
-        $this->addSql('UPDATE office SET top_manager_id = 103 where id = 1');
-        $this->addSql('UPDATE office SET top_manager_id = 101 where id = 1');
-        $this->addSql('UPDATE office SET top_manager_id = 101 where id = 1');
-        $this->addSql('UPDATE office SET top_manager_id = 101 where name = Dormashina (Nikolaev, Ukraine)');
+        $this->addSql('UPDATE office SET top_manager_id = 101 where id = 2');
+        $this->addSql('UPDATE office SET top_manager_id = 102 where id = 3');
+        $this->addSql('UPDATE office SET top_manager_id = 103 where id = 4');
+        $this->addSql('UPDATE office SET top_manager_id = 101 where id = 5');
+        $this->addSql('UPDATE office SET top_manager_id = 101 where id = 6');
+        $this->addSql('UPDATE office SET top_manager_id = 101 where id = 7');
 
     }
 
