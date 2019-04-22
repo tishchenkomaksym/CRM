@@ -19,7 +19,22 @@ class EditSdtMailData extends BaseSdtMailData
      * @var int
      */
     private $daysCount;
+    /**
+     * @var bool
+     */
+    private $atOwnExpense;
 
+    /**
+     * EditSdtMailData constructor.
+     * @param $userName
+     * @param string $oldFromDate
+     * @param string $oldToDate
+     * @param string $newFromDate
+     * @param string $newToDate
+     * @param string $actingPeople
+     * @param int $daysCount
+     * @param bool $atOwnExpense
+     */
     public function __construct(
         $userName,
         string $oldFromDate,
@@ -27,8 +42,10 @@ class EditSdtMailData extends BaseSdtMailData
         string $newFromDate,
         string $newToDate,
         string $actingPeople,
-        int $daysCount
-    ) {
+        int $daysCount,
+        bool $atOwnExpense
+    )
+    {
         parent::__construct($userName);
         $this->oldFromDate = $oldFromDate;
         $this->oldToDate = $oldToDate;
@@ -36,6 +53,7 @@ class EditSdtMailData extends BaseSdtMailData
         $this->newToDate = $newToDate;
         $this->actingPeople = $actingPeople;
         $this->daysCount = $daysCount;
+        $this->atOwnExpense = $atOwnExpense;
     }
 
     /**
@@ -132,5 +150,13 @@ class EditSdtMailData extends BaseSdtMailData
     public function setDaysCount(int $daysCount): void
     {
         $this->daysCount = $daysCount;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAtOwnExpense(): bool
+    {
+        return $this->atOwnExpense;
     }
 }
