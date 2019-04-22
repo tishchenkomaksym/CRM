@@ -98,6 +98,7 @@ class VacancyType extends AbstractType
                     'attr' => ['placeholder' => 'Enter request reason']
                 ]
             );
+            
     }
 
 
