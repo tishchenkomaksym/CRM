@@ -22,9 +22,8 @@ class VacancyListEntryDTO
 
     public $assigneeDate;
 
-    public $expiredTimeAssignee;
+    public $expiredTime;
 
     public $createdAt;
 
-    public $expiredTimeNoAssignee;
 }
