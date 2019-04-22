@@ -8,12 +8,15 @@ use App\Repository\SalaryReportInfoRepository;
 use App\Repository\UserRepository;
 use App\Service\SalaryReport\Builder\BaseSalaryReportBuilder;
 use App\Service\SalaryReport\SalaryReportDTO;
+use Exception;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * @IsGranted("ROLE_VIEW_SALARY_REPORT")
  * @Route("/salary/report/info")
  */
 class SalaryReportInfoController extends AbstractController
@@ -64,7 +67,7 @@ class SalaryReportInfoController extends AbstractController
      * @param BaseSalaryReportBuilder $baseSalaryReportBuilder
      * @param UserRepository $userRepository
      * @return Response
-     * @throws \Exception
+     * @throws Exception
      */
     public function show(SalaryReportInfo $salaryReportInfo, BaseSalaryReportBuilder $baseSalaryReportBuilder, UserRepository $userRepository): Response
     {
