@@ -14,7 +14,7 @@ use App\Repository\VacancyRepository;
 use App\Service\Vacancy\CreateForHrManager\NewVacancyMessageBuilderForHrManager;
 use App\Service\Vacancy\CreateForManager\NewVacancyMessageBuilderForManager;
 use App\Service\Vacancy\CreateVacancy\NewVacancyMessageBuilder;
-use DateTimeImmutable;
+use App\Service\Vacancy\Display\ListEntry\VacancyListEntryDTOBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,9 +22,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 /**
   * @IsGranted("ROLE_VACANCY_VIEWER_USER")
@@ -46,11 +43,17 @@ class VacancyController extends AbstractController
 
     /**
      * @Route("/", name="vacancy_index", methods={"GET"})
+     * @throws \App\Data\Sdt\Mail\Adapter\NoDateException
      */
-    public function index(VacancyRepository $vacancyRepository): Response
+    public function index(VacancyRepository $vacancyRepository, VacancyListEntryDTOBuilder $builder): Response
     {
+        $vacancies = [];
+        foreach ($vacancyRepository->findAll() as $vacancy){
+            $vacancies[] = $builder->build($vacancy);
+        }
+
         return $this->render('vacancy/index.html.twig', [
-            'vacancies' => $vacancyRepository->findAll(),
+            'vacancies' => $vacancies
         ]);
     }
 
@@ -63,10 +66,8 @@ class VacancyController extends AbstractController
     {
         $entityManager = $this->getDoctrine()->getManager();
         $vacancy->setIsApproved(true);
-
         $vacancy->setApproveDate(new \DateTimeImmutable($time = 'now'));
         $entityManager->persist($vacancy);
-        $entityManager->flush();
 
         $messageBuilder = new NewVacancyMessageBuilderForManager(
             $vacancy, $this->environment
@@ -75,7 +76,7 @@ class VacancyController extends AbstractController
         $messageBuilderHr = new NewVacancyMessageBuilderForHrManager(
             $userRepository, $vacancy, $this->environment
         );
-        
+        $entityManager->flush();
         $mailer->send($messageBuilder->build());
         $mailer->send($messageBuilderHr->build());
 
@@ -89,7 +90,6 @@ class VacancyController extends AbstractController
      */
     public function deny(Vacancy $vacancy, Request $request): Response
     {
-
         $form = $this->createForm(VacancyTypeDenied::class, $vacancy);
         $form->handleRequest($request);
 
@@ -105,6 +105,7 @@ class VacancyController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
 
     /**
      * @Route("/result", name="vacancy_result", methods={"GET"})
@@ -169,6 +170,7 @@ class VacancyController extends AbstractController
      * @param Vacancy $vacancy
      * @param Request $request
      * @return Response
+     * @throws \Exception
      */
     public function show(Vacancy $vacancy, Request $request): Response
     {
@@ -188,6 +190,7 @@ class VacancyController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $vacancy->setAssigneeDate(new \DateTimeImmutable($time = 'now'));
             $entityManager->persist($vacancy);
             $entityManager->flush();
         }
@@ -224,11 +227,7 @@ class VacancyController extends AbstractController
      * @Route("/{id}", name="vacancy_delete", methods={"DELETE"})
      * @param Request $request
      * @param Vacancy $vacancy
-     * @param Swift_Mailer $mailer
      * @return Response
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
      */
     public function delete(Request $request, Vacancy $vacancy): Response
     {

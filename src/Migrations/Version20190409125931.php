@@ -27,26 +27,26 @@ final class Version20190409125931 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_74516B025F43BEF1 ON office (top_manager_id)');
 
         $this->addSql('INSERT INTO user (id, email, roles, password, name, create_date)
-        VALUES (101, \'topManager1@onyx.com\', \'[
-          "ROLE_USER",
-          "ROLE_TOP_MANAGER"
-        ]\', \'$argon2i$v=19$m=1024,t=2,p=2$cWRKeFZ6LmdWVVpudEZSWQ$f6vptC22HNlOrQW7dJ1AdKmfZAW2Q0pNBGlhWNkULFk\', \'\',
-                \'2019-04-05 10:38:20\'),
-                (102, \'topManager2@onyx.com\', \'[
-          "ROLE_USER",
-          "ROLE_TOP_MANAGER"
-        ]\', \'$argon2i$v=19$m=1024,t=2,p=2$cWRKeFZ6LmdWVVpudEZSWQ$f6vptC22HNlOrQW7dJ1AdKmfZAW2Q0pNBGlhWNkULFk\', \'\',
-                \'2019-04-05 10:40:26\'),
-                (103, \'topManager3@onyx.com\', \'[
-          "ROLE_USER",
-          "ROLE_TOP_MANAGER"
-        ]\', \'$argon2i$v=19$m=1024,t=2,p=2$cWRKeFZ6LmdWVVpudEZSWQ$f6vptC22HNlOrQW7dJ1AdKmfZAW2Q0pNBGlhWNkULFk\', \'\',
-                \'2019-04-05 10:41:26\'),
-                (104, \'topManager4@onyx.com\', \'[
-          "ROLE_USER",
-          "ROLE_TOP_MANAGER"
-        ]\', \'$argon2i$v=19$m=1024,t=2,p=2$cWRKeFZ6LmdWVVpudEZSWQ$f6vptC22HNlOrQW7dJ1AdKmfZAW2Q0pNBGlhWNkULFk\', \'\',
-                \'2019-04-05 10:59:26\')');
+VALUES (101, \'topManager1@onyx.com\', \'[
+  "ROLE_USER",
+  "ROLE_TOP_MANAGER"
+]\', \'$argon2i$v=19$m=1024,t=2,p=2$cWRKeFZ6LmdWVVpudEZSWQ$f6vptC22HNlOrQW7dJ1AdKmfZAW2Q0pNBGlhWNkULFk\', \'\',
+        \'2019-04-05 10:38:20\'),
+        (102, \'topManager2@onyx.com\', \'[
+  "ROLE_USER",
+  "ROLE_TOP_MANAGER"
+]\', \'$argon2i$v=19$m=1024,t=2,p=2$cWRKeFZ6LmdWVVpudEZSWQ$f6vptC22HNlOrQW7dJ1AdKmfZAW2Q0pNBGlhWNkULFk\', \'\',
+        \'2019-04-05 10:40:26\'),
+        (103, \'topManager3@onyx.com\', \'[
+  "ROLE_USER",
+  "ROLE_TOP_MANAGER"
+]\', \'$argon2i$v=19$m=1024,t=2,p=2$cWRKeFZ6LmdWVVpudEZSWQ$f6vptC22HNlOrQW7dJ1AdKmfZAW2Q0pNBGlhWNkULFk\', \'\',
+        \'2019-04-05 10:41:26\'),
+        (104, \'topManager4@onyx.com\', \'[
+  "ROLE_USER",
+  "ROLE_TOP_MANAGER"
+]\', \'$argon2i$v=19$m=1024,t=2,p=2$cWRKeFZ6LmdWVVpudEZSWQ$f6vptC22HNlOrQW7dJ1AdKmfZAW2Q0pNBGlhWNkULFk\', \'\',
+        \'2019-04-05 10:59:26\')');
 
         $this->addSql('UPDATE office SET top_manager_id = 101 where id = 1');
         $this->addSql('UPDATE office SET top_manager_id = 101 where id = 2');
@@ -55,6 +55,7 @@ final class Version20190409125931 extends AbstractMigration
         $this->addSql('UPDATE office SET top_manager_id = 101 where id = 5');
         $this->addSql('UPDATE office SET top_manager_id = 101 where id = 6');
         $this->addSql('UPDATE office SET top_manager_id = 101 where id = 7');
+
     }
 
     public function down(Schema $schema) : void
