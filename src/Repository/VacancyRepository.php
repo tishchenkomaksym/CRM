@@ -9,8 +9,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 /**
  * @method Vacancy|null find($id, $lockMode = null, $lockVersion = null)
  * @method Vacancy|null findOneBy(array $criteria, array $orderBy = null)
- * @method Vacancy[]    findAll()
- * @method Vacancy[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Vacancy[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)*@method getTeam()
  */
 class VacancyRepository extends ServiceEntityRepository
 {
@@ -19,9 +18,9 @@ class VacancyRepository extends ServiceEntityRepository
         parent::__construct($registry, Vacancy::class);
     }
 
-    // /**
-    //  * @return Vacancy[] Returns an array of Vacancy objects
-    //  */
+    /**
+     * @return Vacancy[] Returns an array of Vacancy objects
+     */
     /*
     public function findByExampleField($value)
     {
@@ -47,4 +46,9 @@ class VacancyRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findAll()
+    {
+        return $this->findBy(array(), array('approveDate' => 'DESC'));
+    }
 }

@@ -40,6 +40,26 @@ class HolidayService
         return $holidayArray;
     }
 
+    public function getHolidayBetweenDateNumbers(\DateTime $from, \DateTime $to): array
+    {
+
+        $calculationDate1 = clone $from;
+        $calculationDate1->setTime(00,00,00);
+
+
+        $calculationDate2 = clone $to;
+        $calculationDate2->setTime(00,00,00);
+
+        $holidayArray = [];
+        foreach ($this->holidays as $holiday) {
+            $date = $holiday->getDate();
+            if ($date >= $calculationDate1 && $date <= $calculationDate2) {
+                $holidayArray[] = $holiday;
+            }
+        }
+        return $holidayArray;
+    }
+
     /**
      * @return \App\Entity\Holiday[]
      */

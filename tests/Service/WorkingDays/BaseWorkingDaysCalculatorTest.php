@@ -12,6 +12,7 @@ use App\Entity\Holiday;
 use App\Service\HolidayService;
 use DateTime;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\Constraints\Date;
 
 class BaseWorkingDaysCalculatorTest extends TestCase
 {
@@ -73,5 +74,14 @@ class BaseWorkingDaysCalculatorTest extends TestCase
         $toDate->setDate(2019, 01, $end);
         $result = $this->calculator->getWorkingHoursBetweenDates($from, $toDate);
         $this->assertEquals(7.5, $result);
+    }
+
+
+    public function testWorkDaysBetweenDatesNumbers()
+    {
+        $date = new DateTime('2019-04-13');
+        $date2 = new DateTime('2019-04-14');
+        $result = $this->calculator->workDaysBetweenDatesNumbers($date, $date2);
+        $this->assertEquals(0, $result);
     }
 }
