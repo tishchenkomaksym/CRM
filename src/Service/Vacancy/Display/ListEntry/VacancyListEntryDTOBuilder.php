@@ -6,9 +6,10 @@ namespace App\Service\Vacancy\Display\ListEntry;
 
 use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\Vacancy;
-use App\Repository\VacancyRepository;
 use App\Service\WorkingDays\BaseWorkingDaysCalculator;
 use DateTime;
+use DateTimeImmutable;
+use Exception;
 
 class VacancyListEntryDTOBuilder
 {
@@ -17,8 +18,6 @@ class VacancyListEntryDTOBuilder
      * @var BaseWorkingDaysCalculator
      */
     private $hoursInformation;
-    private $lastDateHours;
-    private $lastSettingHour;
 
     public function __construct(BaseWorkingDaysCalculator $hoursInformation)
     {
@@ -27,12 +26,11 @@ class VacancyListEntryDTOBuilder
     }
 
     /**
-     * @param VacancyRepository $vacancy
+     * @param Vacancy $vacancy
      * @return VacancyListEntryDTO
      * @throws NoDateException
-     * @throws \Exception
+     * @throws Exception
      */
-
     public function build(Vacancy $vacancy): VacancyListEntryDTO
     {
         $object = new VacancyListEntryDTO();
@@ -48,129 +46,67 @@ class VacancyListEntryDTOBuilder
         $object->assignee = $vacancy->getAssignee();
         $object->isApproved = $vacancy->getIsApproved();
         $object->createdAt = $vacancy->getCreatedAt();
-        $object->expiredTimeNoAssignee = $this->getExpiredTimeNoAssignee($vacancy, new DateTime());
+
         if ($vacancy->getAssigneeDate() != null) {
-            $object->expiredTimeAssignee = $this->getExpiredTimeAssignee($vacancy, new DateTime());
+            $object->expiredTime = $this->getExpiredTime($vacancy->getApproveDate(), new DateTime());
+        } else {
+            $object->expiredTime = $this->getExpiredTime($vacancy->getAssigneeDate(), new DateTime());
         }
 
         return $object;
     }
 
     /**
-     * @param Vacancy $vacancy
+     * @param DateTimeImmutable $date
      * @param DateTime $dateNow
      * @return float
-     * @throws NoDateException
+     * @throws Exception
      */
-
-    public function getExpiredTimeAssignee(Vacancy $vacancy, DateTime $dateNow): float
+    public function getExpiredTime(DateTimeImmutable $date, DateTime $dateNow): float
     {
 
-        if ($vacancy->getAssigneeDate() === null) {
-            throw new NoDateException('No time  assignee of vacancy');
-
-        }
-
-        $approve = new \DateTime("@{$vacancy->getAssigneeDate()->getTimeStamp()}");
+        $approve = new DateTime("@{$date->getTimeStamp()}");
 
         $quantityDays = $this->hoursInformation->getWorkingDaysBetweenDatesNumbers($approve, $dateNow);
-        $approveHours = $vacancy->getAssigneeDate()->format('H');
         $allDaysCount = $dateNow->diff($approve)->d + 1;
 
-        $dateHours = $dateNow->format('H');
-
-        if ($approveHours <= 18 && $approveHours >= 9){
-            $this->lastSettingHour = $approveHours - 9.5;
-        }
-
-        if ($dateHours <= 18 && $dateHours >= 9){
-            $this->lastDateHours = 18 - $dateHours;
-        }
+        $lastSettingHour = $this->getLastSettingHour($date->format('H'));
+        $lastDateHours = $this->getLastDateHour($dateNow->format('H'));
 
 
         if ($quantityDays === 0) {
-            return 0;
-        }
-
-        if ($allDaysCount !== $quantityDays && $this->hoursInformation->getWorkingDaysBetweenDatesNumbers($approve, $dateNow) === 1)  {
-
-            if ($this->hoursInformation->getWorkingDaysBetweenDatesNumbers($approve, $approve) === 0) {
-
-                return 8.5 - $this->lastDateHours;
-
+            $returnValue = 0;
+        } else if ($quantityDays === 1) {
+            if ($allDaysCount !== $quantityDays) {
+                if ($this->hoursInformation->getWorkingDaysBetweenDatesNumbers($approve, $approve) === 0) {
+                    $returnValue = 8.5 - $lastDateHours;
+                } else {
+                    $returnValue = 8.5 - $lastSettingHour;
+                }
+            } else {
+                $returnValue = 8.5 - $lastSettingHour - $lastDateHours;
             }
-
-
-            return 8.5 - $this->lastSettingHour;
-
-         }
-
-        if ($this->hoursInformation->getWorkingDaysBetweenDatesNumbers($approve, $dateNow) === 1){
-
-            return 8.5 - $this->lastSettingHour - $this->lastDateHours;
+        } else {
+            $returnValue = $quantityDays * 8.5 - $lastSettingHour - $lastDateHours;
         }
-
-
-        return $quantityDays * 8.5 - $this->lastSettingHour - $this->lastDateHours;
-
+        return $returnValue;
     }
 
-    /**
-     * @param Vacancy $vacancy
-     * @param DateTime $dateNow
-     * @return float
-     * @throws NoDateException
-     */
-    public function getExpiredTimeNoAssignee(Vacancy $vacancy, DateTime $dateNow): float
+    private function getLastSettingHour($approveHours): float
     {
-
-        if ($vacancy->getCreatedAt() === null) {
-            throw new NoDateException('No date created of vacancy');
-
+        $returnValue = 0;
+        if ($approveHours <= 18 && $approveHours >= 9) {
+            $returnValue = $approveHours - 9.5;
         }
-
-        $create = new \DateTime("@{$vacancy->getCreatedAt()->getTimeStamp()}");
-
-        $quantityDays = $this->hoursInformation->getWorkingDaysBetweenDatesNumbers($create, $dateNow);
-        $createHours = $vacancy->getCreatedAt()->format('H');
-        $allDaysCount = $dateNow->diff($create)->d + 1;
-
-        $dateHours = $dateNow->format('H');
-
-        if ($createHours <= 18 && $createHours >= 9){
-            $this->lastSettingHour = $createHours - 9.5;
-        }
-
-        if ($dateHours <= 18 && $dateHours >= 9){
-            $this->lastDateHours = 18 - $dateHours;
-        }
-
-
-        if ($quantityDays === 0) {
-            return 0;
-        }
-
-        if ($allDaysCount !== $quantityDays && $this->hoursInformation->getWorkingDaysBetweenDatesNumbers($create, $dateNow) === 1)  {
-
-            if ($this->hoursInformation->getWorkingDaysBetweenDatesNumbers($create, $create) === 0) {
-
-                return 8.5 - $this->lastDateHours;
-
-            }
-
-
-            return 8.5 - $this->lastSettingHour;
-
-        }
-
-        if ($this->hoursInformation->getWorkingDaysBetweenDatesNumbers($create, $dateNow) === 1){
-
-            return 8.5 - $this->lastSettingHour - $this->lastDateHours;
-        }
-
-
-        return $quantityDays * 8.5 - $this->lastSettingHour - $this->lastDateHours;
-
+        return $returnValue;
     }
 
+    private function getLastDateHour($dateHours): float
+    {
+        $returnValue = 0;
+        if ($dateHours <= 18 && $dateHours >= 9) {
+            $returnValue = 18 - $dateHours;
+        }
+        return $returnValue;
+    }
 }

@@ -4,15 +4,14 @@
 namespace App\Service\Vacancy\CreateForManager;
 
 
+use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\Vacancy;
 use App\Service\Sdt\MessageBuilderInterface;
-use RuntimeException;
 use Swift_Message;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
-
 
 
 class NewVacancyMessageBuilderForManager implements MessageBuilderInterface
@@ -29,13 +28,13 @@ class NewVacancyMessageBuilderForManager implements MessageBuilderInterface
     }
 
     /**
-     * @return Swift_Message
+     * @return string
      * @throws LoaderError
+     * @throws NoDateException
      * @throws RuntimeError
      * @throws SyntaxError
-     * @throws \Exception
      */
-    public function build()
+    public function build():string
     {
 
         if (
@@ -43,7 +42,7 @@ class NewVacancyMessageBuilderForManager implements MessageBuilderInterface
             $this->vacancy->getCreatedBy() === null ||
             $this->vacancy->getCreatedBy()->getEmail() === null
         ) {
-            throw new RuntimeException('Wrong configuration of top manager');
+            throw new NoDateException('Wrong configuration of top manager');
 
         }
         $email = $this->vacancy->getCreatedBy()->getEmail();
