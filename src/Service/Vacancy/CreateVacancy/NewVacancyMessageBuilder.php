@@ -31,13 +31,13 @@ class NewVacancyMessageBuilder implements MessageBuilderInterface
     }
 
     /**
-     * @return string
+     * @return Swift_Message
      * @throws LoaderError
      * @throws NoDateException
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function build():string
+    public function build(): Swift_Message
     {
         $office = $this->vacancy->getOffice();
         if (
@@ -49,7 +49,8 @@ class NewVacancyMessageBuilder implements MessageBuilderInterface
 
         }
         $email = $office->getTopManager()->getEmail();
-        return (new Swift_Message('Hiring request approval'))
+        $object = new Swift_Message('Hiring request approval');
+        $object
             ->setFrom(getenv('LOCAL_EMAIL'))
             ->setTo($email)
             ->setBody(
@@ -61,5 +62,6 @@ class NewVacancyMessageBuilder implements MessageBuilderInterface
                 ),
                 'text/html'
             );
+        return $object;
     }
 }

@@ -47,9 +47,9 @@ class VacancyListEntryDTOBuilder
         $object->isApproved = $vacancy->getIsApproved();
         $object->createdAt = $vacancy->getCreatedAt();
 
-        if ($vacancy->getAssigneeDate() != null) {
+        if ($vacancy->getApproveDate() != null) {
             $object->expiredTime = $this->getExpiredTime($vacancy->getApproveDate(), new DateTime());
-        } else {
+        } elseif ($vacancy->getAssigneeDate() != null){
             $object->expiredTime = $this->getExpiredTime($vacancy->getAssigneeDate(), new DateTime());
         }
 
