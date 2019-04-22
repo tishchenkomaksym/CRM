@@ -108,57 +108,6 @@ class VacancyController extends AbstractController
 
 
     /**
-     * @Route("/approve/{id}", name="approved", methods={"GET"})
-     * @throws \Exception
-     */
-    public function approve(UserRepository $userRepository, Vacancy $vacancy, Swift_Mailer $mailer): Response
-    {
-        $entityManager = $this->getDoctrine()->getManager();
-        $vacancy->setIsApproved(true);
-
-        $vacancy->setApproveDate(new \DateTimeImmutable($time = 'now'));
-        $entityManager->persist($vacancy);
-        $entityManager->flush();
-
-        $messageBuilder = new NewVacancyMessageBuilderForManager(
-            $vacancy, $this->environment
-        );
-
-        $messageBuilderHr = new NewVacancyMessageBuilderForHrManager(
-            $userRepository, $vacancy, $this->environment
-        );
-
-        $mailer->send($messageBuilder->build());
-        $mailer->send($messageBuilderHr->build());
-
-        return $this->render('vacancy/approved.html.twig', [
-            'vacancy' => $vacancy
-        ]);
-    }
-
-    /**
-     * @Route("/deny/{id}", name="denied", methods={"GET","POST"})
-     */
-    public function deny(Vacancy $vacancy, Request $request): Response
-    {
-
-        $form = $this->createForm(VacancyTypeDenied::class, $vacancy);
-        $form->handleRequest($request);
-
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $vacancy->setIsApproved(false);
-            $this->getDoctrine()->getManager()->flush();
-            return $this->redirectToRoute('vacancy_denied', [
-                'id' => $vacancy->getId(),
-            ]);
-        }
-        return $this->render('vacancy/denied.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    /**
      * @Route("/result", name="vacancy_result", methods={"GET"})
      */
     public function result()
