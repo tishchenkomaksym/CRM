@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Entity\Vacancy;
 use App\Entity\VacancyViewerUser;
 use App\Form\RecruiterType;
@@ -15,6 +14,7 @@ use App\Service\Vacancy\CreateForHrManager\NewVacancyMessageBuilderForHrManager;
 use App\Service\Vacancy\CreateForManager\NewVacancyMessageBuilderForManager;
 use App\Service\Vacancy\CreateVacancy\NewVacancyMessageBuilder;
 use App\Service\Vacancy\Display\ListEntry\VacancyListEntryDTOBuilder;
+use DateTimeImmutable;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,6 +35,8 @@ class VacancyController extends AbstractController
      * @var Environment
      */
     private $environment;
+
+    public const VACANCY_ENTITY_IN_VIEW='vacancy';
 
     public function __construct(Environment $environment)
     {
@@ -66,7 +68,7 @@ class VacancyController extends AbstractController
     {
         $entityManager = $this->getDoctrine()->getManager();
         $vacancy->setIsApproved(true);
-        $vacancy->setApproveDate(new \DateTimeImmutable($time = 'now'));
+        $vacancy->setApproveDate(new DateTimeImmutable('now'));
         $entityManager->persist($vacancy);
 
         $messageBuilder = new NewVacancyMessageBuilderForManager(
@@ -81,7 +83,7 @@ class VacancyController extends AbstractController
         $mailer->send($messageBuilderHr->build());
 
         return $this->render('vacancy/approved.html.twig', [
-            'vacancy' => $vacancy
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy
         ]);
     }
 
@@ -107,56 +109,6 @@ class VacancyController extends AbstractController
     }
 
 
-    /**
-     * @Route("/approve/{id}", name="approved", methods={"GET"})
-     * @throws \Exception
-     */
-    public function approve(UserRepository $userRepository, Vacancy $vacancy, Swift_Mailer $mailer): Response
-    {
-        $entityManager = $this->getDoctrine()->getManager();
-        $vacancy->setIsApproved(true);
-
-        $vacancy->setApproveDate(new \DateTimeImmutable($time = 'now'));
-        $entityManager->persist($vacancy);
-        $entityManager->flush();
-
-        $messageBuilder = new NewVacancyMessageBuilderForManager(
-            $vacancy, $this->environment
-        );
-
-        $messageBuilderHr = new NewVacancyMessageBuilderForHrManager(
-            $userRepository, $vacancy, $this->environment
-        );
-
-        $mailer->send($messageBuilder->build());
-        $mailer->send($messageBuilderHr->build());
-
-        return $this->render('vacancy/approved.html.twig', [
-            'vacancy' => $vacancy
-        ]);
-    }
-
-    /**
-     * @Route("/deny/{id}", name="denied", methods={"GET","POST"})
-     */
-    public function deny(Vacancy $vacancy, Request $request): Response
-    {
-
-        $form = $this->createForm(VacancyTypeDenied::class, $vacancy);
-        $form->handleRequest($request);
-
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $vacancy->setIsApproved(false);
-            $this->getDoctrine()->getManager()->flush();
-            return $this->redirectToRoute('vacancy_denied', [
-                'id' => $vacancy->getId(),
-            ]);
-        }
-        return $this->render('vacancy/denied.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
 
     /**
      * @Route("/result", name="vacancy_result", methods={"GET"})
@@ -180,7 +132,7 @@ class VacancyController extends AbstractController
         $mailer->send($messageBuilder->build());
 
         return $this->render('vacancy/deniedResult.html.twig', [
-            'vacancy' => $vacancy
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy
         ]);
     }
 
@@ -197,7 +149,7 @@ class VacancyController extends AbstractController
         $vacancy->setCreatedBy($this->getUser());
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
-            $vacancy->setCreatedAt(new \DateTimeImmutable($time = 'now'));
+            $vacancy->setCreatedAt(new DateTimeImmutable('now'));
             $entityManager->persist($vacancy);
             $entityManager->flush();
 
@@ -211,7 +163,7 @@ class VacancyController extends AbstractController
 
 
         return $this->render('vacancy/new.html.twig', [
-            'vacancy' => $vacancy,
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView(),
         ]);
     }
@@ -241,12 +193,12 @@ class VacancyController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
-            $vacancy->setAssigneeDate(new \DateTimeImmutable($time = 'now'));
+            $vacancy->setAssigneeDate(new DateTimeImmutable( 'now'));
             $entityManager->persist($vacancy);
             $entityManager->flush();
         }
         return $this->render('vacancy/show.html.twig', [
-            'vacancy' => $vacancy,
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView(),
             'formUser' => $formUser->createView()
         ]);
@@ -269,7 +221,7 @@ class VacancyController extends AbstractController
         }
 
         return $this->render('vacancy/edit.html.twig', [
-            'vacancy' => $vacancy,
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView(),
         ]);
     }
