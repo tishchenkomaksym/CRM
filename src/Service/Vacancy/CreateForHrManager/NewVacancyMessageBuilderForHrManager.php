@@ -4,7 +4,7 @@
 namespace App\Service\Vacancy\CreateForHrManager;
 
 
-use App\Entity\User;
+use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\Vacancy;
 use App\Repository\UserRepository;
 use Swift_Message;
@@ -19,7 +19,6 @@ class NewVacancyMessageBuilderForHrManager
 
     private $vacancy;
 
-    private $user;
     /**
      * @var UserRepository
      */
@@ -36,31 +35,36 @@ class NewVacancyMessageBuilderForHrManager
     /**
      * @return Swift_Message
      * @throws LoaderError
+     * @throws NoDateException
      * @throws RuntimeError
      * @throws SyntaxError
-     * @throws \Exception
      */
-    public function build()
+    public function build():string
     {
         $users = $this->userRepository->findAll();
 
         foreach($users as $user){
-            if(in_array('ROLE_HR', $user->getRoles())) {
+            if(in_array('ROLE_HR', $user->getRoles(),true)) {
                 $emails[] = $user->getEmail();
             }
         }
 
-        return (new Swift_Message('Hiring request denied'))
-            ->setFrom(getenv('LOCAL_EMAIL'))
-            ->setTo($emails)
-            ->setBody(
-                $this->templating->render(
-                    'emails/vacancy/newVacancyForHrManager.twig',
-                    [
-                        'vacancy' => $this->vacancy,
-                    ]
-                ),
-                'text/html'
-            );
+        if (isset($emails)){
+            $result = (new Swift_Message('Hiring request denied'))
+                ->setFrom(getenv('LOCAL_EMAIL'))
+                ->setTo($emails)
+                ->setBody(
+                    $this->templating->render(
+                        'emails/vacancy/newVacancyForHrManager.twig',
+                        [
+                            'vacancy' => $this->vacancy,
+                        ]
+                    ),
+                    'text/html'
+                );
+        }else {
+            throw new NoDateException('Wrong configuration');
+        }
+        return $result;
     }
 }
