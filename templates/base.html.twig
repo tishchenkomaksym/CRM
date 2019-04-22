@@ -75,6 +75,9 @@
                     {% if is_granted('ROLE_MANAGE_HOLIDAYS') %}
                         <li class="list-group-item"><a href="{{ path('holiday_index') }}">Holidays</a></li>
                     {% endif %}
+                    {% if is_granted('ROLE_VIEW_SALARY_REPORT') %}
+                        <li class="list-group-item"><a href="{{ path('salary_report_info_index') }}">Salary report</a></li>
+                    {% endif %}
                     {% if is_granted('ROLE_USER') %}
                     <li class="list-group-item"><a href="{{ path('monthly_sdt_index') }}">SDT monthly</a>
                         {% endif %}

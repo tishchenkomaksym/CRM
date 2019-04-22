@@ -108,8 +108,6 @@ class VacancyController extends AbstractController
         ]);
     }
 
-
-
     /**
      * @Route("/result", name="vacancy_result", methods={"GET"})
      */
