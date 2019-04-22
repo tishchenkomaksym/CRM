@@ -63,9 +63,9 @@
                                 <span>Waiting for approval</span>
                             {% endif %}
                             <span>
-                                {% if vacancy.expiredTimeAssignee >= 17 %}
+                                {% if vacancy.expiredTime >= 17 %}
                                     <span>Expired in Status</span>
-                             {% elseif vacancy.expiredTimeAssignee >= 5 %}
+                             {% elseif vacancy.expiredTime >= 5 %}
                                     <span>Soon to expire</span>
                                 {% endif %}
                         </span>
@@ -73,9 +73,9 @@
                     </td>
                     <td>
                         <span>
-                            {% if vacancy.expiredTimeNoAssignee >= 17 %}
+                            {% if vacancy.expiredTime >= 17 %}
                                 <span>Expired in Status</span>
-                             {% elseif vacancy.expiredTimeNoAssignee >= 5 %}
+                             {% elseif vacancy.expiredTime >= 5 %}
                                 <span>Soon to expire</span>
                             {% endif %}
                         </span>

@@ -6,7 +6,10 @@
     <table class="table">
         <thead>
         <tr>
-            <th>Id</th>
+            <th>#</th>
+            <th>Created</th>
+            <th>CreatedBy</th>
+            <th>Request Reason</th>
             <th>Office</th>
             <th>Department</th>
             <th>Team</th>
@@ -16,16 +19,16 @@
             <th>English</th>
             <th>Amount</th>
             <th>Bonus</th>
-            <th>Responsibilities</th>
-            <th>Requirements</th>
-            <th>Plus</th>
-            <th>Reason</th>
+
             <th>actions</th>
         </tr>
         </thead>
         <tbody>
             <tr>
                 <td>{{ vacancy.id }}</td>
+                <td>{{ vacancy.createdAt|date('Y-m-d') }}</td>
+                <td>{{ vacancy.createdBy }}</td>
+                <td>{{ vacancy.reason }}</td>
                 <td>{{ vacancy.office.name }}</td>
                 <td>{{ vacancy.department.name }}</td>
                 <td>{{ vacancy.team.name }}</td>
@@ -35,12 +38,9 @@
                 <td>{{ vacancy.english }}</td>
                 <td>{{ vacancy.amount }}</td>
                 <td>{{ vacancy.bonus }}</td>
-                <td>{{ vacancy.responsibilities }}</td>
-                <td>{{ vacancy.requirements }}</td>
-                <td>{{ vacancy.reason }}</td>
             </tr>
         </tbody>
     </table>
-    <a href="{{ path('approved',{'id': vacancy.id}) }}">Approved</a>
-    <a href="{{ path('denied',{'id': vacancy.id})}}">Denied</a>
+    <a href="{{ url('approved',{'id': vacancy.id}) }}">Approve</a>
+    <a href="{{ url('denied',{'id': vacancy.id})}}">Deny</a>
 {% endblock %}

@@ -39,7 +39,7 @@ class NewVacancyMessageBuilderForHrManager
      * @throws Twig_Error_Runtime
      * @throws Twig_Error_Syntax
      */
-    public function build():string
+    public function build(): Swift_Message
     {
         $users = $this->userRepository->findAll();
 

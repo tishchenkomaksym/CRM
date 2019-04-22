@@ -28,13 +28,15 @@ class NewVacancyMessageBuilderForManager implements MessageBuilderInterface
     }
 
     /**
-     * @return string
+     * @return Swift_Message
      * @throws NoDateException
      * @throws Twig_Error_Loader
      * @throws Twig_Error_Runtime
      * @throws Twig_Error_Syntax
      */
-    public function build():string
+
+
+    public function build(): Swift_Message
     {
 
         if (

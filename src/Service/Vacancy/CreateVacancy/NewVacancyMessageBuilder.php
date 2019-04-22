@@ -31,10 +31,13 @@ class NewVacancyMessageBuilder implements MessageBuilderInterface
     }
 
     /**
-     * @return string
+     * @return Swift_Message
      * @throws NoDateException
+     * @throws Twig_Error_Loader
+     * @throws Twig_Error_Runtime
+     * @throws Twig_Error_Syntax
      */
-    public function build():string
+    public function build(): Swift_Message
     {
         $office = $this->vacancy->getOffice();
         if (
@@ -46,22 +49,19 @@ class NewVacancyMessageBuilder implements MessageBuilderInterface
 
         }
         $email = $office->getTopManager()->getEmail();
-        try {
-            return (new Swift_Message('Hiring request approval'))
-                ->setFrom(getenv('LOCAL_EMAIL'))
-                ->setTo($email)
-                ->setBody(
-                    $this->templating->render(
-                        'emails/vacancy/newVacancy.twig',
-                        [
-                            'vacancy' => $this->vacancy
-                        ]
-                    ),
-                    'text/html'
-                );
-        } catch (Twig_Error_Loader $e) {
-        } catch (Twig_Error_Runtime $e) {
-        } catch (Twig_Error_Syntax $e) {
-        }
+        $object = new Swift_Message('Hiring request approval');
+        $object
+            ->setFrom(getenv('LOCAL_EMAIL'))
+            ->setTo($email)
+            ->setBody(
+                $this->templating->render(
+                    'emails/vacancy/newVacancy.twig',
+                    [
+                        'vacancy' => $this->vacancy
+                    ]
+                ),
+                'text/html'
+            );
+        return $object;
     }
 }
