@@ -9,9 +9,9 @@ use App\Entity\Vacancy;
 use App\Repository\UserRepository;
 use Swift_Message;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
+use Twig_Error_Loader;
+use Twig_Error_Runtime;
+use Twig_Error_Syntax;
 
 class NewVacancyMessageBuilderForHrManager
 {
@@ -34,10 +34,10 @@ class NewVacancyMessageBuilderForHrManager
 
     /**
      * @return Swift_Message
-     * @throws LoaderError
      * @throws NoDateException
-     * @throws RuntimeError
-     * @throws SyntaxError
+     * @throws Twig_Error_Loader
+     * @throws Twig_Error_Runtime
+     * @throws Twig_Error_Syntax
      */
     public function build():string
     {

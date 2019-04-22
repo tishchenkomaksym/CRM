@@ -11,6 +11,8 @@ namespace App\Service\User\PhpDeveloperLevel\EffectiveTime\SpendEffectiveTime;
 use App\Entity\User;
 use App\Service\ElasticSearchClient;
 use App\Service\UserInformationService;
+use DateTime;
+use Exception;
 
 class BaseEffectiveTimeCalculator
 {
@@ -27,13 +29,13 @@ class BaseEffectiveTimeCalculator
     /**
      * @param User $user
      * @return float
-     * @throws \Exception
+     * @throws Exception
      */
     public function calculate(User $user): float
     {
         /** @var float $effectiveTime */
         $effectiveTime = 0;
-        $startDate = new \DateTime();
+        $startDate = new DateTime();
         $startDate->setDate(2014, 01, 01);
 
 
@@ -41,7 +43,7 @@ class BaseEffectiveTimeCalculator
         if ($startDateAndValues !== null) {
             if($startDateAndValues->getCreateDate())
             {
-                $startDate = new \DateTime();
+                $startDate = new DateTime();
                 $startDate->setTimestamp($startDateAndValues->getCreateDate()->getTimestamp());
             }
             $effectiveTime = $startDateAndValues->getEffectiveTime();

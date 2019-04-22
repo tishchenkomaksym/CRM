@@ -9,9 +9,9 @@ use App\Entity\Vacancy;
 use App\Service\Sdt\MessageBuilderInterface;
 use Swift_Message;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
+use Twig_Error_Loader;
+use Twig_Error_Runtime;
+use Twig_Error_Syntax;
 
 
 class NewVacancyMessageBuilderForManager implements MessageBuilderInterface
@@ -29,10 +29,10 @@ class NewVacancyMessageBuilderForManager implements MessageBuilderInterface
 
     /**
      * @return string
-     * @throws LoaderError
      * @throws NoDateException
-     * @throws RuntimeError
-     * @throws SyntaxError
+     * @throws Twig_Error_Loader
+     * @throws Twig_Error_Runtime
+     * @throws Twig_Error_Syntax
      */
     public function build():string
     {

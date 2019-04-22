@@ -16,7 +16,9 @@ use App\Service\SalaryReport\Builder\SDTDays\SdtDaysCalculator;
 use App\Service\SalaryReport\Builder\WorkingDays\WorkingDaysCalculator;
 use App\Service\SalaryReport\SalaryReportDTO;
 use App\Service\User\Sdt\UsedSdtDaysCalculator;
+use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
+use Exception;
 
 class BaseSalaryReportBuilder
 {
@@ -51,14 +53,14 @@ class BaseSalaryReportBuilder
      * @param SalaryReportInfo $newReport
      * @param User $user
      * @return SalaryReportDTO
-     * @throws \Exception
+     * @throws Exception
      */
     public function build(SalaryReportInfo $newReport, User $user): SalaryReportDTO
     {
 
         $returnObject = new SalaryReportDTO();
         $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport);
-        $dateTime = new \DateTime();
+        $dateTime = new DateTime();
         /** @noinspection NullPointerExceptionInspection */
         $dateTime->setTimestamp($newReport->getCreateDate()->getTimestamp());
         $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateTime, $user);
@@ -69,12 +71,12 @@ class BaseSalaryReportBuilder
 
     /**
      * @param SalaryReportInfo $newReport
-     * @param \DateTime $nowTime
+     * @param DateTime $nowTime
      * @param User $user
      * @return int
      * @throws NonUniqueResultException
      */
-    private function getSdtCountUsed(SalaryReportInfo $newReport, \DateTime $nowTime, User $user): int
+    private function getSdtCountUsed(SalaryReportInfo $newReport, DateTime $nowTime, User $user): int
     {
         $previousReport = $this->salaryReportInfoRepository->getPreviousReport($newReport);
         /** @noinspection PhpParamsInspection */

@@ -13,9 +13,9 @@ use App\Entity\Vacancy;
 use App\Service\Sdt\MessageBuilderInterface;
 use Swift_Message;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
+use Twig_Error_Loader;
+use Twig_Error_Runtime;
+use Twig_Error_Syntax;
 
 class NewVacancyMessageBuilder implements MessageBuilderInterface
 {
@@ -32,10 +32,7 @@ class NewVacancyMessageBuilder implements MessageBuilderInterface
 
     /**
      * @return string
-     * @throws LoaderError
      * @throws NoDateException
-     * @throws RuntimeError
-     * @throws SyntaxError
      */
     public function build():string
     {
@@ -49,17 +46,22 @@ class NewVacancyMessageBuilder implements MessageBuilderInterface
 
         }
         $email = $office->getTopManager()->getEmail();
-        return (new Swift_Message('Hiring request approval'))
-            ->setFrom(getenv('LOCAL_EMAIL'))
-            ->setTo($email)
-            ->setBody(
-                $this->templating->render(
-                    'emails/vacancy/newVacancy.twig',
-                    [
-                        'vacancy' => $this->vacancy
-                    ]
-                ),
-                'text/html'
-            );
+        try {
+            return (new Swift_Message('Hiring request approval'))
+                ->setFrom(getenv('LOCAL_EMAIL'))
+                ->setTo($email)
+                ->setBody(
+                    $this->templating->render(
+                        'emails/vacancy/newVacancy.twig',
+                        [
+                            'vacancy' => $this->vacancy
+                        ]
+                    ),
+                    'text/html'
+                );
+        } catch (Twig_Error_Loader $e) {
+        } catch (Twig_Error_Runtime $e) {
+        } catch (Twig_Error_Syntax $e) {
+        }
     }
 }

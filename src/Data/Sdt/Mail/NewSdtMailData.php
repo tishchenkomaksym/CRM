@@ -10,18 +10,20 @@ namespace App\Data\Sdt\Mail;
 
 class NewSdtMailData extends BaseSdtMailData
 {
+    private $atOwnExpensive;
     private $daysCount;
     private $fromDate;
     private $toDate;
     private $actingPeople;
 
-    public function __construct($userName, $fromDate, $toDate, $actingPeople, $daysCount)
+    public function __construct($userName, $fromDate, $toDate, $actingPeople, $daysCount, bool $atOwnExpensive)
     {
         parent::__construct($userName);
         $this->fromDate = $fromDate;
         $this->toDate = $toDate;
         $this->actingPeople = $actingPeople;
         $this->daysCount = $daysCount;
+        $this->atOwnExpensive = $atOwnExpensive;
     }
 
     /**
@@ -86,5 +88,23 @@ class NewSdtMailData extends BaseSdtMailData
     public function setDaysCount($daysCount): void
     {
         $this->daysCount = $daysCount;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAtOwnExpensive(): bool
+    {
+        return $this->atOwnExpensive;
+    }
+
+    /**
+     * @param bool $atOwnExpensive
+     * @return NewSdtMailData
+     */
+    public function setAtOwnExpensive(bool $atOwnExpensive): NewSdtMailData
+    {
+        $this->atOwnExpensive = $atOwnExpensive;
+        return $this;
     }
 }

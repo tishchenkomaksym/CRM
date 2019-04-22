@@ -11,6 +11,7 @@ namespace App\Service\User\PhpDeveloperLevel\EffectiveTime;
 use App\Entity\User;
 use App\Service\User\PhpDeveloperLevel\EffectiveTime\HoursRequired\RequiredHoursCalculator;
 use App\Service\User\PhpDeveloperLevel\EffectiveTime\SpendEffectiveTime\BaseEffectiveTimeCalculator;
+use Exception;
 
 class BaseEffectiveTimeBuilder
 {
@@ -36,7 +37,7 @@ class BaseEffectiveTimeBuilder
      * @param User $user
      * @return BaseEffectiveTime
      * @throws NoRequiredHoursException
-     * @throws \Exception
+     * @throws Exception
      */
     public function build(
         User $user

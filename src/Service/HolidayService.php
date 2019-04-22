@@ -10,11 +10,13 @@ namespace App\Service;
 
 use App\Entity\Holiday;
 use App\Repository\HolidayRepository;
+use DateTime;
+use DateTimeInterface;
 
 class HolidayService
 {
     /**
-     * @var \App\Entity\Holiday[]
+     * @var Holiday[]
      */
     private $holidays;
 
@@ -24,11 +26,11 @@ class HolidayService
     }
 
     /**
-     * @param \DateTimeInterface $from
-     * @param \DateTimeInterface $to
+     * @param DateTimeInterface $from
+     * @param DateTimeInterface $to
      * @return Holiday[]
      */
-    public function getHolidayBetweenDate(\DateTimeInterface $from, \DateTimeInterface $to): array
+    public function getHolidayBetweenDate(DateTimeInterface $from, DateTimeInterface $to): array
     {
         $holidayArray = [];
         foreach ($this->holidays as $holiday) {
@@ -40,7 +42,7 @@ class HolidayService
         return $holidayArray;
     }
 
-    public function getHolidayBetweenDateNumbers(\DateTime $from, \DateTime $to): array
+    public function getHolidayBetweenDateNumbers(DateTime $from, DateTime $to): array
     {
 
         $calculationDate1 = clone $from;
@@ -61,7 +63,7 @@ class HolidayService
     }
 
     /**
-     * @return \App\Entity\Holiday[]
+     * @return Holiday[]
      */
     public function getHolidays(): array
     {

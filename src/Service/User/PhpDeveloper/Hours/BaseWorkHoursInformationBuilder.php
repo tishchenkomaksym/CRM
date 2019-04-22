@@ -49,7 +49,7 @@ class BaseWorkHoursInformationBuilder
      * @param User $user
      * @return WorkHoursInformation
      */
-    public function build(\DateTime $from, DateTime $to, User $user): WorkHoursInformation
+    public function build(DateTime $from, DateTime $to, User $user): WorkHoursInformation
     {
         $information = new WorkHoursInformation();
         $information->setRequiredTime($this->getRequiredTimeInHours($from, $to));

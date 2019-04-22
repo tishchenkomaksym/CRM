@@ -10,6 +10,7 @@ namespace App\Service\Sdt\Update;
 
 use App\Entity\Sdt;
 use App\Service\Sdt\Exception\EmailServerNotWorking;
+use Exception;
 
 class BaseUpdateContext
 {
@@ -28,7 +29,7 @@ class BaseUpdateContext
 
     /**
      * @return Sdt
-     * @throws \Exception
+     * @throws Exception
      * @throws EmailServerNotWorking
      */
     public function updateSDT(): Sdt

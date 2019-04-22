@@ -9,11 +9,12 @@
 namespace App\Service\MonthlySdt;
 
 use App\Repository\MonthlySdtRepository;
+use DateTime;
 
 class MonthlySdtService
 {
     //TODO move to strategy
-    public static function isAllowedToGenerate(\DateTime $nowDate, MonthlySdtRepository $monthlySdtRepository): bool
+    public static function isAllowedToGenerate(DateTime $nowDate, MonthlySdtRepository $monthlySdtRepository): bool
     {
         $lastMonthlySdt = $monthlySdtRepository->findOneBy([], ['id' => 'desc']);
         if ($lastMonthlySdt) {

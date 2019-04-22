@@ -11,13 +11,14 @@ namespace App\Service\Sdt\Interval;
 
 use App\Entity\Sdt;
 use DateTime;
+use Exception;
 
 class EndDateOfSdtCalculator
 {
     /**
      * @param Sdt $sdt
      * @return DateTime
-     * @throws \Exception
+     * @throws Exception
      */
     public function calculate(Sdt $sdt): DateTime
     {
