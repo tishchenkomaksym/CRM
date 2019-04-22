@@ -10,6 +10,7 @@ namespace App\Service\User\Sdt;
 
 
 use App\Entity\User;
+use DateTime;
 
 class LeftSdtForPeriodCalculator
 {
@@ -24,7 +25,7 @@ class LeftSdtForPeriodCalculator
         $this->daysCalculator = $daysCalculator;
     }
 
-    public function calculate(User $user, \DateTime $toPeriod): float
+    public function calculate(User $user, DateTime $toPeriod): float
     {
         $existSDT = 0;
         foreach ($user->getMonthlySdts() as $monthlySdt) {
