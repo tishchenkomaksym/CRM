@@ -100,7 +100,7 @@ class Vacancy
     private $createdBy;
 
     /**
-     * @ORM\Column(type="date_immutable")
+     * @ORM\Column(type="datetime_immutable")
      */
     private $createdAt;
 
@@ -110,7 +110,7 @@ class Vacancy
     private $assignee;
 
     /**
-     * @ORM\Column(type="date_immutable", nullable=true)
+     * @ORM\Column(type="datetime_immutable", nullable=true)
      */
     private $approveDate;
 
@@ -118,6 +118,11 @@ class Vacancy
      * @ORM\ManyToOne(targetEntity="App\Entity\VacancyViewerUser", inversedBy="vacancies")
      */
     private $vacancyViewerUser;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $assigneeDate;
 
 
 
@@ -362,6 +367,18 @@ class Vacancy
     public function setVacancyViewerUser(?VacancyViewerUser $vacancyViewerUser): self
     {
         $this->vacancyViewerUser = $vacancyViewerUser;
+
+        return $this;
+    }
+
+    public function getAssigneeDate(): ?\DateTimeImmutable
+    {
+        return $this->assigneeDate;
+    }
+
+    public function setAssigneeDate(?\DateTimeImmutable $assigneeDate): self
+    {
+        $this->assigneeDate = $assigneeDate;
 
         return $this;
     }

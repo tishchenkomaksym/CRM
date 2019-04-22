@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 /**
  * @method Vacancy|null find($id, $lockMode = null, $lockVersion = null)
  * @method Vacancy|null findOneBy(array $criteria, array $orderBy = null)
- * @method Vacancy[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Vacancy[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)*@method getTeam()
  */
 class VacancyRepository extends ServiceEntityRepository
 {

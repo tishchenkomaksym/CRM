@@ -4,8 +4,8 @@
 namespace App\Service\Vacancy\Display\ListEntry;
 
 
-use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\Vacancy;
+use App\Service\HolidayService;
 use App\Service\WorkingDays\BaseWorkingDaysCalculator;
 use DateTime;
 use DateTimeImmutable;
@@ -18,71 +18,74 @@ use PHPUnit\Framework\TestCase;
  */
 class VacancyListEntryDTOBuilderTest extends TestCase
 {
-
     /**
+     * @dataProvider dataProviderDate
      * @throws Exception
-     * @var BaseWorkingDaysCalculator|MockObject
      */
 
-    private $calc;
-
-    public function setUp()
+    public function testGetExpiredTime($approveDate, $nowDate, $holidays,  $expected)
     {
-        $this->calc = $this->createMock(BaseWorkingDaysCalculator::class);
+        /** @var  HolidayService|MockObject $mock */
+        $mock=$this->createMock(HolidayService::class);
+        $mock->method('getHolidayBetweenDate')->willReturn($holidays);
+        $calculator = new BaseWorkingDaysCalculator($mock);
+
+        $dateNow = new DateTime($nowDate);
+        $object = new VacancyListEntryDTOBuilder($calculator);
+        $vacancy = new Vacancy();
+        $dateTime = new DateTimeImmutable($approveDate);
+        $vacancy->setAssigneeDate($dateTime);
+        $this->assertEquals($expected, $object->getExpiredTimeAssignee($vacancy, $dateNow));
+    }
+
+
+    public function dataProviderDate()
+    {
+        return [
+            ['2019-04-19 16:00:00', '2019-04-22 17:00:00',[],9.5], // end work
+            ['2019-04-14 16:00:00', '2019-04-15 17:00:00',[],7.5], // end work
+            ['2019-04-19 00:03:57', '2019-04-20 01:00:00',[],8.5], //work end
+            ['2019-04-19 16:00:00', '2019-04-20 17:00:00',[], 2], // work end
+            ['2019-04-20 16:00:00', '2019-04-21 17:00:00',[], 0], // end end
+            ['2019-04-17 16:00:00', '2019-04-19 17:00:00',[], 18], // work work
+            ['2019-04-17 16:00:00', '2019-04-17 17:00:00',[], 1], // same day
+            ['2019-04-17 16:00:00', '2019-04-17 16:01:00',[], 0], // same day one min.
+        ];
     }
 
     /**
-     * @throws NoDateException
-     */
-    public function testGetExpiredTime()
-    {
-        $this->calc->method('workDaysBetweenDates')->willReturn(1);
-        $dateNow = new DateTime();
-        $object = new VacancyListEntryDTOBuilder($this->calc);
-        $vacancy = new Vacancy();
-        $dateTime = New DateTimeImmutable('2019-11-11 01:01:01');
-        $vacancy->setApproveDate($dateTime);
-        $this->assertEquals(23, $object->getExpiredTime($vacancy, $dateNow));
-    }
-
-    public function testGetExpiredTimeQwe()
-    {
-        $this->calc->method('workDaysBetweenDates')->willReturn(1);
-        $object = new VacancyListEntryDTOBuilder($this->calc);
-        $vacancy = new Vacancy();
-        $dateTime = New DateTimeImmutable('2019-04-17 16:01:01');
-        $dateTimeFor = New DateTime('2019-04-18 20:02:01');
-        $vacancy->setApproveDate($dateTime);
-        $this->assertEquals(8, $object->getExpiredTime($vacancy, $dateTimeFor));
-    }
-
-    /**
-     * @throws NoDateException
+     * @dataProvider dataProviderDateNoAssignee
+     * @throws Exception
      */
 
-    public function testGetExpiredTimeSecond()
+    public function testGetExpiredTimeNoAssignee($createdDate, $nowDate, $holidays,  $expected)
     {
-        $this->calc->method('workDaysBetweenDates')->willReturn(2);
-        $object = new VacancyListEntryDTOBuilder($this->calc);
+        /** @var  HolidayService|MockObject $mock */
+        $mock=$this->createMock(HolidayService::class);
+        $mock->method('getHolidayBetweenDate')->willReturn($holidays);
+        $calculator = new BaseWorkingDaysCalculator($mock);
+
+        $dateNow = new DateTime($nowDate);
+        $object = new VacancyListEntryDTOBuilder($calculator);
         $vacancy = new Vacancy();
-        $dateNow = new DateTime();
-        $dateTime = New DateTimeImmutable('2019-11-11 16:01:01');
-        $vacancy->setApproveDate($dateTime);
-        $this->assertEquals(8, $object->getExpiredTime($vacancy, $dateNow));
+        $dateTime = new DateTimeImmutable($createdDate);
+        $vacancy->setCreatedAt($dateTime);
+        $this->assertEquals($expected, $object->getExpiredTimeNoAssignee($vacancy, $dateNow));
     }
 
-    /**
-     * @throws NoDateException
-     */
 
-    public function testGetExpiredTimeThird()
+    public function dataProviderDateNoAssignee()
     {
-        $this->calc->method('workDaysBetweenDates')->willReturn(0);
-        $object = new VacancyListEntryDTOBuilder($this->calc);
-        $vacancy = new Vacancy();
-        $dateNow = new DateTime();
-        $dateTime = New DateTimeImmutable('2019-11-11 01:01:01');
-        $vacancy->setApproveDate($dateTime);
-        $this->assertEquals(24, $object->getExpiredTime($vacancy, $dateNow));
+        return [
+            ['2019-04-19 16:00:00', '2019-04-22 17:00:00',[],9.5], // end work
+            ['2019-04-14 16:00:00', '2019-04-15 17:00:00',[],7.5], // end work
+            ['2019-04-19 00:03:57', '2019-04-20 01:00:00',[],8.5], //work end
+            ['2019-04-19 16:00:00', '2019-04-20 17:00:00',[], 2], // work end
+            ['2019-04-20 16:00:00', '2019-04-21 17:00:00',[], 0], // end end
+            ['2019-04-17 16:00:00', '2019-04-19 17:00:00',[], 18], // work work
+            ['2019-04-17 16:00:00', '2019-04-17 17:00:00',[], 1], // same day
+            ['2019-04-17 16:00:00', '2019-04-17 16:01:00',[], 0], // same day one min.
+        ];
     }
+
 }

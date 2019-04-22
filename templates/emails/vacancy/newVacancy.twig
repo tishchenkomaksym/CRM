@@ -41,6 +41,10 @@
             </tr>
         </tbody>
     </table>
-    <a href="{{ path('approved',{'id': vacancy.id}) }}">Approved</a>
-    <a href="{{ path('denied',{'id': vacancy.id})}}">Denied</a>
+    <table>
+        <td><a href="{{ path('approved',{'id': vacancy.id}) }}">Approved</a></td>
+        <td><a href="{{ path('denied',{'id': vacancy.id})}}">Denied</a></td>
+    </table>
+
+
 {% endblock %}

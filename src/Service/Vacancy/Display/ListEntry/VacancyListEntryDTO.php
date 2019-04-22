@@ -20,9 +20,11 @@ class VacancyListEntryDTO
 
     public $approveDate;
 
-    public $expiredTime;
+    public $assigneeDate;
 
-//    public $soonExpiredStatus;
+    public $expiredTimeAssignee;
 
+    public $createdAt;
 
+    public $expiredTimeNoAssignee;
 }

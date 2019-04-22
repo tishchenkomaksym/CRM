@@ -13,6 +13,7 @@ use App\Repository\VacancyRepository;
 use App\Service\Vacancy\CreateForHrManager\NewVacancyMessageBuilderForHrManager;
 use App\Service\Vacancy\CreateForManager\NewVacancyMessageBuilderForManager;
 use App\Service\Vacancy\CreateVacancy\NewVacancyMessageBuilder;
+use App\Service\Vacancy\Display\ListEntry\VacancyListEntryDTOBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,11 +42,17 @@ class VacancyController extends AbstractController
 
     /**
      * @Route("/", name="vacancy_index", methods={"GET"})
+     * @throws \App\Data\Sdt\Mail\Adapter\NoDateException
      */
-    public function index(VacancyRepository $vacancyRepository): Response
+    public function index(VacancyRepository $vacancyRepository, VacancyListEntryDTOBuilder $builder): Response
     {
+        $vacancies = [];
+        foreach ($vacancyRepository->findAll() as $vacancy){
+            $vacancies[] = $builder->build($vacancy);
+        }
+
         return $this->render('vacancy/index.html.twig', [
-            'vacancies' => $vacancyRepository->findAll()
+            'vacancies' => $vacancies
         ]);
     }
 
@@ -58,7 +65,7 @@ class VacancyController extends AbstractController
     {
         $entityManager = $this->getDoctrine()->getManager();
         $vacancy->setIsApproved(true);
-
+        $vacancy->setApproveDate(new \DateTimeImmutable($time = 'now'));
         $entityManager->persist($vacancy);
 
         $messageBuilder = new NewVacancyMessageBuilderForManager(
@@ -82,7 +89,6 @@ class VacancyController extends AbstractController
      */
     public function deny(Vacancy $vacancy, Request $request): Response
     {
-
         $form = $this->createForm(VacancyTypeDenied::class, $vacancy);
         $form->handleRequest($request);
 
@@ -162,6 +168,7 @@ class VacancyController extends AbstractController
      * @param Vacancy $vacancy
      * @param Request $request
      * @return Response
+     * @throws \Exception
      */
     public function show(Vacancy $vacancy, Request $request): Response
     {
@@ -181,6 +188,7 @@ class VacancyController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $vacancy->setAssigneeDate(new \DateTimeImmutable($time = 'now'));
             $entityManager->persist($vacancy);
             $entityManager->flush();
         }

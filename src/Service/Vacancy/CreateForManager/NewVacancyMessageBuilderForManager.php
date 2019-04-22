@@ -38,8 +38,6 @@ class NewVacancyMessageBuilderForManager implements MessageBuilderInterface
     public function build()
     {
 
-
-
         if (
             $this->vacancy === null ||
             $this->vacancy->getCreatedBy() === null ||
