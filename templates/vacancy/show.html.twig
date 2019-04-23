@@ -24,7 +24,7 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
+                <th>Request#</th>
                 <td>{{ vacancy.id }}</td>
             </tr>
             <tr>
@@ -63,36 +63,50 @@
                 <th>Bonus</th>
                 <td>{{ vacancy.bonus }}</td>
             </tr>
+            {% if vacancy.isApproved == false and vacancy.isApproved is not null %}
+                <tr>
+                    <th>Request reason</th>
+                    <td>{{ vacancy.reasonDenied }}</td>
+                </tr>
+            {% else %}
             <tr>
                 <th>Responsibilities</th>
-                <td>{{ vacancy.responsibilities }}</td>
+                <td style="max-width: 500px"><div></div>{{ vacancy.responsibilities }}</td>
             </tr>
             <tr>
                 <th>Requirements</th>
-                <td>{{ vacancy.requirements }}</td>
+                <td style="max-width: 500px">{{ vacancy.requirements }}</td>
             </tr>
             <tr>
                 <th>Plus</th>
-                <td>{{ vacancy.plus }}</td>
+                <td style="max-width: 500px">{{ vacancy.plus }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>Created</th>
+                <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+                <td>
+                    {% if expiredTime >= 17 %}
+                       <p><span>Expired in Status</span></p>
+                     {% elseif expiredTime >= 12 %}
+                        <p><span>Soon to expire</span></p>
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <th>By</th>
                 <td>{{ vacancy.createdBy }}</td>
             </tr>
-            <tr>
-                <th>Created</th>
-                <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
-            </tr>
         </tbody>
     </table>
 
     <a href="{{ path('vacancy_index') }}">back to list</a>
-{#    <a href="{{ path('vacancy_edit', {'id': vacancy.id}) }}">edit</a>#}
+
     <br>
     {% if vacancy.assignee is null %}
         <span>no assignee</span>
     {% else %}
-        <span>{{ vacancy.assignee }}</span>
+        <span>{{ vacancy.assignee.name }}</span>
     {% endif %}
 
     {% if vacancy.isApproved is null %}
@@ -110,7 +124,7 @@
         {{ include('vacancy/_delete_form.html.twig') }}
         Denied
     {% elseif vacancy.isApproved == true %}
-        <span>Approved {{ vacancy.approveDate|date("m/d/Y") }}</span>
+        <span>Approved {{ vacancy.approveDate|date('Y-m-d') }}</span>
     {% else %}
         <span>Waiting for approval</span>
     {% endif %}

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -105,6 +106,7 @@ class User implements UserInterface
      * @ORM\OneToMany(targetEntity="App\Entity\Vacancy", mappedBy="createdBy")
      */
     private $vacancies;
+
 
     public function __construct()
     {
@@ -417,12 +419,12 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getCreateDate(): ?\DateTimeInterface
+    public function getCreateDate(): ?DateTimeInterface
     {
         return $this->createDate;
     }
 
-    public function setCreateDate(\DateTimeInterface $createDate): self
+    public function setCreateDate(DateTimeInterface $createDate): self
     {
         $this->createDate = $createDate;
 
@@ -507,5 +509,7 @@ class User implements UserInterface
 
         return $this;
     }
+
+
 
 }
