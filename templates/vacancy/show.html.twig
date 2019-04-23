@@ -21,7 +21,12 @@
     {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') and is_granted('ROLE_VACANCY_VIEWER_USER') %}
         {{ include('vacancy/userForm.html.twig') }}
     {% endif %}
-    <table class="table">
+    <style>
+        td {
+            word-wrap: break-word;
+        }
+    </style>
+    <table class="table" style="table-layout: fixed">
         <tbody>
             <tr>
                 <th>Request#</th>
