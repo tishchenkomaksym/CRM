@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\Vacancy;
 use App\Entity\VacancyViewerUser;
 use App\Form\RecruiterType;
@@ -13,8 +14,11 @@ use App\Repository\VacancyRepository;
 use App\Service\Vacancy\CreateForHrManager\NewVacancyMessageBuilderForHrManager;
 use App\Service\Vacancy\CreateForManager\NewVacancyMessageBuilderForManager;
 use App\Service\Vacancy\CreateVacancy\NewVacancyMessageBuilder;
+use App\Service\Vacancy\Display\ListEntry\ExpiredTimeCalculator;
 use App\Service\Vacancy\Display\ListEntry\VacancyListEntryDTOBuilder;
+use DateTime;
 use DateTimeImmutable;
+use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +26,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 /**
   * @IsGranted("ROLE_VACANCY_VIEWER_USER")
@@ -45,13 +52,28 @@ class VacancyController extends AbstractController
 
     /**
      * @Route("/", name="vacancy_index", methods={"GET"})
-     * @throws \App\Data\Sdt\Mail\Adapter\NoDateException
+     * @param VacancyRepository $vacancyRepository
+     * @param VacancyListEntryDTOBuilder $builder
+     * @return Response
+     * @throws NoDateException
      */
     public function index(VacancyRepository $vacancyRepository, VacancyListEntryDTOBuilder $builder): Response
     {
         $vacancies = [];
-        foreach ($vacancyRepository->findAll() as $vacancy){
-            $vacancies[] = $builder->build($vacancy);
+
+        $assignee = $this->getUser()->getRoles();
+        $currentUser = $this->getUser()->getId();
+        if (in_array('ROLE_RECRUITER', $assignee, true)){
+            foreach ($vacancyRepository->findBy([
+                'assignee' => $currentUser
+            ]) as $vacancy){
+                $vacancies[] = $builder->build($vacancy);
+            }
+
+        }else{
+            foreach ($vacancyRepository->findAll() as $vacancy){
+                $vacancies[] = $builder->build($vacancy);
+            }
         }
 
         return $this->render('vacancy/index.html.twig', [
@@ -62,7 +84,14 @@ class VacancyController extends AbstractController
 
     /**
      * @Route("/approve/{id}", name="approved", methods={"GET"})
-     * @throws \Exception
+     * @param UserRepository $userRepository
+     * @param Vacancy $vacancy
+     * @param Swift_Mailer $mailer
+     * @return Response
+     * @throws NoDateException
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function approve(UserRepository $userRepository, Vacancy $vacancy, Swift_Mailer $mailer): Response
     {
@@ -89,6 +118,9 @@ class VacancyController extends AbstractController
 
     /**
      * @Route("/deny/{id}", name="denied", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param Request $request
+     * @return Response
      */
     public function deny(Vacancy $vacancy, Request $request): Response
     {
@@ -111,7 +143,7 @@ class VacancyController extends AbstractController
     /**
      * @Route("/result", name="vacancy_result", methods={"GET"})
      */
-    public function result()
+    public function result(): Response
     {
         return $this->render('vacancy/result.html.twig', [
             'controller_name' => 'ResultController',
@@ -120,9 +152,15 @@ class VacancyController extends AbstractController
 
     /**
      * @Route("/denied/{id}", name="vacancy_denied", methods={"GET"})
-     *  @throws \Exception
+     * @param Vacancy $vacancy
+     * @param Swift_Mailer $mailer
+     * @return Response
+     * @throws NoDateException
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    public function resultDenied(Vacancy $vacancy, Swift_Mailer $mailer)
+    public function resultDenied(Vacancy $vacancy, Swift_Mailer $mailer): Response
     {
         $messageBuilder = new NewVacancyMessageBuilderForManager(
             $vacancy, $this->environment
@@ -136,7 +174,13 @@ class VacancyController extends AbstractController
 
     /**
      * @Route("/new", name="vacancy_new", methods={"GET","POST"})
-     * @throws \Exception
+     * @param Request $request
+     * @param Swift_Mailer $mailer
+     * @return Response
+     * @throws NoDateException
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function new(Request $request, Swift_Mailer $mailer): Response
     {
@@ -170,10 +214,11 @@ class VacancyController extends AbstractController
      * @Route("/{id}", name="vacancy_show", methods={"GET","POST"})
      * @param Vacancy $vacancy
      * @param Request $request
+     * @param ExpiredTimeCalculator $timeCalculator
      * @return Response
-     * @throws \Exception
+     * @throws Exception
      */
-    public function show(Vacancy $vacancy, Request $request): Response
+    public function show(Vacancy $vacancy, Request $request, ExpiredTimeCalculator $timeCalculator): Response
     {
         $viewerUser = new VacancyViewerUser();
         $formUser = $this->createForm(ViewerType::class, $viewerUser);
@@ -195,15 +240,28 @@ class VacancyController extends AbstractController
             $entityManager->persist($vacancy);
             $entityManager->flush();
         }
+
+        if ($vacancy->getApproveDate() != null) {
+            $object = $vacancy->getApproveDate();
+        } elseif ($vacancy->getAssigneeDate() != null){
+            $object = $vacancy->getAssigneeDate();
+        }else{
+            $object = new DateTimeImmutable('now');
+        }
+
         return $this->render('vacancy/show.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView(),
-            'formUser' => $formUser->createView()
+            'formUser' => $formUser->createView(),
+            'expiredTime' => $timeCalculator->getExpiredTime($object, new DateTime())
         ]);
     }
 
     /**
      * @Route("/{id}/edit", name="vacancy_edit", methods={"GET","POST"})
+     * @param Request $request
+     * @param Vacancy $vacancy
+     * @return Response
      */
     public function edit(Request $request, Vacancy $vacancy): Response
     {

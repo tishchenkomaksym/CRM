@@ -29,13 +29,12 @@ class VacancyListEntryDTOBuilderTest extends TestCase
         $mock=$this->createMock(HolidayService::class);
         $mock->method('getHolidayBetweenDate')->willReturn($holidays);
         $calculator = new BaseWorkingDaysCalculator($mock);
-
+        $expiredTimeCalculator = new ExpiredTimeCalculator($calculator);
         $dateNow = new DateTime($nowDate);
-        $object = new VacancyListEntryDTOBuilder($calculator);
         $vacancy = new Vacancy();
         $dateTime = new DateTimeImmutable($approveDate);
         $vacancy->setAssigneeDate($dateTime);
-        $this->assertEquals($expected, $object->getExpiredTime($vacancy->getAssigneeDate(), $dateNow));
+        $this->assertEquals($expected, $expiredTimeCalculator->getExpiredTime($vacancy->getAssigneeDate(), $dateNow));
     }
 
 
