@@ -21,7 +21,10 @@ class SdtRequestDaysCalculator
     {
         $days = 0;
         foreach ($sdtArray as $item) {
-            $days += $item->getCount();
+            if(!$item->getAtOwnExpense())
+            {
+                $days += $item->getCount();
+            }
         }
         return $days;
     }

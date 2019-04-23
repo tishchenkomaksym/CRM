@@ -11,6 +11,7 @@ namespace App\Service\User\PhpDeveloper\Hours;
 use App\Entity\User;
 use App\Repository\SalaryReportInfoRepository;
 use DateTime;
+use Exception;
 
 class ReportWorkHoursBuilderDecorator
 {
@@ -33,13 +34,13 @@ class ReportWorkHoursBuilderDecorator
     /**
      * @param User $user
      * @return WorkHoursInformation
-     * @throws \Exception
+     * @throws Exception
      */
     public function build(User $user): WorkHoursInformation
     {
         $createDate = $this->infoRepository->findOneBy([], ['createDate' => 'ASC']);
         if ($createDate) {
-            $dateTime = new \DateTime();
+            $dateTime = new DateTime();
             if ($createDate->getCreateDate()) {
                 $dateTime->setTimestamp($createDate->getCreateDate()->getTimestamp());
             }

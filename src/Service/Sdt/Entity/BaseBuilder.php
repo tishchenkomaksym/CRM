@@ -9,17 +9,19 @@
 namespace App\Service\Sdt\Entity;
 
 use App\Entity\Sdt;
+use DateTimeImmutable;
+use Exception;
 
 class BaseBuilder
 {
     /**
      * @param Sdt $entity
      * @return Sdt
-     * @throws \Exception
+     * @throws Exception
      */
     public static function build(Sdt $entity): Sdt
     {
-        $entity->setReportDate(new \DateTimeImmutable());
+        $entity->setReportDate(new DateTimeImmutable());
         return $entity;
     }
 }

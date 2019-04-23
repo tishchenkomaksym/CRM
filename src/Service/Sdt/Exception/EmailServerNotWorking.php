@@ -9,7 +9,9 @@
 namespace App\Service\Sdt\Exception;
 
 
-class EmailServerNotWorking extends \Exception
+use Exception;
+
+class EmailServerNotWorking extends Exception
 {
     public const MESSAGE='Email service doesn\'t work. Ask admin';
 

@@ -8,7 +8,9 @@
 
 namespace App\Service\PhpDeveloperTest\Exception;
 
-class NoExistsNewLevelOfDeveloper extends \Exception
+use Exception;
+
+class NoExistsNewLevelOfDeveloper extends Exception
 {
 
 }

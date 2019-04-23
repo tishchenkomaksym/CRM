@@ -10,7 +10,11 @@ namespace App\Service\Sdt\Update;
 
 use App\Data\Sdt\Mail\EditSdtMailData;
 use App\Service\Sdt\MessageBuilderInterface;
+use Swift_Message;
 use Twig_Environment;
+use Twig_Error_Loader;
+use Twig_Error_Runtime;
+use Twig_Error_Syntax;
 
 class UpdateSDTMessageBuilder implements MessageBuilderInterface
 {
@@ -29,31 +33,35 @@ class UpdateSDTMessageBuilder implements MessageBuilderInterface
     }
 
     /**
-     * @return \Swift_Message
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
+     * @return Swift_Message
+     * @throws Twig_Error_Loader
+     * @throws Twig_Error_Runtime
+     * @throws Twig_Error_Syntax
      */
-    public function build()
+    public function build(): Swift_Message
     {
-        $mailData = $this->mailData;
-        $message = (new \Swift_Message($mailData->getSubject()))
-            ->setFrom($mailData->getFromEmail())
-            ->setTo($mailData->getToEmails())
+        $mailDataObject = $this->mailData;
+        if ($mailDataObject->isAtOwnExpense()) {
+            $templateName = 'emails/sdt/editAtOwnExpenseSdt.twig';
+        } else {
+            $templateName = 'emails/sdt/editSdt.twig';
+        }
+        return (new Swift_Message($mailDataObject->getSubject()))
+            ->setFrom($mailDataObject->getFromEmail())
+            ->setTo($mailDataObject->getToEmails())
             ->setBody(
                 $this->templating->render(
-                    'emails/sdt/editSdt.twig',
+                    $templateName,
                     [
-                        'oldFromDate' => $mailData->getOldFromDate(),
-                        'oldToDate' => $mailData->getOldToDate(),
-                        'newFromDate' => $mailData->getOldFromDate(),
-                        'newToDate' => $mailData->getNewToDate(),
-                        'actingPeople' => $mailData->getActingPeople(),
-                        'daysCount' => $mailData->getDaysCount(),
+                        'oldFromDate' => $mailDataObject->getOldFromDate(),
+                        'oldToDate' => $mailDataObject->getOldToDate(),
+                        'newFromDate' => $mailDataObject->getOldFromDate(),
+                        'newToDate' => $mailDataObject->getNewToDate(),
+                        'actingPeople' => $mailDataObject->getActingPeople(),
+                        'daysCount' => $mailDataObject->getDaysCount(),
                     ]
                 ),
                 'text/html'
             );
-        return $message;
     }
 }

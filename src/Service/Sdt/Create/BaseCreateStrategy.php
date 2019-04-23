@@ -13,12 +13,13 @@ use App\Service\Sdt\Entity\BaseBuilder;
 use App\Service\Sdt\MessageBuilderInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
+use Exception;
 use Swift_Mailer;
 
 class BaseCreateStrategy
 {
     /**
-     * @var \Swift_Mailer
+     * @var Swift_Mailer
      */
     private $mailer;
 
@@ -52,7 +53,7 @@ class BaseCreateStrategy
 
     /**
      * @return Sdt
-     * @throws \Exception
+     * @throws Exception
      */
     public function create(): Sdt
     {

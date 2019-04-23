@@ -14,6 +14,7 @@ use App\Service\Sdt\MessageBuilderInterface;
 use App\Service\SdtArchive\SdtArchiveBuilderFromSdt;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
+use Exception;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -24,7 +25,7 @@ class BaseUpdateStrategy
      */
     private $messageBuilder;
     /**
-     * @var \Swift_Mailer
+     * @var Swift_Mailer
      */
     private $mailer;
 
@@ -62,7 +63,7 @@ class BaseUpdateStrategy
 
     /**
      * @return Sdt
-     * @throws \Exception
+     * @throws Exception
      */
     public function update(): Sdt
     {
@@ -73,7 +74,7 @@ class BaseUpdateStrategy
 
     /**
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function createArchive(): SdtArchive
     {

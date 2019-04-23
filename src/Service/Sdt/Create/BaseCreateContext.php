@@ -10,6 +10,7 @@ namespace App\Service\Sdt\Create;
 
 use App\Entity\Sdt;
 use App\Service\Sdt\Exception\EmailServerNotWorking;
+use Exception;
 
 class BaseCreateContext
 {
@@ -29,7 +30,7 @@ class BaseCreateContext
     /**
      * @return Sdt
      * @throws EmailServerNotWorking
-     * @throws \Exception
+     * @throws Exception
      */
     public function createSdt(): Sdt
     {
