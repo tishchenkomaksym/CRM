@@ -1,4 +1,9 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
+{% if vacancy.assignee is not null %}
+    {{ form_label(form.assignee, 'Reassign issue') }}
+{% else %}
+    {{ form_label(form.assignee, 'Assign issue') }}
+{% endif %}
+    {{ form_widget(form.assignee) }}
 <button class="btn">{{ button_label|default('Send') }}</button>
 {{ form_end(form) }}
