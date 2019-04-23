@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -104,10 +105,6 @@ class Vacancy
      */
     private $createdAt;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $assignee;
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
@@ -123,6 +120,11 @@ class Vacancy
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
     private $assigneeDate;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="assignee")
+     */
+    private $assignee;
 
 
 
@@ -323,36 +325,25 @@ class Vacancy
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getAssignee(): ?string
-    {
-        return $this->assignee;
-    }
 
-    public function setAssignee(?string $assignee): self
-    {
-        $this->assignee = $assignee;
-
-        return $this;
-    }
-
-    public function getApproveDate(): ?\DateTimeImmutable
+    public function getApproveDate(): ?DateTimeImmutable
     {
         return $this->approveDate;
     }
 
-    public function setApproveDate(?\DateTimeImmutable $approveDate): self
+    public function setApproveDate(?DateTimeImmutable $approveDate): self
     {
         $this->approveDate = $approveDate;
 
@@ -371,14 +362,26 @@ class Vacancy
         return $this;
     }
 
-    public function getAssigneeDate(): ?\DateTimeImmutable
+    public function getAssigneeDate(): ?DateTimeImmutable
     {
         return $this->assigneeDate;
     }
 
-    public function setAssigneeDate(?\DateTimeImmutable $assigneeDate): self
+    public function setAssigneeDate(?DateTimeImmutable $assigneeDate): self
     {
         $this->assigneeDate = $assigneeDate;
+
+        return $this;
+    }
+
+    public function getAssignee(): ?User
+    {
+        return $this->assignee;
+    }
+
+    public function setAssignee(?User $assignee): self
+    {
+        $this->assignee = $assignee;
 
         return $this;
     }
