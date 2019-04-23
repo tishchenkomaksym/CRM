@@ -95,10 +95,9 @@ class VacancyController extends AbstractController
      */
     public function approve(UserRepository $userRepository, Vacancy $vacancy, Swift_Mailer $mailer): Response
     {
-        foreach ($userRepository->findAll() as $item) {
-            $item->
+        if ($vacancy->getIsApproved() !== null){
+            throw $this->createNotFoundException('Not found 404');
         }
-        
         $entityManager = $this->getDoctrine()->getManager();
         $vacancy->setIsApproved(true);
         $vacancy->setApproveDate(new DateTimeImmutable('now'));
@@ -128,6 +127,10 @@ class VacancyController extends AbstractController
      */
     public function deny(Vacancy $vacancy, Request $request): Response
     {
+        if ($vacancy->getIsApproved() !== null){
+            throw $this->createNotFoundException('This request was already approved or denied!');
+        }
+
         $form = $this->createForm(VacancyTypeDenied::class, $vacancy);
         $form->handleRequest($request);
 
