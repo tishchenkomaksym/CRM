@@ -95,6 +95,10 @@ class VacancyController extends AbstractController
      */
     public function approve(UserRepository $userRepository, Vacancy $vacancy, Swift_Mailer $mailer): Response
     {
+        foreach ($userRepository->findAll() as $item) {
+            $item->
+        }
+        
         $entityManager = $this->getDoctrine()->getManager();
         $vacancy->setIsApproved(true);
         $vacancy->setApproveDate(new DateTimeImmutable('now'));

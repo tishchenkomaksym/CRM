@@ -92,10 +92,6 @@ class User implements UserInterface
      */
     private $phpDeveloperStartTimeAndDateValue;
 
-//    /**
-//     * @ORM\OneToMany(targetEntity="App\Entity\Vacancy", mappedBy="user")
-//     */
-//    private $vacancies;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Office", mappedBy="topManager")
@@ -107,10 +103,6 @@ class User implements UserInterface
      */
     private $vacancies;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Vacancy", mappedBy="assignee")
-     */
-    private $assignee;
 
     public function __construct()
     {
@@ -123,7 +115,6 @@ class User implements UserInterface
         $this->sdtArchives = new ArrayCollection();
         $this->vacancies = new ArrayCollection();
         $this->offices = new ArrayCollection();
-        $this->assignee = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -509,37 +500,6 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($vacancy->getCreatedBy() === $this) {
                 $vacancy->setCreatedBy(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Vacancy[]
-     */
-    public function getAssignee(): Collection
-    {
-        return $this->assignee;
-    }
-
-    public function addAssignee(Vacancy $assignee): self
-    {
-        if (!$this->assignee->contains($assignee)) {
-            $this->assignee[] = $assignee;
-            $assignee->setAssignee($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAssignee(Vacancy $assignee): self
-    {
-        if ($this->assignee->contains($assignee)) {
-            $this->assignee->removeElement($assignee);
-            // set the owning side to null (unless already changed)
-            if ($assignee->getAssignee() === $this) {
-                $assignee->setAssignee(null);
             }
         }
 
