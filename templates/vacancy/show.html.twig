@@ -63,6 +63,16 @@
                 <th>Bonus</th>
                 <td>{{ vacancy.bonus }}</td>
             </tr>
+            {% if vacancy.isApproved == false and vacancy.isApproved is not null %}
+                <tr>
+                    <th>The reason your request have been denied</th>
+                    <td>{{ vacancy.reasonDenied }}</td>
+                </tr>
+                <tr>
+                    <th>Request reason</th>
+                    <td>{{ vacancy.reason }}</td>
+                </tr>
+            {% else %}
             <tr>
                 <th>Responsibilities</th>
                 <td>{{ vacancy.responsibilities }}</td>
@@ -75,6 +85,7 @@
                 <th>Plus</th>
                 <td>{{ vacancy.plus }}</td>
             </tr>
+            {% endif %}
             <tr>
                 <th>Created</th>
                 <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
