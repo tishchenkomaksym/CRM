@@ -45,6 +45,8 @@ class VacancyController extends AbstractController
 
     public const VACANCY_ENTITY_IN_VIEW='vacancy';
 
+    public const VACANCY_EXPIRED_TIME = 'expiredTime';
+
     public function __construct(Environment $environment)
     {
         $this->environment = $environment;
@@ -98,6 +100,7 @@ class VacancyController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $vacancy->setIsApproved(true);
         $vacancy->setApproveDate(new DateTimeImmutable('now'));
+        $vacancy->setApprovedBy($this->getUser());
         $entityManager->persist($vacancy);
 
         $messageBuilder = new NewVacancyMessageBuilderForManager(
@@ -253,8 +256,39 @@ class VacancyController extends AbstractController
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView(),
             'formUser' => $formUser->createView(),
-            'expiredTime' => $timeCalculator->getExpiredTime($object, new DateTime())
+            self::VACANCY_EXPIRED_TIME => $timeCalculator->getExpiredTime($object, new DateTime())
         ]);
+    }
+
+    /**
+     * @Route("/recruiter/{id}", name="vacancy_show_recruiter", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param ExpiredTimeCalculator $timeCalculator
+     * @return Response
+     * @throws Exception
+     */
+
+    public function showRecruiter(Vacancy $vacancy,ExpiredTimeCalculator $timeCalculator):Response
+    {
+        if ($vacancy->getApproveDate() != null) {
+            $object = $vacancy->getApproveDate();
+        } elseif ($vacancy->getAssigneeDate() != null){
+            $object = $vacancy->getAssigneeDate();
+        }else{
+            $object = new DateTimeImmutable('now');
+        }
+
+        $role = $this->getUser()->getRoles();
+        if (in_array('ROLE_RECRUITER', $role, true)){
+            $return = $this->render('vacancy/showRecruiter.html.twig', [
+                self::VACANCY_ENTITY_IN_VIEW => $vacancy,
+                self::VACANCY_EXPIRED_TIME => $timeCalculator->getExpiredTime($object, new DateTime())
+            ]);
+        }else{
+            $return = new NoDateException('Not found 404');
+        }
+
+        return $return;
     }
 
     /**
