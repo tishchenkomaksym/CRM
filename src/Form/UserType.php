@@ -24,6 +24,9 @@ class UserType extends AbstractType
                 TextType::class
             )
             ->add(
+                'createDate'
+            )
+            ->add(
                 'team',
                 EntityType::class,
                 [

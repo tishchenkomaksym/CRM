@@ -10,8 +10,9 @@
         <tr>
             <th>Id</th>
             <th>Email</th>
+            <th>Name</th>
             <th>Sdt Email assignee</th>
-            <th>Roles</th>
+{#            <th>Roles</th>#}
             <th>actions</th>
         </tr>
         </thead>
@@ -20,8 +21,9 @@
             <tr>
                 <td>{{ user.id }}</td>
                 <td>{{ user.email }}</td>
+                <td>{{ user.name }}</td>
                 <td><a href="{{ path('sdt_email_assignee_index',{'id':user.id}) }}">show</a>{% for email in user.SDTEmailAssignees%}{% endfor %}</td>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+{#                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>#}
                 <td>
                     <a href="{{ path('user_show', {'id': user.id}) }}">show</a>
                 </td>
