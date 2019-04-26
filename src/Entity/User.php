@@ -107,6 +107,11 @@ class User implements UserInterface
      */
     private $sDTEmailAssignees;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Team", inversedBy="users")
+     */
+    private $team;
+
 
     public function __construct()
     {
@@ -542,6 +547,15 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getTeam(): ?Team
+    {
+        return $this->team;
+    }
 
+    public function setTeam(?Team $team): self
+    {
+        $this->team = $team;
 
+        return $this;
+    }
 }

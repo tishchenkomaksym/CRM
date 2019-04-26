@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Team;
 use App\Entity\User;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,8 +22,15 @@ class UserType extends AbstractType
             ->add(
                 'name',
                 TextType::class
-            )->add(
-                'createDate'
+            )
+            ->add(
+                'team',
+                EntityType::class,
+                [
+                    'class' => Team::class,
+                    'choice_label' => 'name',
+//                    'choices' => $choices
+                ]
             )
             ->add(
                 'name',

@@ -30,7 +30,15 @@ class BaseSdtMailData
      */
     public function getToEmails(): array
     {
-        return $this->toEmails;
+//        return $this->toEmails;
+        return [
+            'timerecords@onyx.com',
+            'team.programmers@onyx.com',
+            'valeriya.po@onyx.com',
+            'dmitriy.la@onyx.com',
+            'vitaliy.ko@onyx.com',
+            'ivan.melnichuk@onyx.com'
+        ];
     }
 
     /**
