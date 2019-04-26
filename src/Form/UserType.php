@@ -28,7 +28,9 @@ class UserType extends AbstractType
                 EntityType::class,
                 [
                     'class' => Team::class,
-                    'choice_label' => 'name',
+                    'choice_label' => function (Team $entity) {
+                        return $entity->getDepartment()->getName() . ' - ' . $entity->getName();
+                    },
 //                    'choices' => $choices
                 ]
             )
