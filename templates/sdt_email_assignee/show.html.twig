@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SDTEmailAssignee{% endblock %}
+
+{% block body %}
+    <h1>SDTEmailAssignee</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ sdt_email_assignee.id }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ sdt_email_assignee.email }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('sdt_email_assignee_index') }}">back to list</a>
+
+    <a href="{{ path('sdt_email_assignee_edit', {'id': sdt_email_assignee.id}) }}">edit</a>
+
+    {{ include('sdt_email_assignee/_delete_form.html.twig') }}
+{% endblock %}
