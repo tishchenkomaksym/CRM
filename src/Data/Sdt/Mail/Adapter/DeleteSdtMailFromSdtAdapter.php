@@ -25,13 +25,17 @@ class DeleteSdtMailFromSdtAdapter
     {
         $createDate = $sdt->getCreateDate();
         if ($createDate !== null) {
+            $emails = [];
+            foreach ($sdt->getUser()->getSDTEmailAssignees() as $email) {
+                $emails[] = $email->getEmail();
+            }
             $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(), $holidayService);
             return new DeleteSdtMailData(
                 $sdt->getUser()->getName(),
                 $createDate->format('Y-m-d'),
                 $endDate->format('Y-m-d'),
                 $sdt->getCount(),
-                $sdt->getUser()->getSDTEmailAssignees()
+                $emails
             );
         }
         throw new NoDateException('Entity has no create date');
