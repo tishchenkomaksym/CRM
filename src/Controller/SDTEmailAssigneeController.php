@@ -57,7 +57,7 @@ class SDTEmailAssigneeController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="sdt_email_assignee_show", methods={"GET"})
+     * @Route("/entry/{id}", name="sdt_email_assignee_show", methods={"GET"})
      */
     public function show(SDTEmailAssignee $sDTEmailAssignee): Response
     {
@@ -79,7 +79,6 @@ class SDTEmailAssigneeController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
-
             return $this->redirectToRoute('sdt_email_assignee_index', [
                 'id' => $sDTEmailAssignee->getId(),
             ]);

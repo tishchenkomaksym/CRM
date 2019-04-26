@@ -30,7 +30,8 @@ class DeleteSdtMailFromSdtAdapter
                 $sdt->getUser()->getName(),
                 $createDate->format('Y-m-d'),
                 $endDate->format('Y-m-d'),
-                $sdt->getCount()
+                $sdt->getCount(),
+                $sdt->getUser()->getSDTEmailAssignees()
             );
         }
         throw new NoDateException('Entity has no create date');

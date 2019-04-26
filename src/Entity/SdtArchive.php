@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -59,12 +60,12 @@ class SdtArchive
         return $this;
     }
 
-    public function getCreateDate(): ?\DateTimeImmutable
+    public function getCreateDate(): ?DateTimeImmutable
     {
         return $this->createDate;
     }
 
-    public function setCreateDate(\DateTimeImmutable $createDate): self
+    public function setCreateDate(DateTimeImmutable $createDate): self
     {
         $this->createDate = $createDate;
 
@@ -95,12 +96,12 @@ class SdtArchive
         return $this;
     }
 
-    public function getReportDate(): ?\DateTimeImmutable
+    public function getReportDate(): ?DateTimeImmutable
     {
         return $this->reportDate;
     }
 
-    public function setReportDate(\DateTimeImmutable $reportDate): self
+    public function setReportDate(DateTimeImmutable $reportDate): self
     {
         $this->reportDate = $reportDate;
 

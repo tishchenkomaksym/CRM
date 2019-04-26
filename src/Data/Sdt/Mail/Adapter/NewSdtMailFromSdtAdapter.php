@@ -32,7 +32,8 @@ class NewSdtMailFromSdtAdapter
                 $endDate->format('Y-m-d'),
                 $sdt->getActing(),
                 $sdt->getCount(),
-                $sdt->getAtOwnExpense()
+                $sdt->getAtOwnExpense(),
+                $sdt->getUser()->getSDTEmailAssignees()
             );
         }
         throw new NoDateException('Entity has no create date');

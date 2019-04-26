@@ -15,11 +15,12 @@ class DeleteSdtMailData extends BaseSdtMailData
     private $fromDate;
     private $toDate;
 
-    public function __construct(string $userName, string $fromDate, string $toDate, $daysCount)
+    public function __construct(string $userName, string $fromDate, string $toDate, $daysCount, array $toEmails)
     {
         $this->fromDate = $fromDate;
         $this->toDate = $toDate;
         $this->daysCount = $daysCount;
+        $this->setToEmails($toEmails);
         BaseSdtMailData::__construct($userName);
     }
 
