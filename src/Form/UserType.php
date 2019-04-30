@@ -6,6 +6,7 @@ use App\Entity\Team;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -24,7 +25,7 @@ class UserType extends AbstractType
                 TextType::class
             )
             ->add(
-                'createDate'
+                'createDate', DateType::class, ['years'=>range(2005,2020)]
             )
             ->add(
                 'team',
@@ -32,7 +33,7 @@ class UserType extends AbstractType
                 [
                     'class' => Team::class,
                     'choice_label' => function (Team $entity) {
-                        return $entity->getDepartment()->getName() . ' - ' . $entity->getName();
+                        return $entity->getDepartment()->getOffice()->getName() . '- ' . $entity->getDepartment()->getName() . ' - ' . $entity->getName();
                     },
 //                    'choices' => $choices
                 ]
