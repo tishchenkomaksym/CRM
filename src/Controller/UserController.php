@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserCreateType;
 use App\Form\UserType;
+use App\Repository\SDTEmailAssigneeRepository;
 use App\Repository\UserRepository;
 use App\Service\User\Builder\RegistrationUserBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -21,7 +22,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class UserController extends AbstractController
 {
 
-    public const ROUTE_USER_SHOW='user_show';
+    public const ROUTE_USER_SHOW = 'user_show';
 
     /**
      * @Route("/", name="user_index", methods={"GET"})
@@ -43,19 +44,25 @@ class UserController extends AbstractController
      * @Route("/new", name="user_new", methods={"GET","POST"})
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param RegistrationUserBuilder $userBuilder
      * @return Response
      */
-    public function new(Request $request,UserPasswordEncoderInterface $passwordEncoder): Response
+    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder, RegistrationUserBuilder $userBuilder): Response
     {
         $user = new User();
         $form = $this->createForm(UserCreateType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user=RegistrationUserBuilder::build($user,$passwordEncoder,$user->getPassword());
+            $user = RegistrationUserBuilder::build($user, $passwordEncoder, $user->getPassword());
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
+            foreach ($userBuilder->buildUserEmails($user) as $email) {
+                $entityManager->persist($email);
+            }
+            $entityManager->flush();
+
             return $this->redirectToRoute('user_index');
         }
 
@@ -87,16 +94,26 @@ class UserController extends AbstractController
      * @Route("/{id}/edit", name="user_edit", methods={"GET","POST"})
      * @param Request $request
      * @param User $user
+     * @param RegistrationUserBuilder $userBuilder
+     * @param SDTEmailAssigneeRepository $assigneeRepository
      * @return Response
      */
-    public function edit(Request $request, User $user): Response
+    public function edit(Request $request, User $user, RegistrationUserBuilder $userBuilder, SDTEmailAssigneeRepository $assigneeRepository): Response
     {
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
 
+            foreach ($assigneeRepository->findBy(['user' => $user->getId()]) as $SDTEmailAssignee) {
+                $entityManager->remove($SDTEmailAssignee);
+            }
+            foreach ($userBuilder->buildUserEmails($user) as $email) {
+                $entityManager->persist($email);
+            }
+            $entityManager->flush();
             return $this->redirectToRoute(
                 'user_index',
                 [
