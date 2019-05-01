@@ -103,9 +103,6 @@ class User implements UserInterface
      */
     private $vacancies;
 
-    private $sDTEmailAssignees;
-
-
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
@@ -117,7 +114,6 @@ class User implements UserInterface
         $this->sdtArchives = new ArrayCollection();
         $this->vacancies = new ArrayCollection();
         $this->offices = new ArrayCollection();
-        $this->sDTEmailAssignees = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -503,37 +499,6 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($vacancy->getCreatedBy() === $this) {
                 $vacancy->setCreatedBy(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|SDTEmailAssignee[]
-     */
-    public function getSDTEmailAssignees(): Collection
-    {
-        return $this->sDTEmailAssignees;
-    }
-
-    public function addSDTEmailAssignee(SDTEmailAssignee $sDTEmailAssignee): self
-    {
-        if (!$this->sDTEmailAssignees->contains($sDTEmailAssignee)) {
-            $this->sDTEmailAssignees[] = $sDTEmailAssignee;
-            $sDTEmailAssignee->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSDTEmailAssignee(SDTEmailAssignee $sDTEmailAssignee): self
-    {
-        if ($this->sDTEmailAssignees->contains($sDTEmailAssignee)) {
-            $this->sDTEmailAssignees->removeElement($sDTEmailAssignee);
-            // set the owning side to null (unless already changed)
-            if ($sDTEmailAssignee->getUser() === $this) {
-                $sDTEmailAssignee->setUser(null);
             }
         }
 
