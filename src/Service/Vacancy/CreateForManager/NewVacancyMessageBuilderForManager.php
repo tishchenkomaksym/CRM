@@ -34,7 +34,7 @@ class NewVacancyMessageBuilderForManager implements MessageBuilderInterface
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function build():string
+    public function build(): Swift_Message
     {
 
         if (

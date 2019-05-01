@@ -126,6 +126,11 @@ class Vacancy
      */
     private $assignee;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     */
+    private $approvedBy;
+
 
 
     public function getId(): ?int
@@ -382,6 +387,18 @@ class Vacancy
     public function setAssignee(?User $assignee): self
     {
         $this->assignee = $assignee;
+
+        return $this;
+    }
+
+    public function getApprovedBy(): ?User
+    {
+        return $this->approvedBy;
+    }
+
+    public function setApprovedBy(?User $approvedBy): self
+    {
+        $this->approvedBy = $approvedBy;
 
         return $this;
     }

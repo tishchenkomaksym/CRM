@@ -109,18 +109,18 @@
             </tr>
             {% elseif is_granted('ROLE_RECRUITER')%}
                 <tr>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.id }}</a></td>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.team }}</a></td>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.position }}</a></td>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.amount }}</a></td>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">{{ vacancy.id }}</a></td>
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">{{ vacancy.team }}</a></td>
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">{{ vacancy.position }}</a></td>
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">{{ vacancy.amount }}</a></td>
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">
                             {% if vacancy.assignee is null %}
                                 <span>no assignee</span>
                             {% else %}
                                 <span>{{ vacancy.assignee.name }}</span>
                             {% endif %}</a></td>
                     <td>
-                        <a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">
+                        <a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">
                             {% if vacancy.isApproved == false and vacancy.isApproved is not null %}
                                 Denied
                             {% elseif vacancy.isApproved == true %}
@@ -137,7 +137,7 @@
                             {% endif %}
                         </span>
                     </td>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.createdAt|date('Y-m-d') }}</a></td>
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">{{ vacancy.createdAt|date('Y-m-d') }}</a></td>
                 </tr>
             {% else %}
             {% endif %}
