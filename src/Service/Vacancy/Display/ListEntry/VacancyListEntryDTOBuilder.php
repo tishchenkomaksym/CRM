@@ -40,7 +40,7 @@ class VacancyListEntryDTOBuilder
         $object->amount = $vacancy->getAmount();
         $object->approveDate = $vacancy->getApproveDate();
         $object->assignee = $vacancy->getAssignee();
-        $object->isApproved = $vacancy->getIsApproved();
+        $object->status = $vacancy->getStatus();
         $object->createdAt = $vacancy->getCreatedAt();
 
         if ($vacancy->getApproveDate() != null) {

@@ -24,6 +24,7 @@ use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -43,7 +44,7 @@ class VacancyController extends AbstractController
      */
     private $environment;
 
-    public const VACANCY_ENTITY_IN_VIEW='vacancy';
+    public const VACANCY_ENTITY_IN_VIEW ='vacancy';
 
     public const VACANCY_EXPIRED_TIME = 'expiredTime';
 
@@ -97,11 +98,13 @@ class VacancyController extends AbstractController
      */
     public function approve(UserRepository $userRepository, Vacancy $vacancy, Swift_Mailer $mailer): Response
     {
-        if ($vacancy->getIsApproved() !== null){
-            throw $this->createNotFoundException('Not found 404');
+
+        if ($vacancy->getStatus() !== null){
+            throw new NotFoundHttpException('This request was already approved or denied');
         }
+
         $entityManager = $this->getDoctrine()->getManager();
-        $vacancy->setIsApproved(true);
+        $vacancy->setStatus('Approved');
         $vacancy->setApproveDate(new DateTimeImmutable('now'));
         $vacancy->setApprovedBy($this->getUser());
         $entityManager->persist($vacancy);
@@ -130,8 +133,8 @@ class VacancyController extends AbstractController
      */
     public function deny(Vacancy $vacancy, Request $request): Response
     {
-        if ($vacancy->getIsApproved() !== null){
-            throw $this->createNotFoundException('This request was already approved or denied!');
+        if ($vacancy->getStatus() !== null){
+            throw new NotFoundHttpException('This request was already approved or denied');
         }
 
         $form = $this->createForm(VacancyTypeDenied::class, $vacancy);
@@ -139,7 +142,7 @@ class VacancyController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $vacancy->setIsApproved(false);
+            $vacancy->setStatus('Denied');
             $this->getDoctrine()->getManager()->flush();
             return $this->redirectToRoute('vacancy_denied', [
                 'id' => $vacancy->getId(),
@@ -247,6 +250,7 @@ class VacancyController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $vacancy->setAssigneeDate(new DateTimeImmutable( 'now'));
+            $vacancy->setStatus('Issue have been assigned ');
             $entityManager->persist($vacancy);
             $entityManager->flush();
         }

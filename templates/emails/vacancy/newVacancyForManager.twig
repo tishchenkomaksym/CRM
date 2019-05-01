@@ -4,7 +4,7 @@
         <p>
             Your request #{{ vacancy.id }}
 
-            {% if vacancy.isApproved == true %}
+            {% if vacancy.status == 'Approved' %}
                 have been successfully approved
             {% else %}
                 have been denied

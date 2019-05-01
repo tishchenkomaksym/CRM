@@ -14,7 +14,7 @@ class VacancyListEntryDTO
 
     public $team;
 
-    public $isApproved;
+    public $status;
 
     public $assignee;
 
