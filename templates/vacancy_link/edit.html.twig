@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit VacancyLink{% endblock %}
+
+{% block body %}
+    <h1>Edit VacancyLink</h1>
+
+    {{ include('vacancy_link/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('vacancy_link_index', {'id': vacancy_link.id}) }}">back to list</a>
+
+    {{ include('vacancy_link/_delete_form.html.twig') }}
+{% endblock %}

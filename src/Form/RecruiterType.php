@@ -18,13 +18,14 @@ class RecruiterType extends AbstractType
     {
         $builder
             ->add('assignee', EntityType::class, [
-                'placeholder' => 'Assign Issue',
+                'placeholder' => 'Assign issue',
                 'class' => User::class,
-                'query_builder' => static function (EntityRepository $er) {
+                'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('u')
-                        ->andWhere('u.roles LIKE :param')
+                        ->andWhere('u.roles LIKE :param ')
                         ->setParameter('param', '%"ROLE_RECRUITER"%');
                 },
+
                 'choice_label' => 'name'
             ]);
     }
