@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\SDTEmailAssignee;
 use App\Entity\User;
 use App\Form\SDTEmailAssigneeType;
+use App\Repository\SDTEmailAssigneeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,10 +21,10 @@ class SDTEmailAssigneeController extends AbstractController
      * @param User $user
      * @return Response
      */
-    public function index(User $user): Response
+    public function index(User $user, SDTEmailAssigneeRepository $SDTEmailAssigneeRepository): Response
     {
         return $this->render('sdt_email_assignee/index.html.twig', [
-            'sdt_email_assignees' => $user->getSDTEmailAssignees(),
+            'sdt_email_assignees' => $SDTEmailAssigneeRepository->findBy(['user' => $user->getId()]),
             'user' => $user
         ]);
     }
