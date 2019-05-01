@@ -92,6 +92,7 @@ class User implements UserInterface
      */
     private $phpDeveloperStartTimeAndDateValue;
 
+
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Office", mappedBy="topManager")
      */
@@ -101,16 +102,6 @@ class User implements UserInterface
      * @ORM\OneToMany(targetEntity="App\Entity\Vacancy", mappedBy="createdBy")
      */
     private $vacancies;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\SDTEmailAssignee", mappedBy="user", orphanRemoval=true)
-     */
-    private $sDTEmailAssignees;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Team", inversedBy="users")
-     */
-    private $team;
 
 
     public function __construct()
