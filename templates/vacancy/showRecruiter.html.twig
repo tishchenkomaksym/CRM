@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Request</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Work on Issue - Step 1</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block body %}
+    <style>
+        .wrapStart {
+            border: 2px solid #F5871F;
+            padding: 10px;
+            text-align: center;
+            border-radius: 10px;
+        }
+    </style>
+    <table class="table" style="table-layout: fixed">
+        <tbody>
+        <tr>
+            <th>Request#</th>
+            <td>{{ vacancy.id }}</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+        </tr>
+        <tr>
+            <th>By</th>
+            <td>{{ vacancy.createdBy }}</td>
+            <td>
+                {% if expiredTime >= 17 %}
+                    <p><span>Expired in Status</span></p>
+                {% elseif expiredTime >= 12 %}
+                    <p><span>Soon to expire</span></p>
+                {% endif %}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div>
+        <div class="border border-danger rounded d-flex align-items-">
+            <p class="">
+                Request Status:
+            </p>
+        </div>
+    </div>
+    <br>
+    <div class="d-flex justify-content-around link-recruiter">
+        <a class="btn btn-primary" href="{{ path('vacancy_show', {'id': vacancy.id}) }}" >View Request Info &#8594;</a>
+        <a class="btn btn-primary" href="#">View Request history &#8594;</a>
+        <a class="btn btn-primary" href="#">View Candidates list &#8594;</a>
+    </div>
+    <h3 class="text-center">Work on Issue</h3>
+    <div class="wrapStart">
+        <p class="border border-warning">Status: </p>
+        <a class="btn btn-danger" href="#">Start Work</a>
+    </div>
+    <div class="d-flex justify-content-between">
+        <div>
+            assigned to:{{ vacancy.assignee }}
+        </div>
+        <div>
+            Approved
+            {{ vacancy.approveDate|date('Y-m-d') }}
+            by {{ vacancy.approvedBy }}
+        </div>
+    </div>
+
+{% endblock %}

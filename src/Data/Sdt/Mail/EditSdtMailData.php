@@ -43,7 +43,8 @@ class EditSdtMailData extends BaseSdtMailData
         string $newToDate,
         string $actingPeople,
         int $daysCount,
-        bool $atOwnExpense
+        bool $atOwnExpense,
+        array $toEmails
     )
     {
         parent::__construct($userName);
@@ -54,6 +55,7 @@ class EditSdtMailData extends BaseSdtMailData
         $this->actingPeople = $actingPeople;
         $this->daysCount = $daysCount;
         $this->atOwnExpense = $atOwnExpense;
+        $this->setToEmails($toEmails);
     }
 
     /**

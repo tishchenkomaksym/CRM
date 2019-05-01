@@ -16,7 +16,7 @@ class NewSdtMailData extends BaseSdtMailData
     private $toDate;
     private $actingPeople;
 
-    public function __construct($userName, $fromDate, $toDate, $actingPeople, $daysCount, bool $atOwnExpensive)
+    public function __construct($userName, $fromDate, $toDate, $actingPeople, $daysCount, bool $atOwnExpensive, array $toEmails)
     {
         parent::__construct($userName);
         $this->fromDate = $fromDate;
@@ -24,6 +24,7 @@ class NewSdtMailData extends BaseSdtMailData
         $this->actingPeople = $actingPeople;
         $this->daysCount = $daysCount;
         $this->atOwnExpensive = $atOwnExpensive;
+        $this->setToEmails($toEmails);
     }
 
     /**

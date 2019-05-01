@@ -115,6 +115,7 @@ class User implements UserInterface
         $this->sdtArchives = new ArrayCollection();
         $this->vacancies = new ArrayCollection();
         $this->offices = new ArrayCollection();
+        $this->sDTEmailAssignees = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -168,7 +169,7 @@ class User implements UserInterface
      */
     public function getPassword(): string
     {
-        return (string)$this->password;
+        return $this->password;
     }
 
     public function setPassword(string $password): self
@@ -506,6 +507,46 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return Collection|SDTEmailAssignee[]
+     */
+    public function getSDTEmailAssignees(): Collection
+    {
+        return $this->sDTEmailAssignees;
+    }
 
+    public function addSDTEmailAssignee(SDTEmailAssignee $sDTEmailAssignee): self
+    {
+        if (!$this->sDTEmailAssignees->contains($sDTEmailAssignee)) {
+            $this->sDTEmailAssignees[] = $sDTEmailAssignee;
+            $sDTEmailAssignee->setUser($this);
+        }
 
+        return $this;
+    }
+
+    public function removeSDTEmailAssignee(SDTEmailAssignee $sDTEmailAssignee): self
+    {
+        if ($this->sDTEmailAssignees->contains($sDTEmailAssignee)) {
+            $this->sDTEmailAssignees->removeElement($sDTEmailAssignee);
+            // set the owning side to null (unless already changed)
+            if ($sDTEmailAssignee->getUser() === $this) {
+                $sDTEmailAssignee->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTeam(): ?Team
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?Team $team): self
+    {
+        $this->team = $team;
+
+        return $this;
+    }
 }

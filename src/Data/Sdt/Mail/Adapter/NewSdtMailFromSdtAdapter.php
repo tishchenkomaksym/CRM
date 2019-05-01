@@ -24,6 +24,10 @@ class NewSdtMailFromSdtAdapter
     public static function getNewSdtMail(Sdt $sdt, HolidayService $holidayService): NewSdtMailData
     {
         $createDate = $sdt->getCreateDate();
+        $emails = [];
+        foreach ($sdt->getUser()->getSDTEmailAssignees() as $email) {
+            $emails[] = $email->getEmail();
+        }
         if ($createDate !== null) {
             $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(), $holidayService);
             return new NewSdtMailData(
@@ -32,7 +36,9 @@ class NewSdtMailFromSdtAdapter
                 $endDate->format('Y-m-d'),
                 $sdt->getActing(),
                 $sdt->getCount(),
-                $sdt->getAtOwnExpense()
+                $sdt->getAtOwnExpense(),
+                $emails
+
             );
         }
         throw new NoDateException('Entity has no create date');
