@@ -35,7 +35,7 @@ class PhpDeveloperMonthlySDTBuilder
     private static function calculateSdtCount(DateTimeInterface $createDate, DateTime $nowDate)
     {
         $date = clone $createDate;
-        if ($date instanceof DateTime && (int)$date->format('d') < 15) {
+        if ($date instanceof DateTime) {
             $date->setDate($date->format('Y'), $date->format('m'), 1);
             $date->setTime(0, 0);
         }
