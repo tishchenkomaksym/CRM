@@ -49,6 +49,7 @@ final class Version20190408132401 extends AbstractMigration
                ");
     }
 
+
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
