@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Candidate index{% endblock %}
+
+{% block body %}
+    <h1>Candidate index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Photo</th>
+                <th>Full name</th>
+                <th>Position</th>
+                <th>Location</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
+        <tbody>
+        <div>
+            <a class="btn btn-primary" href="{{ path('candidate_new') }}">Create new</a>
+        </div>
+        {% for candidate in candidates %}
+            <tr>
+                <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}"><img class="img-fluid img-thumbnail" src="/uploads/{{ candidate.photo }}" alt=""></a></td>
+                <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.name }}</a></td>
+                <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.position }}</a></td>
+                <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.location }}</a></td>
+                <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.phone }}</a></td>
+                {% for vacancy in candidate.vacancy %}
+                    <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">Request#{{ vacancy.id }}</a></td>
+                {% endfor %}
+                {% if candidate.updatedDate is not null %}
+                    <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">Updated:{{ candidate.updatedDate|date('Y-m-d') }}</a></td>
+                {% else %}
+                    <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">Created:{{ candidate.createdAt|date('Y-m-d') }}</a></td>
+                {% endif %}
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="15">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+{% endblock %}

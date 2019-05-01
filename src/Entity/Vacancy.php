@@ -89,7 +89,6 @@ class Vacancy
      */
     private $reasonDenied;
 
-
     /**
      * @var string $type
      *
@@ -126,7 +125,7 @@ class Vacancy
     private $assigneeDate;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="assignee")
      */
     private $assignee;
 
@@ -134,6 +133,11 @@ class Vacancy
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
      */
     private $approvedBy;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $updatedDate;
 
 
 
@@ -319,6 +323,8 @@ class Vacancy
     {
         $this->status = $status;
 
+        $this->setUpdatedDate(new DateTimeImmutable( 'now'));
+
         return $this;
     }
 
@@ -407,5 +413,16 @@ class Vacancy
         return $this;
     }
 
+    public function getUpdatedDate(): ?DateTimeImmutable
+    {
+        return $this->updatedDate;
+    }
+
+    public function setUpdatedDate(?DateTimeImmutable $updatedDate): self
+    {
+        $this->updatedDate = $updatedDate;
+
+        return $this;
+    }
 
 }

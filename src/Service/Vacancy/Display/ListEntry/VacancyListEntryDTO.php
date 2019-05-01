@@ -26,4 +26,6 @@ class VacancyListEntryDTO
 
     public $createdAt;
 
+    public $updatedDate;
+
 }
