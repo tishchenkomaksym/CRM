@@ -14,13 +14,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ViewerType extends AbstractType
 {
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('user', EntityType::class, [
                 'placeholder' => 'Add request viewer',
                 'class' => User::class,
-                'query_builder' => function (EntityRepository $er) {
+                'query_builder' => static function (EntityRepository $er) {
                     return $er->createQueryBuilder('u')
                         ->orderBy('u.name', 'ASC');
                 },

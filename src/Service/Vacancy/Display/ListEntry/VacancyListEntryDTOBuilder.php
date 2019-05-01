@@ -40,8 +40,9 @@ class VacancyListEntryDTOBuilder
         $object->amount = $vacancy->getAmount();
         $object->approveDate = $vacancy->getApproveDate();
         $object->assignee = $vacancy->getAssignee();
-        $object->isApproved = $vacancy->getIsApproved();
+        $object->status = $vacancy->getStatus();
         $object->createdAt = $vacancy->getCreatedAt();
+        $object->updatedDate = $vacancy->getUpdatedDate();
 
         if ($vacancy->getApproveDate() != null) {
             $object->expiredTime = $this->calculator->getExpiredTime($vacancy->getApproveDate(), new DateTime());

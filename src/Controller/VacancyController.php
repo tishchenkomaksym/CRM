@@ -24,6 +24,7 @@ use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -43,7 +44,9 @@ class VacancyController extends AbstractController
      */
     private $environment;
 
-    public const VACANCY_ENTITY_IN_VIEW='vacancy';
+    public const VACANCY_ENTITY_IN_VIEW ='vacancy';
+
+    public const VACANCY_EXPIRED_TIME = 'expiredTime';
 
     public function __construct(Environment $environment)
     {
@@ -95,9 +98,15 @@ class VacancyController extends AbstractController
      */
     public function approve(UserRepository $userRepository, Vacancy $vacancy, Swift_Mailer $mailer): Response
     {
+
+        if ($vacancy->getStatus() !== null){
+            throw new NotFoundHttpException('This request was already approved or denied');
+        }
+
         $entityManager = $this->getDoctrine()->getManager();
-        $vacancy->setIsApproved(true);
+        $vacancy->setStatus('Approved');
         $vacancy->setApproveDate(new DateTimeImmutable('now'));
+        $vacancy->setApprovedBy($this->getUser());
         $entityManager->persist($vacancy);
 
         $messageBuilder = new NewVacancyMessageBuilderForManager(
@@ -124,12 +133,16 @@ class VacancyController extends AbstractController
      */
     public function deny(Vacancy $vacancy, Request $request): Response
     {
+        if ($vacancy->getStatus() !== null){
+            throw new NotFoundHttpException('This request was already approved or denied');
+        }
+
         $form = $this->createForm(VacancyTypeDenied::class, $vacancy);
         $form->handleRequest($request);
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $vacancy->setIsApproved(false);
+            $vacancy->setStatus('Denied');
             $this->getDoctrine()->getManager()->flush();
             return $this->redirectToRoute('vacancy_denied', [
                 'id' => $vacancy->getId(),
@@ -237,6 +250,7 @@ class VacancyController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $vacancy->setAssigneeDate(new DateTimeImmutable( 'now'));
+            $vacancy->setStatus('Issue have been assigned ');
             $entityManager->persist($vacancy);
             $entityManager->flush();
         }
@@ -253,8 +267,39 @@ class VacancyController extends AbstractController
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView(),
             'formUser' => $formUser->createView(),
-            'expiredTime' => $timeCalculator->getExpiredTime($object, new DateTime())
+            self::VACANCY_EXPIRED_TIME => $timeCalculator->getExpiredTime($object, new DateTime())
         ]);
+    }
+
+    /**
+     * @Route("/recruiter/{id}", name="vacancy_show_recruiter", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param ExpiredTimeCalculator $timeCalculator
+     * @return Response
+     * @throws Exception
+     */
+
+    public function showRecruiter(Vacancy $vacancy,ExpiredTimeCalculator $timeCalculator):Response
+    {
+        if ($vacancy->getApproveDate() != null) {
+            $object = $vacancy->getApproveDate();
+        } elseif ($vacancy->getAssigneeDate() != null){
+            $object = $vacancy->getAssigneeDate();
+        }else{
+            $object = new DateTimeImmutable('now');
+        }
+
+        $role = $this->getUser()->getRoles();
+        if (in_array('ROLE_RECRUITER', $role, true)){
+            $return = $this->render('vacancy/showRecruiter.html.twig', [
+                self::VACANCY_ENTITY_IN_VIEW => $vacancy,
+                self::VACANCY_EXPIRED_TIME => $timeCalculator->getExpiredTime($object, new DateTime())
+            ]);
+        }else{
+            $return = new NoDateException('Not found 404');
+        }
+
+        return $return;
     }
 
     /**

@@ -6,7 +6,7 @@
             <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
         {% endif %}
         {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
-            <li class="list-group-item"><a href="#">Candidate Database</a></li>
+            <li class="list-group-item"><a href="{{ path('candidate_index') }}">Candidate Database</a></li>
         {% endif %}
     </ul>
 {% endblock %}
@@ -35,6 +35,8 @@
                 <th>Status</th>
                 {% if is_granted('ROLE_HR') %}
                     <th>Approve date</th>
+                {% elseif is_granted('ROLE_RECRUITER') %}
+                    <th>Updated Date</th>
                 {% else %}
                     <th>Created date</th>
                 {% endif %}
@@ -42,7 +44,7 @@
         </thead>
         <tbody>
         {% for vacancy in vacancies %}
-            {% if is_granted('ROLE_HR') and vacancy.isApproved == true %}
+            {% if is_granted('ROLE_HR') and vacancy.status != 'Denied' and vacancy.status != null %}
                 <tr>
                     <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.id }}</a></td>
                     <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.team }}</a></td>
@@ -56,12 +58,10 @@
                             {% endif %}</a></td>
                     <td>
                         <a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">
-                            {% if vacancy.isApproved == false and vacancy.isApproved is not null %}
-                                Denied
-                            {% elseif vacancy.isApproved == true %}
-                                <span>Approved</span>
-                            {% else %}
+                            {% if vacancy.status == null %}
                                 <span>Waiting for approval</span>
+                            {% else %}
+                                {{ vacancy.status }}
                             {% endif %}
                         </a>
                     </td>
@@ -89,12 +89,10 @@
                         {% endif %}</a></td>
                 <td>
                     <a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">
-                    {% if vacancy.isApproved == false and vacancy.isApproved is not null %}
-                        Denied
-                    {% elseif vacancy.isApproved == true %}
-                        <span>Approved</span>
-                    {% else %}
+                    {% if vacancy.status == null %}
                         <span>Waiting for approval</span>
+                    {% else %}
+                        {{ vacancy.status }}
                     {% endif %}
                     </a>
                     <span>
@@ -107,26 +105,24 @@
                 </td>
                 <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.createdAt|date('Y-m-d') }}</a></td>
             </tr>
-            {% elseif is_granted('ROLE_RECRUITER')%}
+            {% elseif is_granted('ROLE_RECRUITER') and vacancy.status != 'Denied' and vacancy.status != null %}
                 <tr>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.id }}</a></td>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.team }}</a></td>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.position }}</a></td>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.amount }}</a></td>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">{{ vacancy.id }}</a></td>
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">{{ vacancy.team }}</a></td>
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">{{ vacancy.position }}</a></td>
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">{{ vacancy.amount }}</a></td>
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">
                             {% if vacancy.assignee is null %}
                                 <span>no assignee</span>
                             {% else %}
                                 <span>{{ vacancy.assignee.name }}</span>
                             {% endif %}</a></td>
                     <td>
-                        <a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">
-                            {% if vacancy.isApproved == false and vacancy.isApproved is not null %}
-                                Denied
-                            {% elseif vacancy.isApproved == true %}
-                                <span>Approved</span>
-                            {% else %}
+                        <a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">
+                            {% if vacancy.status == null %}
                                 <span>Waiting for approval</span>
+                            {% else %}
+                                {{ vacancy.status }}
                             {% endif %}
                         </a>
                         <span>
@@ -137,7 +133,7 @@
                             {% endif %}
                         </span>
                     </td>
-                    <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.createdAt|date('Y-m-d') }}</a></td>
+                    <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">{{ vacancy.updatedDate|date('Y-m-d') }}</a></td>
                 </tr>
             {% else %}
             {% endif %}

@@ -2,6 +2,14 @@
 
 {% block text %}
     <h1>Vacancy index</h1>
+    <style>
+        td {
+            word-wrap: break-word;
+        }
+        table {
+            table-layout: fixed;
+        }
+    </style>
 
     <table class="table">
         <thead>
@@ -19,7 +27,6 @@
             <th>English</th>
             <th>Amount</th>
             <th>Bonus</th>
-
             <th>actions</th>
         </tr>
         </thead>
@@ -38,6 +45,9 @@
                 <td>{{ vacancy.english }}</td>
                 <td>{{ vacancy.amount }}</td>
                 <td>{{ vacancy.bonus }}</td>
+                <td>{{ vacancy.responsibilities }}</td>
+                <td>{{ vacancy.requirements }}</td>
+                <td>{{ vacancy.reason }}</td>
             </tr>
         </tbody>
     </table>

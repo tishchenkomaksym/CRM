@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block menu %}
+    <ul class="list-group list-group-flush">
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
+        {% endif %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('candidate_index') }}">Candidate Database</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Your Requests</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Work on Issue - Step
+                {% if vacancy.status == 'CV Received' %}
+                    2
+                {% else %}
+                    1
+                {% endif %}
+            </li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block body %}
+    <table class="table" style="table-layout: fixed">
+        <tbody>
+        <tr>
+            <th>Request#</th>
+            <td>{{ vacancy.id }}</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+        </tr>
+        <tr>
+            <th>By</th>
+            <td>{{ vacancy.createdBy }}</td>
+            <td>
+                {% if expiredTime >= 17 %}
+                    <p><span>Expired in Status</span></p>
+                {% elseif expiredTime >= 12 %}
+                    <p><span>Soon to expire</span></p>
+                {% endif %}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div>
+        <div class="border border-danger rounded d-flex align-items-">
+            {% if vacancy.status is null %}
+                <p>Status:<span>Waiting for approval</span></p>
+            {% else %}
+                <p>Status: <span>{{ vacancy.status }}</span></p>
+            {% endif %}
+        </div>
+    </div>
+    <br>
+    <div class="d-flex justify-content-around link-recruiter">
+        <a class="btn btn-primary" href="{{ path('vacancy_show', {'id': vacancy.id}) }}" >View Request Info &#8594;</a>
+        <a class="btn btn-primary" href="#">View Request history &#8594;</a>
+        <a class="btn btn-primary" href="#">View Candidates list &#8594;</a>
+    </div>
+    <h3 class="text-center">Work on Issue</h3>
+    <div class="wrapStart text-center border border-warning rounded">
+        <p class="border border-warning rounded">Status:
+            {% if vacancy.status == 'CV Received' %}
+                <span>CV Received</span>
+            {% else %}
+                <span>Search for a candidate(s) have been started</span>
+            {% endif %}
+        </p>
+        <a class="btn btn-danger" href="{{ path('vacancy_link_new', {'id': vacancy.id}) }}">Start Work</a>
+    </div>
+    <div class="navbar bg-light d-flex justify-content-between">
+        <div>
+            assigned to:{{ vacancy.assignee }}
+        </div>
+        <div>
+            <span class="border border-success">Approved</span>
+            {{ vacancy.approveDate|date('Y-m-d') }}
+            by {{ vacancy.approvedBy }}
+        </div>
+    </div>
+
+{% endblock %}

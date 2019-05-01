@@ -14,7 +14,7 @@ class VacancyListEntryDTO
 
     public $team;
 
-    public $isApproved;
+    public $status;
 
     public $assignee;
 
@@ -25,5 +25,7 @@ class VacancyListEntryDTO
     public $expiredTime;
 
     public $createdAt;
+
+    public $updatedDate;
 
 }

@@ -90,9 +90,12 @@ class Vacancy
     private $reasonDenied;
 
     /**
-     * @ORM\Column(type="boolean", nullable=true)
+     * @var string $type
+     *
+     * @ORM\Column(name="status", nullable=true, type="string", length=255, columnDefinition="ENUM('Approved', 'Denied','No assignee','Issue have been assigned','Search for a candidate(s) have been started','CV Received','Candidates Interest is checked','CV approved by Department Manager')")
      */
-    private $isApproved;
+
+    private $status;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="vacancies")
@@ -122,9 +125,19 @@ class Vacancy
     private $assigneeDate;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="assignee")
      */
     private $assignee;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     */
+    private $approvedBy;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $updatedDate;
 
 
 
@@ -301,14 +314,16 @@ class Vacancy
         return $this;
     }
 
-    public function getIsApproved(): ?bool
+    public function getStatus(): ?string
     {
-        return $this->isApproved;
+        return $this->status;
     }
 
-    public function setIsApproved(?bool $isApproved): self
+    public function setStatus($status): self
     {
-        $this->isApproved = $isApproved;
+        $this->status = $status;
+
+        $this->setUpdatedDate(new DateTimeImmutable( 'now'));
 
         return $this;
     }
@@ -386,5 +401,28 @@ class Vacancy
         return $this;
     }
 
+    public function getApprovedBy(): ?User
+    {
+        return $this->approvedBy;
+    }
+
+    public function setApprovedBy(?User $approvedBy): self
+    {
+        $this->approvedBy = $approvedBy;
+
+        return $this;
+    }
+
+    public function getUpdatedDate(): ?DateTimeImmutable
+    {
+        return $this->updatedDate;
+    }
+
+    public function setUpdatedDate(?DateTimeImmutable $updatedDate): self
+    {
+        $this->updatedDate = $updatedDate;
+
+        return $this;
+    }
 
 }

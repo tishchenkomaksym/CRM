@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Candidate{% endblock %}
+
+{% block body %}
+    <h1>Candidate</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ candidate.id }}</td>
+            </tr>
+            <tr>
+                <th>Photo</th>
+                <td><img class="img-fluid img-thumbnail" src="/uploads/{{ candidate.photo }}" alt="">
+                    <a class="btn btn-secondary" href="{{ path('candidate_edit', {'id': candidate.id}) }}">edit</a>
+                </td>
+                <td>Created
+                    {{ candidate.createdAt|date('Y-m-d') }}</td>
+
+            </tr>
+            <tr>
+                <th>Full name</th>
+                <td>{{ candidate.name }}</td>
+            </tr>
+            <tr>
+                <th>Position</th>
+                <td>{{ candidate.position }}</td>
+            </tr>
+            <tr>
+                <th>Location</th>
+                <td>{{ candidate.location }}</td>
+            </tr>
+            <tr class="border border-dark">
+                <th>Contact Information</th>
+            </tr>
+            <tr>
+                <th>Phone number</th>
+                <td>{{ candidate.phone }}</td>
+            </tr>
+            <tr>
+                <th>Personal email</th>
+                <td>{{ candidate.email }}</td>
+            </tr>
+            <tr>
+                <th>LinkedIn</th>
+                <td>{{ candidate.linkedIn }}</td>
+            </tr>
+            <tr>
+                <th>Facebook</th>
+                <td>{{ candidate.facebook }}</td>
+            </tr>
+            <tr class="border border-dark">
+                <th>Additional Information</th>
+            </tr>
+            <tr>
+                <th>Expected salary</th>
+                <td>{{ candidate.salary }}</td>
+            </tr>
+            <tr>
+                <th>Work experience(years)</th>
+                <td>{{ candidate.experience }}</td>
+            </tr>
+            <tr>
+                <th>Education</th>
+                <td>{{ candidate.education }}</td>
+            </tr>
+            <tr>
+                <th>Current employment</th>
+                <td>{{ candidate.employment }}</td>
+            </tr>
+            <tr>
+                <th>Comment</th>
+                <td>{{ candidate.comment }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% for vacancy in vacancies %}
+        <div class="d-flex justify-content-between">
+            <div class="d-flex">
+                <div class="border border-warning rounded">Request#{{ vacancy.id }}</div>
+                <div class="border border-warning rounded">assigned to: {{ vacancy.assignee }}</div>
+            </div>
+            <div class="d-flex">
+                <div class="border border-warning rounded">Created{{ vacancy.createdAt|date('Y-m-d') }}</div>
+                <div class="border border-warning rounded">by {{ vacancy.createdBy }}</div>
+            </div>
+        </div>
+        <div class="border border-warning rounded">
+            Candidate Status: {{ vacancy.status }}
+        </div>
+    {% endfor %}
+
+    <a class="btn btn-info" href="{{ path('candidate_index') }}">back to list</a>
+
+{% endblock %}
