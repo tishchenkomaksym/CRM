@@ -103,6 +103,8 @@ class User implements UserInterface
      */
     private $vacancies;
 
+    private $sDTEmailAssignees;
+
 
     public function __construct()
     {
