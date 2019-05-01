@@ -10,6 +10,7 @@ namespace App\Service\MonthlySdt\Builder;
 
 use App\Entity\User;
 use DateTime;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class PhpDeveloperMonthlySDTBuilderTest extends TestCase
@@ -17,7 +18,7 @@ class PhpDeveloperMonthlySDTBuilderTest extends TestCase
 
     /**
      * @dataProvider dataProviderTestBuild
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBuild($startDate, $endDate, $expected)
     {
@@ -36,6 +37,8 @@ class PhpDeveloperMonthlySDTBuilderTest extends TestCase
             ['2018-01-01', '2019-01-01', 2],
             ['2018-01-01', '2018-02-01', 1.5],
             ['2018-01-01', '2020-02-01', 2],
+            ['2018-05-14', '2019-05-01', 2],
+            ['2018-05-15', '2019-05-01', 1.5],
         ];
     }
 }

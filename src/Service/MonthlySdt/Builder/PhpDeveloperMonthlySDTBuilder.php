@@ -11,7 +11,9 @@ namespace App\Service\MonthlySdt\Builder;
 use App\Entity\MonthlySdt;
 use App\Entity\User;
 use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
+use Exception;
 
 class PhpDeveloperMonthlySDTBuilder
 {
@@ -19,20 +21,25 @@ class PhpDeveloperMonthlySDTBuilder
      * @param User $user
      * @param DateTime $nowDate
      * @return MonthlySdt
-     * @throws \Exception
+     * @throws Exception
      */
     public static function build(User $user, DateTime $nowDate): MonthlySdt
     {
         $monthlyStdObject = new MonthlySdt();
         $monthlyStdObject->setUserId($user);
         $monthlyStdObject->setCount(self::calculateSdtCount($user->getCreateDate(), $nowDate));
-        $monthlyStdObject->setCreateDate(new \DateTimeImmutable());
+        $monthlyStdObject->setCreateDate(new DateTimeImmutable());
         return $monthlyStdObject;
     }
 
     private static function calculateSdtCount(DateTimeInterface $createDate, DateTime $nowDate)
     {
-        $result = $nowDate->getTimestamp() - $createDate->getTimestamp();
+        $date = clone $createDate;
+        if ($date instanceof DateTime && (int)$date->format('d') < 15) {
+            $date->setDate($date->format('Y'), $date->format('m'), 1);
+            $date->setTime(0, 0);
+        }
+        $result = $nowDate->getTimestamp() - $date->getTimestamp();
         //Year check
         if ($result >= 31536000) {
             return 2;
