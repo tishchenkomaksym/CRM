@@ -11,12 +11,25 @@ namespace App\Data\Sdt\Mail\Adapter;
 use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
 use App\Data\Sdt\Mail\EditSdtMailData;
 use App\Entity\Sdt;
+use App\Repository\SDTEmailAssigneeRepository;
 use App\Service\HolidayService;
 use DateTimeInterface;
 
 class EditSdtMailFromSdtAdapter
 {
-    public const LETTER_DATE_FORMAT='Y-m-d';
+
+    /**
+     * @var SDTEmailAssigneeRepository
+     */
+    private $SDTEmailAssigneeRepository;
+
+    public function __construct(SDTEmailAssigneeRepository $SDTEmailAssigneeRepository)
+    {
+        $this->SDTEmailAssigneeRepository = $SDTEmailAssigneeRepository;
+    }
+
+    public const LETTER_DATE_FORMAT = 'Y-m-d';
+
     /**
      * @param Sdt $sdt
      * @param DateTimeInterface $oldCreateDate
@@ -25,7 +38,7 @@ class EditSdtMailFromSdtAdapter
      * @return EditSdtMailData
      * @throws NoDateException
      */
-    public static function getEditSdtMail(
+    public function getEditSdtMail(
         Sdt $sdt,
         DateTimeInterface $oldCreateDate,
         int $oldCount,
@@ -41,7 +54,7 @@ class EditSdtMailFromSdtAdapter
             );
             $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(), $holidayService);
             $emails = [];
-            foreach ($sdt->getUser()->getSDTEmailAssignees() as $email) {
+            foreach ($this->SDTEmailAssigneeRepository->findBy(['user' => $sdt->getUser()->getId()]) as $email) {
                 $emails[] = $email->getEmail();
             }
             return new EditSdtMailData(

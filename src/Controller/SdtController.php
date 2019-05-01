@@ -26,7 +26,6 @@ use App\Service\Sdt\Update\UpdateSDTMessageBuilder;
 use App\Service\SdtArchive\SdtArchiveBuilderFromSdt;
 use App\Service\User\Sdt\LeftSdtCalculator;
 use App\Service\UserInformationService;
-use Exception;
 use Swift_Mailer;
 use Swift_Message;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -104,6 +103,7 @@ class SdtController extends AbstractController
      * @param Swift_Mailer $mailer
      * @param HolidayService $holidayService
      * @param LeftSdtCalculator $leftSdtCalculator
+     * @param NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
@@ -111,7 +111,8 @@ class SdtController extends AbstractController
     public function new(Request $request,
                         Swift_Mailer $mailer,
                         HolidayService $holidayService,
-                        LeftSdtCalculator $leftSdtCalculator
+                        LeftSdtCalculator $leftSdtCalculator,
+                        NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter
     ): Response
     {
         $sdt = new Sdt();
@@ -126,7 +127,7 @@ class SdtController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $messageBuilder = new NewSDTMessageBuilder(
-                NewSdtMailFromSdtAdapter::getNewSdtMail($sdt, $holidayService), $this->environment
+                $newSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService), $this->environment
             );
             $strategy = new BaseCreateStrategy(
                 $mailer,
@@ -172,11 +173,18 @@ class SdtController extends AbstractController
      * @param Swift_Mailer $mailer
      * @param HolidayService $holidayService
      * @param LeftSdtCalculator $leftSdtCalculator
+     * @param EditSdtMailFromSdtAdapter $editSdtMailFromSdtAdapter
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
      */
-    public function edit(Request $request, Sdt $sdt, Swift_Mailer $mailer, HolidayService $holidayService, LeftSdtCalculator $leftSdtCalculator): Response
+    public function edit(Request $request,
+                         Sdt $sdt,
+                         Swift_Mailer $mailer,
+                         HolidayService $holidayService,
+                         LeftSdtCalculator $leftSdtCalculator,
+                         EditSdtMailFromSdtAdapter $editSdtMailFromSdtAdapter
+    ): Response
     {
         $form = $this->createForm(SdtType::class, $sdt,
             ['constraints' => [new SdtCount($leftSdtCalculator, $this->getUser())]]
@@ -188,7 +196,7 @@ class SdtController extends AbstractController
 
         if ($oldFromDate !== null && $form->isSubmitted() && $form->isValid()) {
             $messageBuilder = new UpdateSDTMessageBuilder(
-                EditSdtMailFromSdtAdapter::getEditSdtMail($sdt, $oldFromDate, $oldCount, $holidayService),
+                $editSdtMailFromSdtAdapter->getEditSdtMail($sdt, $oldFromDate, $oldCount, $holidayService),
                 $this->environment
             );
             $strategy = new BaseUpdateStrategy(
@@ -225,16 +233,17 @@ class SdtController extends AbstractController
      * @param Sdt $sdt
      * @param Swift_Mailer $mailer
      * @param HolidayService $holidayService
+     * @param DeleteSdtMailFromSdtAdapter $deleteSdtMailFromSdtAdapter
      * @return Response
+     * @throws EmailServerNotWorking
      * @throws NoDateException
-     * @throws Exception
      */
-    public function delete(Request $request, Sdt $sdt, Swift_Mailer $mailer, HolidayService $holidayService): Response
+    public function delete(Request $request, Sdt $sdt, Swift_Mailer $mailer, HolidayService $holidayService, DeleteSdtMailFromSdtAdapter $deleteSdtMailFromSdtAdapter): Response
     {
         if ($this->isCsrfTokenValid('delete' . $sdt->getId(), $request->request->get('_token'))) {
             if ($this->sendDeleteSdtEmail(
                     $mailer,
-                    DeleteSdtMailFromSdtAdapter::getNewSdtMail($sdt, $holidayService)
+                    $deleteSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService)
                 ) === 0) {
                 throw new EmailServerNotWorking(EmailServerNotWorking::MESSAGE);
             }
