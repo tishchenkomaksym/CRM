@@ -24,7 +24,7 @@ class LeftSdtCalculator
         $this->daysCalculator = $daysCalculator;
     }
 
-    public function calculate(User$user) : float
+    public function calculate(User $user) : float
     {
         $existSDT = 0;
         foreach ($user->getMonthlySdts() as $monthlySdt) {

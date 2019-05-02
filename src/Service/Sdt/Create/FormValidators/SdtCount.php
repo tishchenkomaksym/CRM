@@ -3,7 +3,6 @@
 
 namespace App\Service\Sdt\Create\FormValidators;
 
-use App\Entity\User;
 use App\Service\User\Sdt\LeftSdtCalculator;
 use Symfony\Component\Validator\Constraint;
 
@@ -14,16 +13,11 @@ class SdtCount extends Constraint
      * @var LeftSdtCalculator
      */
     private $leftSdtCalculator;
-    /**
-     * @var User
-     */
-    private $user;
 
-    public function __construct(LeftSdtCalculator $leftSdtCalculator, User $user)
+    public function __construct(LeftSdtCalculator $leftSdtCalculator)
     {
         parent::__construct([]);
         $this->leftSdtCalculator = $leftSdtCalculator;
-        $this->user = $user;
     }
 
     /**
@@ -32,13 +26,5 @@ class SdtCount extends Constraint
     public function getLeftSdtCalculator(): LeftSdtCalculator
     {
         return $this->leftSdtCalculator;
-    }
-
-    /**
-     * @return User
-     */
-    public function getUser(): User
-    {
-        return $this->user;
     }
 }

@@ -27,6 +27,7 @@ class UserInformationService
         return new SdtCollection($user->getSdt()->toArray());
     }
 
+
     public function getPhpUserLevel(User $user): ?string
     {
         if ($user->getPhpDeveloperLevelRelation() === null || $user->getPhpDeveloperLevelRelation(

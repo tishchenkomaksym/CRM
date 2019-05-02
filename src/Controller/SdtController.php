@@ -5,7 +5,12 @@ namespace App\Controller;
 use App\Calendar\CalendarEventItemCollection;
 use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
 use App\Calendar\HolidayCalendarEventItemBuilder;
+use App\Calendar\Sdt\Tom\TomSdtLinkGenerator;
+use App\Calendar\Sdt\Tom\TomSdtTitleGenerator;
+use App\Calendar\Sdt\UserSdtLinkGenerator;
+use App\Calendar\Sdt\UserSdtTitleGenerator;
 use App\Calendar\SdtCalendarEventItemBuilder;
+use App\Constants\Services;
 use App\Data\Sdt\Mail\Adapter\DeleteSdtMailFromSdtAdapter;
 use App\Data\Sdt\Mail\Adapter\EditSdtMailFromSdtAdapter;
 use App\Data\Sdt\Mail\Adapter\NewSdtMailFromSdtAdapter;
@@ -15,6 +20,7 @@ use App\Entity\Sdt;
 use App\Entity\SdtArchive;
 use App\Form\SdtType;
 use App\Service\HolidayService;
+use App\Service\Sdt\Calendar\Tom\TomSdtCollectionBuilder;
 use App\Service\Sdt\Create\BaseCreateContext;
 use App\Service\Sdt\Create\BaseCreateStrategy;
 use App\Service\Sdt\Create\FormValidators\SdtCount;
@@ -26,6 +32,8 @@ use App\Service\Sdt\Update\UpdateSDTMessageBuilder;
 use App\Service\SdtArchive\SdtArchiveBuilderFromSdt;
 use App\Service\User\Sdt\LeftSdtCalculator;
 use App\Service\UserInformationService;
+use Exception;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Swift_Mailer;
 use Swift_Message;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -55,12 +63,16 @@ class SdtController extends AbstractController
      * @param HolidayService $holidayService
      * @param UserInformationService $userInformationService
      * @param LeftSdtCalculator $leftSdtCalculator
+     * @param UserSdtLinkGenerator $userSdtLinkGenerator
+     * @param UserSdtTitleGenerator $titleGenerator
      * @return Response
      */
     public function index(
         HolidayService $holidayService,
         UserInformationService $userInformationService,
-        LeftSdtCalculator $leftSdtCalculator
+        LeftSdtCalculator $leftSdtCalculator,
+        UserSdtLinkGenerator $userSdtLinkGenerator,
+        UserSdtTitleGenerator $titleGenerator
     ): Response
     {
         $sdtCollection = $userInformationService
@@ -70,11 +82,10 @@ class SdtController extends AbstractController
         foreach ($sdtCollection->getItems() as $sdt) {
             $calendarEventItemCollection->add(
                 (new SdtCalendarEventItemBuilder(
-                    $sdt,
-                    $this->container->get('router'),
-                    $this->getUser(),
-                    $holidayService
-                ))->build()
+                    $holidayService,
+                    $userSdtLinkGenerator,
+                    $titleGenerator
+                ))->build($sdt, $this->getUser())
             );
         }
 
@@ -82,7 +93,57 @@ class SdtController extends AbstractController
             $calendarEventItemCollection->add(
                 (new HolidayCalendarEventItemBuilder(
                     $holiday,
-                    $this->container->get('router')
+                    $this->container->get(Services::ROUTER)
+                ))->build()
+            );
+        }
+
+        return $this->render(
+            'sdt/index.html.twig',
+            [
+                'sdts' => $sdtCollection->getItems(),
+                'calendarEvents' => $calendarEventItemCollection->toJson(),
+                'leftSdt' => $leftSdtCalculator->calculate($this->getUser())
+            ]
+        );
+    }
+
+    /**
+     * @Route("/view-all", name="sdt_view_all", methods={"GET"})
+     * @param HolidayService $holidayService
+     * @param TomSdtCollectionBuilder $collectionBuilder
+     * @param LeftSdtCalculator $leftSdtCalculator
+     * @param TomSdtLinkGenerator $linkGenerator
+     * @param TomSdtTitleGenerator $titleGenerator
+     * @return Response
+     * @Security("is_granted('ROLE_TOM')")
+     */
+    public function viewAll(HolidayService $holidayService,
+                            TomSdtCollectionBuilder $collectionBuilder,
+                            LeftSdtCalculator $leftSdtCalculator,
+                            TomSdtLinkGenerator $linkGenerator,
+                            TomSdtTitleGenerator $titleGenerator
+
+    ): Response
+    {
+        $sdtCollection = $collectionBuilder->buildCollection();
+
+        $calendarEventItemCollection = new CalendarEventItemCollection();
+        foreach ($sdtCollection->getItems() as $sdt) {
+            $calendarEventItemCollection->add(
+                (new SdtCalendarEventItemBuilder(
+                    $holidayService,
+                    $linkGenerator,
+                    $titleGenerator
+                ))->build($sdt, $this->getUser())
+            );
+        }
+
+        foreach ($holidayService->getHolidays() as $holiday) {
+            $calendarEventItemCollection->add(
+                (new HolidayCalendarEventItemBuilder(
+                    $holiday,
+                    $this->container->get(Services::ROUTER)
                 ))->build()
             );
         }
@@ -120,12 +181,11 @@ class SdtController extends AbstractController
         $form = $this->createForm(
             SdtType::class,
             $sdt,
-            ['constraints' => [new SdtCount($leftSdtCalculator, $this->getUser())]]);
+            ['constraints' => [new SdtCount($leftSdtCalculator)]]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $messageBuilder = new NewSDTMessageBuilder(
                 $newSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService), $this->environment
             );
@@ -187,7 +247,7 @@ class SdtController extends AbstractController
     ): Response
     {
         $form = $this->createForm(SdtType::class, $sdt,
-            ['constraints' => [new SdtCount($leftSdtCalculator, $this->getUser())]]
+            ['constraints' => [new SdtCount($leftSdtCalculator)]]
         );
         $oldEntity = clone $sdt;
         $oldFromDate = $sdt->getCreateDate();
@@ -237,6 +297,7 @@ class SdtController extends AbstractController
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
+     * @throws Exception
      */
     public function delete(Request $request, Sdt $sdt, Swift_Mailer $mailer, HolidayService $holidayService, DeleteSdtMailFromSdtAdapter $deleteSdtMailFromSdtAdapter): Response
     {

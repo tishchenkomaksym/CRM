@@ -9,68 +9,61 @@
 namespace App\Calendar;
 
 use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
+use App\Calendar\Sdt\SdtLinkGeneratorInterface;
+use App\Calendar\Sdt\SdtTitleGeneratorInterface;
 use App\Entity\Sdt;
 use App\Entity\User;
 use App\Service\HolidayService;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use DateTime;
 
 class SdtCalendarEventItemBuilder
 {
     /**
-     * @var Sdt
-     */
-    private $sdt;
-    /**
-     * @var Router
-     */
-    private $router;
-    /**
-     * @var User
-     */
-    private $user;
-    /**
      * @var HolidayService
      */
     private $holidayService;
+    /**
+     * @var SdtLinkGeneratorInterface
+     */
+    private $linkGenerator;
+    /**
+     * @var SdtTitleGeneratorInterface
+     */
+    private $titleGenerator;
 
     /**
      * SdtCalendarEventItemBuilder constructor.
-     * @param Sdt $sdt
-     * @param Router $router
-     * @param User $user
      * @param HolidayService $holidayService
+     * @param SdtLinkGeneratorInterface $linkGenerator
+     * @param SdtTitleGeneratorInterface $titleGenerator
      */
-    public function __construct(Sdt $sdt, Router $router, User $user, HolidayService $holidayService)
+    public function __construct(
+        HolidayService $holidayService,
+        SdtLinkGeneratorInterface $linkGenerator,
+        SdtTitleGeneratorInterface $titleGenerator
+    )
     {
-        $this->sdt = $sdt;
-        $this->router = $router;
-        $this->user = $user;
         $this->holidayService = $holidayService;
+        $this->linkGenerator = $linkGenerator;
+        $this->titleGenerator = $titleGenerator;
     }
 
-    public function build(): CalendarItem
+    public function build(Sdt $sdt,
+                          User $user): CalendarItem
     {
         $calendarItem = new CalendarItem();
-        $createDate = $this->sdt->getCreateDate();
-        if ($createDate && $createDate instanceof \DateTime) {
+        $createDate = $sdt->getCreateDate();
+        if ($createDate && $createDate instanceof DateTime) {
             $calendarItem->start = $createDate->format('Y-m-d');
             $calendarItem->end = DateCalculatorWithWeekends::getDateWithOffset(
                 $createDate,
-                $this->sdt->getCount(),
+                $sdt->getCount(),
                 $this->holidayService
             );
             $calendarItem->end = $calendarItem->end->setTime(23, 59, 59)->format('Y-m-d H:i:s');
         }
-        $calendarItem->title = 'SDT';
-        //TODO: add TOM role check
-        if ($this->user->getId() === $this->sdt->getUser()->getId()) {
-            $calendarItem->url = $this->router->generate(
-                'sdt_show',
-                ['id' => $this->sdt->getId()],
-                UrlGeneratorInterface::ABSOLUTE_PATH
-            );
-        }
+        $calendarItem->title = $this->titleGenerator->getTitle($sdt);
+        $calendarItem->url = $this->linkGenerator->getLink($user, $sdt);
         return $calendarItem;
     }
 }
