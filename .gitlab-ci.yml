@@ -1,6 +1,6 @@
 stages:
-- testing
-- code check
+#- testing
+#- code check
 - compile
 - build
 - deploy
@@ -17,12 +17,12 @@ variables:
   PHP_IMAGE_LATEST: ${CI_REGISTRY_IMAGE}/php:latest
   KUBECONFIG: /root/.kube/config
 
-code check:
-  image: emeraldsquad/sonar-scanner:latest
-  stage: code check
-  script:
-    - sonar-scanner -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectVersion=$CI_BUILD_ID -Dsonar.projectKey=$CI_PROJECT_PATH_SLUG -Dsonar.sources=src -Dsonar.coverage.exclusions=**/Migrations/*.*,**/DataFixtures/*.*,*.js,*.css,*.html,**/*.twig,**Interface.php,**Kernel.php -Dsonar.php.tests.reportPath=build/index.xml -Dsonar.php.coverage.reportPaths=build/coverage/coverage_index.xml -Dsonar.branch.name=$CI_COMMIT_REF_NAME
-    - rm -rf build
+# code check:
+#   image: emeraldsquad/sonar-scanner:latest
+#   stage: code check
+#   script:
+#     - sonar-scanner -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectVersion=$CI_BUILD_ID -Dsonar.projectKey=$CI_PROJECT_PATH_SLUG -Dsonar.sources=src -Dsonar.coverage.exclusions=**/Migrations/*.*,**/DataFixtures/*.*,*.js,*.css,*.html,**/*.twig,**Interface.php,**Kernel.php -Dsonar.php.tests.reportPath=build/index.xml -Dsonar.php.coverage.reportPaths=build/coverage/coverage_index.xml -Dsonar.branch.name=$CI_COMMIT_REF_NAME
+#     - rm -rf build
 
 compile:
   stage: compile
@@ -94,26 +94,26 @@ image:php-fpm:
   - *building_script
 
 
-unit-tests:
-  stage: testing
-  image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
+# unit-tests:
+#   stage: testing
+#   image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
 
-# If you need carid repositories you need to set up ssh keys
-#  before_script:
-#  - eval $(ssh-agent -s)
-#  - mkdir -p ~/.ssh
-#  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
-#  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-  script:
-  - export APP_ENV=test
-  # Install DEVELOPMENT dependencies
-  - composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
-  - cp ./phpunit.xml.dist ./phpunit.xml
-  - vendor/bin/phpunit --configuration ./phpunit.xml --log-junit build/index.xml --coverage-xml build/coverage --coverage-clover build/coverage/coverage_index.xml --colors=never
-  artifacts:
-    paths:
-    - build/
-    expire_in: 2 days
+# # If you need carid repositories you need to set up ssh keys
+# #  before_script:
+# #  - eval $(ssh-agent -s)
+# #  - mkdir -p ~/.ssh
+# #  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
+# #  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+#   script:
+#   - export APP_ENV=test
+#   # Install DEVELOPMENT dependencies
+#   - composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
+#   - cp ./phpunit.xml.dist ./phpunit.xml
+#   - vendor/bin/phpunit --configuration ./phpunit.xml --log-junit build/index.xml --coverage-xml build/coverage --coverage-clover build/coverage/coverage_index.xml --colors=never
+#   artifacts:
+#     paths:
+#     - build/
+#     expire_in: 2 days
 
 
 .deployment_rancher: &deployment_rancher
