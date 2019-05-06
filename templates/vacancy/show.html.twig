@@ -19,7 +19,9 @@
         {{ include('vacancy/recruiterForm.html.twig') }}
     {% endif %}
     {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') and is_granted('ROLE_VACANCY_VIEWER_USER') %}
-        {{ include('vacancy/userForm.html.twig') }}
+        {% if vacancy.status != 'Denied' %}
+            {{ include('vacancy/userForm.html.twig') }}
+        {% endif %}
     {% endif %}
     <div>
         {% if vacancy.status is null %}
@@ -76,7 +78,7 @@
             </tr>
             {% if vacancy.status == 'Denied' %}
                 <tr>
-                    <th>Request reason</th>
+                    <th>The reason request have been denied</th>
                     <td style="word-break: break-all">{{ vacancy.reasonDenied }}</td>
                 </tr>
             {% else %}

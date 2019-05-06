@@ -11,7 +11,7 @@
         }
     </style>
 
-    <table class="table">
+    <table class="table" style="table-layout: fixed">
         <thead>
         <tr>
             <th>#</th>
@@ -35,7 +35,7 @@
                 <td>{{ vacancy.id }}</td>
                 <td>{{ vacancy.createdAt|date('Y-m-d') }}</td>
                 <td>{{ vacancy.createdBy }}</td>
-                <td>{{ vacancy.reason }}</td>
+                <td style="word-break: break-all">{{ vacancy.reason }}</td>
                 <td>{{ vacancy.office.name }}</td>
                 <td>{{ vacancy.department.name }}</td>
                 <td>{{ vacancy.team.name }}</td>
@@ -46,8 +46,7 @@
                 <td>{{ vacancy.amount }}</td>
                 <td>{{ vacancy.bonus }}</td>
                 <td>{{ vacancy.responsibilities }}</td>
-                <td>{{ vacancy.requirements }}</td>
-                <td>{{ vacancy.reason }}</td>
+                <td>{{ vacancy.requirements }}</td>>
             </tr>
         </tbody>
     </table>
