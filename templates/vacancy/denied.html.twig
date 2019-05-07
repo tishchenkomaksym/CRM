@@ -7,10 +7,9 @@
 
 {% block body %}
     {{ form_start(form) }}
-    {{ form_widget(form) }}
+    {{ form_row(form.reasonDenied, {'label': 'The reason request have been denied'}) }}
     <button class="btn">{{ button_label|default('Send') }}</button>
     {{ form_end(form) }}
-
 
 {% endblock %}
 
