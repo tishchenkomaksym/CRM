@@ -59,12 +59,13 @@ class BaseSalaryReportBuilder
     {
 
         $returnObject = new SalaryReportDTO();
-        $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport);
         $dateTime = new DateTime();
         /** @noinspection NullPointerExceptionInspection */
         $dateTime->setTimestamp($newReport->getCreateDate()->getTimestamp());
-        $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateTime, $user);
         $returnObject->sdtCountUsed = $this->getSdtCountUsed($newReport, $dateTime, $user);
+        $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport) - $returnObject->sdtCountUsed;
+        $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateTime, $user);
+
         $returnObject->user = $user;
         return $returnObject;
     }

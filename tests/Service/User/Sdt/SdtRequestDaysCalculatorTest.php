@@ -22,8 +22,8 @@ class SdtRequestDaysCalculatorTest extends TestCase
         $sdt->setAtOwnExpense(false);
         $sdt->setCount(1);
         $array = [$sdt];
-        $this->assertEquals(1, $calculator->calculate($array));
+        $this->assertEquals(1, $calculator->calculateArray($array));
         $sdt->setAtOwnExpense(true);
-        $this->assertEquals(0, $calculator->calculate($array));
+        $this->assertEquals(0, $calculator->calculateArray($array));
     }
 }

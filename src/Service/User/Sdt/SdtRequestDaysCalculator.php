@@ -17,15 +17,22 @@ class SdtRequestDaysCalculator
      * @param Sdt[] $sdtArray
      * @return int|null
      */
-    public function calculate(array $sdtArray): ?int
+    public function calculateArray(array $sdtArray): ?int
     {
         $days = 0;
         foreach ($sdtArray as $item) {
-            if(!$item->getAtOwnExpense())
-            {
-                $days += $item->getCount();
-            }
+            $days += $this->calculateItem($item);
         }
         return $days;
     }
+
+    public function calculateItem(Sdt $sdt)
+    {
+        $count = 0;
+        if (!$sdt->getAtOwnExpense()) {
+            $count = $sdt->getCount();
+        }
+        return $count;
+    }
+
 }

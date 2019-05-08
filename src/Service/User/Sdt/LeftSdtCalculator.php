@@ -30,6 +30,6 @@ class LeftSdtCalculator
         foreach ($user->getMonthlySdts() as $monthlySdt) {
             $existSDT += $monthlySdt->getCount();
         }
-        return $existSDT - $this->daysCalculator->calculate($user->getSdt()->toArray());
+        return $existSDT - $this->daysCalculator->calculateArray($user->getSdt()->toArray());
     }
 }

@@ -39,6 +39,6 @@ class LeftSdtForPeriodCalculator
                 $sdtArray[] = $sdt;
             }
         }
-        return $existSDT - $this->daysCalculator->calculate($sdtArray);
+        return $existSDT - $this->daysCalculator->calculateArray($sdtArray);
     }
 }

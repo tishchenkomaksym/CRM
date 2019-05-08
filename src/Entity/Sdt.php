@@ -74,7 +74,6 @@ class Sdt
     public function setCount(int $count): self
     {
         $this->count = $count;
-
         return $this;
     }
 

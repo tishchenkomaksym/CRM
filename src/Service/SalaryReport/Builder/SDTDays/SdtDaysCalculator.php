@@ -11,6 +11,8 @@ namespace App\Service\SalaryReport\Builder\SDTDays;
 use App\Entity\User;
 use App\Service\Sdt\Interval\EndDateOfSdtCalculator;
 use App\Service\User\Sdt\LeftSdtForPeriodCalculator;
+use DateTime;
+use Exception;
 
 class SdtDaysCalculator
 {
@@ -31,12 +33,12 @@ class SdtDaysCalculator
     }
 
     /**
-     * @param \DateTime $to
+     * @param DateTime $to
      * @param User $user
      * @return float
-     * @throws \Exception
+     * @throws Exception
      */
-    public function calculate(\DateTime $to, User $user): float
+    public function calculate(DateTime $to, User $user): float
     {
         $leftSdt = $this->leftSdtCalculator->calculate($user, $to);
         $sdtArray = $user->getSdt();
