@@ -62,6 +62,8 @@ class BaseSalaryReportBuilder
         $dateTime = new DateTime();
         /** @noinspection NullPointerExceptionInspection */
         $dateTime->setTimestamp($newReport->getCreateDate()->getTimestamp());
+        $dateTime->setDate($dateTime->format('Y'), $dateTime->format('m'), (int)$dateTime->format('d') - 1);
+        $dateTime->setTime(23, 59, 59);
         $returnObject->sdtCountUsed = $this->getSdtCountUsed($newReport, $dateTime, $user);
         $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport) - $returnObject->sdtCountUsed;
         $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateTime, $user);
