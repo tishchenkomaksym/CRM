@@ -52,7 +52,7 @@ class NewVacancyMessageBuilderForHrManager
         }
 
         if (isset($emails)){
-            $result = (new Swift_Message('Hiring request denied'))
+            $result = (new Swift_Message('New request appeared'))
                 ->setFrom(getenv('LOCAL_EMAIL'))
                 ->setTo($emails)
                 ->setBody(
