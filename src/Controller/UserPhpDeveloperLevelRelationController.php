@@ -7,6 +7,8 @@ use App\Entity\UserPhpDeveloperLevelRelation;
 use App\Form\UserPhpDeveloperLevelRelationType;
 use App\Repository\UserPhpDeveloperLevelRelationRepository;
 use App\Service\User\PhpDeveloperLevel\PhpDeveloperLevelService;
+use DateTimeImmutable;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +40,7 @@ class UserPhpDeveloperLevelRelationController extends AbstractController
      * @param User $user
      * @param Request $request
      * @return Response
-     * @throws \Exception
+     * @throws Exception
      */
     public function new(User $user, Request $request): Response
     {
@@ -47,8 +49,9 @@ class UserPhpDeveloperLevelRelationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+//            if($userPhpDeveloperLevelRelation->getPhpDeveloperLevel()===)
             $user = PhpDeveloperLevelService::resetPhpDeveloperRoles($user);
-            $userPhpDeveloperLevelRelation->setCreateDate(new \DateTimeImmutable());
+            $userPhpDeveloperLevelRelation->setCreateDate(new DateTimeImmutable());
             $userPhpDeveloperLevelRelation->setUser($user);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($userPhpDeveloperLevelRelation);
@@ -77,7 +80,6 @@ class UserPhpDeveloperLevelRelationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
-
             return $this->redirectToRoute(
                 'user_php_developer_level_relation_index',
                 [

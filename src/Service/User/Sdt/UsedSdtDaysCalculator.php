@@ -58,8 +58,7 @@ class UsedSdtDaysCalculator
                 $diffBetweenEndDate = $startDate->diff($endPeriod);
                 //cause count of days
                 $usedSdt += $diffBetweenEndDate->days + 1;
-            } elseif ($startPeriod > $startDate && $endPeriod > $endDate) {
-
+            } elseif ($startPeriod > $startDate && $endPeriod > $endDate && $endDate > $startPeriod) {
                 $monthStartDate = new DateTime();
                 /** @noinspection NullPointerExceptionInspection */
                 $monthStartDate->setDate(
@@ -67,7 +66,7 @@ class UsedSdtDaysCalculator
                     $startPeriod->format('m'),
                     $startPeriod->format('d')
                 );
-                $monthStartDate->setTime(0, 0, 0);
+                $monthStartDate->setTime(0, 0);
                 $usedSdt += $this->workingDaysCalculator->getWorkingDaysBetweenDates($monthStartDate, $endDate);
             }
         }
