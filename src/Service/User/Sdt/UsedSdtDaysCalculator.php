@@ -54,7 +54,7 @@ class UsedSdtDaysCalculator
             $endDate = $this->endDateOfSdtCalculator->calculate($sdt);
             if ($startPeriod < $startDate && $endPeriod > $endDate) {
                 $usedSdt += $this->sdtRequestDaysCalculator->calculateItem($sdt);
-            } elseif ($startPeriod < $startDate && $endPeriod < $endDate) {
+            } elseif ($startPeriod < $startDate && $endPeriod < $endDate && $startDate < $endPeriod) {
                 $diffBetweenEndDate = $startDate->diff($endPeriod);
                 //cause count of days
                 $usedSdt += $diffBetweenEndDate->days + 1;
