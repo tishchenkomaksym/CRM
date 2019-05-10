@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CandidateRepository")
@@ -38,11 +40,6 @@ class Candidate
      * @ORM\Column(type="string", length=255)
      */
     private $location;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Vacancy")
-     */
-    private $vacancy;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -95,13 +92,29 @@ class Candidate
     private $createdAt;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $updatedDate;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $surname;
+
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $linkToCv;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CandidateVacancy", mappedBy="candidate")
+     */
+    private $candidateVacancies;
+
     public function __construct()
     {
-        $this->vacancy = new ArrayCollection();
+        $this->candidateVacancies = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -152,32 +165,6 @@ class Candidate
     public function setLocation(string $location): self
     {
         $this->location = $location;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Vacancy[]
-     */
-    public function getVacancy(): Collection
-    {
-        return $this->vacancy;
-    }
-
-    public function addVacancy(Vacancy $vacancy): self
-    {
-        if (!$this->vacancy->contains($vacancy)) {
-            $this->vacancy[] = $vacancy;
-        }
-
-        return $this;
-    }
-
-    public function removeVacancy(Vacancy $vacancy): self
-    {
-        if ($this->vacancy->contains($vacancy)) {
-            $this->vacancy->removeElement($vacancy);
-        }
 
         return $this;
     }
@@ -302,14 +289,83 @@ class Candidate
         return $this;
     }
 
-    public function getUpdatedDate(): ?DateTimeImmutable
+    public function getUpdatedDate(): ?DateTime
     {
         return $this->updatedDate;
     }
 
-    public function setUpdatedDate(?DateTimeImmutable $updatedDate): self
+    public function setUpdatedDate(?DateTime $updatedDate): self
     {
         $this->updatedDate = $updatedDate;
+
+        return $this;
+    }
+
+    public function getSurname(): ?string
+    {
+        return $this->surname;
+    }
+
+    public function setSurname(string $surname): self
+    {
+        $this->surname = $surname;
+
+        return $this;
+    }
+
+//    public function getLink()
+//    {
+//        return $this->link;
+//    }
+//
+//    public function setLink($link): self
+//    {
+//        $this->link = $link;
+//
+//        return $this;
+//    }
+
+
+    public function getLinkToCv(): ?string
+    {
+        return $this->linkToCv;
+    }
+
+
+    public function setLinkToCv(?string $linkToCv): self
+    {
+        $this->linkToCv = $linkToCv;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CandidateVacancy[]
+     */
+    public function getCandidateVacancies(): Collection
+    {
+        return $this->candidateVacancies;
+    }
+
+    public function addCandidateVacancy(CandidateVacancy $candidateVacancy): self
+    {
+        if (!$this->candidateVacancies->contains($candidateVacancy)) {
+            $this->candidateVacancies[] = $candidateVacancy;
+            $candidateVacancy->setCandidate($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCandidateVacancy(CandidateVacancy $candidateVacancy): self
+    {
+        if ($this->candidateVacancies->contains($candidateVacancy)) {
+            $this->candidateVacancies->removeElement($candidateVacancy);
+            // set the owning side to null (unless already changed)
+            if ($candidateVacancy->getCandidate() === $this) {
+                $candidateVacancy->setCandidate(null);
+            }
+        }
 
         return $this;
     }

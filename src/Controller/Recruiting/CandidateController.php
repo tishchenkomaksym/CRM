@@ -1,10 +1,14 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Recruiting;
 
 use App\Entity\Candidate;
+use App\Entity\CandidateVacancy;
 use App\Form\CandidateType;
+use App\Form\CandidateVacancyIdType;
 use App\Repository\CandidateRepository;
+use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\FormValidators\CandidateVacancyCheckExistenceUpdateCandidate;
+use DateTime;
 use DateTimeImmutable;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +28,8 @@ class CandidateController extends AbstractController
     public const CANDIDATE = 'candidate';
 
     public const CANDIDATE_INDEX = 'candidate_index';
+
+    public const VACANCY_ENTITY_IN_VIEW = 'vacancy';
 
     /**
      * @Route("/", name="candidate_index", methods={"GET"})
@@ -49,7 +55,17 @@ class CandidateController extends AbstractController
         $form = $this->createForm(CandidateType::class, $candidate);
         $form->handleRequest($request);
 
+        $entityManager = $this->getDoctrine()->getManager();
         if ($form->isSubmitted() && $form->isValid()) {
+            $vacancyIds = $form->get(self::VACANCY_ENTITY_IN_VIEW)->getData();
+
+            foreach ($vacancyIds as $vacancyId) {
+                $candidateVacancy = new CandidateVacancy();
+                $candidateVacancy->setCandidate($candidate);
+                $candidateVacancy->setVacancy($vacancyId);
+                $entityManager->persist($candidateVacancy);
+            }
+
 
             if ($candidate->getPhoto() !== null) {
                 /** @var UploadedFile $file */
@@ -61,6 +77,7 @@ class CandidateController extends AbstractController
 
             $entityManager = $this->getDoctrine()->getManager();
             $candidate->setCreatedAt(new DateTimeImmutable('now'));
+
             $entityManager->persist($candidate);
             $entityManager->flush();
 
@@ -74,16 +91,41 @@ class CandidateController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="candidate_show", methods={"GET"})
+     * @Route("/{id}", name="candidate_show", methods={"GET","POST"})
      * @param Candidate $candidate
+     * @param Request $request
      * @return Response
      */
-    public function show(Candidate $candidate): Response
+    public function show(Candidate $candidate, Request $request): Response
     {
-        $vacancy = $candidate->getVacancy();
+        $form = $this->createForm(CandidateVacancyIdType::class, $candidate,
+            ['constraints' => [new CandidateVacancyCheckExistenceUpdateCandidate()]]);
+        $form->handleRequest($request);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $vacancyIds = $form->get(self::VACANCY_ENTITY_IN_VIEW)->getData();
+
+            foreach ($vacancyIds as $vacancyId) {
+                $candidateVacancy = new CandidateVacancy();
+                $candidateVacancy->setCandidate($candidate);
+                $candidateVacancy->setVacancy($vacancyId);
+                $entityManager->persist($candidateVacancy);
+            }
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($candidate);
+            $entityManager->flush();
+
+            return $this->redirectToRoute(self::CANDIDATE_INDEX);
+        }
+
+        $vacancy = $candidate->getCandidateVacancies();
         return $this->render('candidate/show.html.twig', [
             self::CANDIDATE => $candidate,
-            'vacancies' => $vacancy
+            'vacancies' => $vacancy,
+            'form' => $form->createView()
+
         ]);
     }
 
@@ -97,41 +139,49 @@ class CandidateController extends AbstractController
 
     public function edit(Candidate $candidate, Request $request): Response
     {
-        $photoNull = $candidate->getPhoto() !== null;
-        if ($photoNull && false !== stripos($candidate->getPhoto(), '/application/public')) {
-            $candidate->setPhoto(
-                new File($candidate->getPhoto()));
-        } elseif ($photoNull  && false === stripos($candidate->getPhoto(), '/application/public')){
+        $photoNotNull = $candidate->getPhoto() !== null;
+        if ($photoNotNull) {
             $candidate->setPhoto(
                 new File($this->getParameter(self::UPLOADS_DIRECTORY) . '/' . $candidate->getPhoto())
             );
         }
-
-        $form = $this->createForm(CandidateType::class, $candidate);
-
+        $form = $this->createForm(CandidateType::class, $candidate,
+            ['constraints' => [new CandidateVacancyCheckExistenceUpdateCandidate()]]);
         $form->handleRequest($request);
-
+        $entityManager = $this->getDoctrine()->getManager();
         if ($form->isSubmitted() && $form->isValid()) {
+            // Check existence of vacancy
+            $vacancyIds = $form->get(self::VACANCY_ENTITY_IN_VIEW)->getData();
+
+            // set Vacancy and Candidate to CandidateVacancyCheckExistenceUpdateCandidate
+            foreach ($vacancyIds as $vacancyId) {
+                $candidateVacancy = new CandidateVacancy();
+                $candidateVacancy->setCandidate($candidate);
+                $candidateVacancy->setVacancy($vacancyId);
+                $entityManager->persist($candidateVacancy);
+            }
+
             /** @var UploadedFile $file */
             $file = $candidate->getPhoto();
-            if ($file !== null){
+            if ($file !== null) {
                 $fileName = md5(uniqid('', true)) . '.' . $file->guessExtension();
                 $file->move($this->getParameter('uploads_directory'), $fileName);
                 $candidate->setPhoto($fileName);
             }
-            $candidate->setUpdatedDate(new DateTimeImmutable( 'now'));
+            $candidate->setUpdatedDate(new DateTime('now'));
 
             $this->getDoctrine()->getManager()->flush();
+            if (!empty($request->get(self::VACANCY_ENTITY_IN_VIEW))) {
+                return $this->redirectToRoute('vacancy_show_cv-received', [
+                        'id' => $request->get(self::VACANCY_ENTITY_IN_VIEW)
+                    ]
+                );
+            }
+
             return $this->redirectToRoute(self::CANDIDATE_INDEX, [
                 'id' => $candidate->getId(),
             ]);
         }
-
-        $form = $this->createForm(CandidateType::class, $candidate);
-        $form->handleRequest($request);
-        $this->getDoctrine()->getManager()->flush();
-
-
         return $this->render('candidate/edit.html.twig', [
             self::CANDIDATE => $candidate,
             'form' => $form->createView(),

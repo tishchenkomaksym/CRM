@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block menu %}
+    <ul class="list-group list-group-flush">
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
+        {% endif %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('candidate_index') }}">Candidate Database</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Your Requests</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Work on Issue - Step
+                {% if vacancy.status == 'CV Received' %}
+                    2
+                {% else %}
+                    1
+                {% endif %}
+            </li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block body %}
+<table class="table" style="table-layout: fixed">
+    <tbody>
+    <tr>
+        <th>Request#</th>
+        <td>{{ vacancy.id }}</td>
+    </tr>
+    <tr>
+        <th>Created</th>
+        <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+    </tr>
+    <tr>
+        <th>By</th>
+        <td>{{ vacancy.createdBy }}</td>
+    </tr>
+    </tbody>
+</table>
+<div>
+    <div class="border border-danger rounded d-flex align-items-">
+        {% if vacancy.status is null %}
+            <p>Status:<span>Waiting for approval</span></p>
+        {% else %}
+            <p>Status: <span>{{ vacancy.status }}</span></p>
+        {% endif %}
+    </div>
+    <p>
+        Ниже вы видите созданные вами вакансии. При получение резюме по вакансиям выберите имя и впишите фамилию
+        кандидата, затем нажмите на кнопку "Check Candidate" чтобы проверить его на наличие в базе кандидатов. Если кандидат
+        уже существует в базе кандидатов - прикрепите его к вакансиию Если кандидата нет в базе данных - добавьте кандидата
+        в базу кандидатов.
+    </p>
+</div>
+    <div>
+        Link(s) to vacancy
+    </div>
+    {% for links in link %}
+
+            <div class="border border-primary rounded">
+                {{ links.link }}
+            </div>
+    {% endfor %}
+
+        {{ include('vacancy/formForVacancy.html.twig') }}
+
+<div class="navbar bg-light d-flex justify-content-between">
+    <div>
+        assigned to:{{ vacancy.assignee }}
+    </div>
+    <div>
+        <span class="border border-success">Approved</span>
+        {{ vacancy.approveDate|date('Y-m-d') }}
+        by {{ vacancy.approvedBy }}
+    </div>
+</div>
+
+
+{% endblock %}

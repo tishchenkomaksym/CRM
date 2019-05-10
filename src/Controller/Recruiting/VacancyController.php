@@ -1,27 +1,40 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Recruiting;
 
 use App\Data\Sdt\Mail\Adapter\NoDateException;
+use App\Entity\CandidateVacancy;
 use App\Entity\Vacancy;
 use App\Entity\VacancyViewerUser;
+use App\Form\CandidateStepCvReceivedType;
+use App\Form\CandidateStepCvReceivedTypeForHunting;
 use App\Form\RecruiterType;
 use App\Form\VacancyType;
 use App\Form\VacancyTypeDenied;
 use App\Form\ViewerType;
+use App\Repository\CandidateRepository;
 use App\Repository\UserRepository;
 use App\Repository\VacancyRepository;
+use App\Service\CandidateForms\CandidateForms;
+use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\ContextForRelationStrategy;
+use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\FormValidators\CandidateVacancyCheckExistence;
+use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\StrategyExistence;
+use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\StrategyNonExistence;
+use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\VacancyCandidateBuilder\ExistsCandidateBuilder;
 use App\Service\Vacancy\CreateForHrManager\NewVacancyMessageBuilderForHrManager;
 use App\Service\Vacancy\CreateForManager\NewVacancyMessageBuilderForManager;
 use App\Service\Vacancy\CreateVacancy\NewVacancyMessageBuilder;
 use App\Service\Vacancy\Display\ListEntry\ExpiredTimeCalculator;
 use App\Service\Vacancy\Display\ListEntry\VacancyListEntryDTOBuilder;
+use App\Service\Vacancy\VacancyTimeDecorator\VacancyTimeDecorator;
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\Common\Persistence\ObjectManager;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -32,10 +45,9 @@ use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
 /**
-  * @IsGranted("ROLE_VACANCY_VIEWER_USER")
+ * @IsGranted("ROLE_VACANCY_VIEWER_USER")
  * @Route("/vacancy")
  */
-
 class VacancyController extends AbstractController
 {
 
@@ -44,9 +56,17 @@ class VacancyController extends AbstractController
      */
     private $environment;
 
-    public const VACANCY_ENTITY_IN_VIEW ='vacancy';
+    public const VACANCY_ENTITY_IN_VIEW = 'vacancy';
+
+    public const CANDIDATE = 'candidate';
+
+    public const CANDIDATE_NAME = 'name';
+
+    public const CANDIDATE_SURNAME = 'surname';
 
     public const VACANCY_EXPIRED_TIME = 'expiredTime';
+
+    public const CANDIDATE_EDIT = 'candidate_edit';
 
     public function __construct(Environment $environment)
     {
@@ -66,15 +86,15 @@ class VacancyController extends AbstractController
 
         $assignee = $this->getUser()->getRoles();
         $currentUser = $this->getUser()->getId();
-        if (in_array('ROLE_RECRUITER', $assignee, true)){
+        if (in_array('ROLE_RECRUITER', $assignee, true)) {
             foreach ($vacancyRepository->findBy([
                 'assignee' => $currentUser
-            ]) as $vacancy){
+            ]) as $vacancy) {
                 $vacancies[] = $builder->build($vacancy);
             }
 
-        }else{
-            foreach ($vacancyRepository->findAll() as $vacancy){
+        } else {
+            foreach ($vacancyRepository->findAll() as $vacancy) {
                 $vacancies[] = $builder->build($vacancy);
             }
         }
@@ -99,7 +119,7 @@ class VacancyController extends AbstractController
     public function approve(UserRepository $userRepository, Vacancy $vacancy, Swift_Mailer $mailer): Response
     {
 
-        if ($vacancy->getStatus() !== null){
+        if ($vacancy->getStatus() !== null) {
             throw new NotFoundHttpException('This request was already approved or denied');
         }
 
@@ -133,7 +153,7 @@ class VacancyController extends AbstractController
      */
     public function deny(Vacancy $vacancy, Request $request): Response
     {
-        if ($vacancy->getStatus() !== null){
+        if ($vacancy->getStatus() !== null) {
             throw new NotFoundHttpException('This request was already approved or denied');
         }
 
@@ -234,6 +254,7 @@ class VacancyController extends AbstractController
     public function show(Vacancy $vacancy, Request $request, ExpiredTimeCalculator $timeCalculator): Response
     {
         $viewerUser = new VacancyViewerUser();
+        $timeDecorator = new VacancyTimeDecorator($vacancy);
         $formUser = $this->createForm(ViewerType::class, $viewerUser);
         $formUser->handleRequest($request);
 
@@ -249,29 +270,23 @@ class VacancyController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
-            $vacancy->setAssigneeDate(new DateTimeImmutable( 'now'));
+            $vacancy->setAssignedBy($this->getUser());
+            $vacancy->setAssigneeDate(new DateTimeImmutable('now'));
             $vacancy->setStatus('Issue have been assigned ');
             $entityManager->persist($vacancy);
             $entityManager->flush();
-        }
-
-        if ($vacancy->getApproveDate() != null) {
-            $object = $vacancy->getApproveDate();
-        } elseif ($vacancy->getAssigneeDate() != null){
-            $object = $vacancy->getAssigneeDate();
-        }else{
-            $object = new DateTimeImmutable('now');
         }
 
         return $this->render('vacancy/show.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView(),
             'formUser' => $formUser->createView(),
-            self::VACANCY_EXPIRED_TIME => $timeCalculator->getExpiredTime($object, new DateTime())
+            self::VACANCY_EXPIRED_TIME => $timeCalculator->getExpiredTime($timeDecorator->timeDecorator(), new DateTime())
         ]);
     }
 
     /**
+     * @IsGranted("ROLE_RECRUITER")
      * @Route("/recruiter/{id}", name="vacancy_show_recruiter", methods={"GET","POST"})
      * @param Vacancy $vacancy
      * @param ExpiredTimeCalculator $timeCalculator
@@ -279,28 +294,185 @@ class VacancyController extends AbstractController
      * @throws Exception
      */
 
-    public function showRecruiter(Vacancy $vacancy,ExpiredTimeCalculator $timeCalculator):Response
+    public function showRecruiter(Vacancy $vacancy, ExpiredTimeCalculator $timeCalculator): Response
     {
-        if ($vacancy->getApproveDate() != null) {
-            $object = $vacancy->getApproveDate();
-        } elseif ($vacancy->getAssigneeDate() != null){
-            $object = $vacancy->getAssigneeDate();
-        }else{
-            $object = new DateTimeImmutable('now');
-        }
-
-        $role = $this->getUser()->getRoles();
-        if (in_array('ROLE_RECRUITER', $role, true)){
-            $return = $this->render('vacancy/showRecruiter.html.twig', [
+        $timeDecorator = new VacancyTimeDecorator($vacancy);
+            return  $this->render('vacancy/showRecruiter.html.twig', [
                 self::VACANCY_ENTITY_IN_VIEW => $vacancy,
-                self::VACANCY_EXPIRED_TIME => $timeCalculator->getExpiredTime($object, new DateTime())
+                self::VACANCY_EXPIRED_TIME => $timeCalculator->getExpiredTime($timeDecorator->timeDecorator(),
+                    new DateTime()),
             ]);
-        }else{
-            $return = new NoDateException('Not found 404');
-        }
-
-        return $return;
     }
+
+    /**
+     * @IsGranted("ROLE_RECRUITER")
+     * @Route("/recruiter/received/{id}", name="vacancy_show_cv-received", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @return NoDateException|Response
+     */
+    public function recruiterStatusCvReceived(Vacancy $vacancy)
+    {
+        return  $this->render('vacancy/recruiterStatusCvReceived.html.twig', [
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy,
+        ]);
+    }
+
+
+    /**
+     * @IsGranted("ROLE_RECRUITER")
+     * @Route("/recruiter/received/fromVacancy/{id}", name="vacancy_show_from_vacancy", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param Request $request
+     * @param CandidateRepository $candidateRepository
+     * @param CandidateForms $candidateForms
+     * @param StrategyExistence $strategyExistence
+     * @param StrategyNonExistence $strategyNonExistence
+     * @param ObjectManager $objectManager
+     * @return NoDateException|RedirectResponse|Response
+     */
+    public function receivedFromVacancy(
+        Vacancy $vacancy,
+        Request $request,
+        CandidateRepository $candidateRepository,
+        CandidateForms $candidateForms,
+        StrategyExistence $strategyExistence,
+        StrategyNonExistence $strategyNonExistence,
+        ObjectManager $objectManager
+    )
+    {
+        $candidateVacancy = new CandidateVacancy();
+        $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateVacancy,
+            ['constraints' => [new CandidateVacancyCheckExistence($vacancy)]]);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $name = $form->get(self::CANDIDATE_NAME)->getData();
+            $surname = $form->get(self::CANDIDATE_SURNAME)->getData();
+            $existsCandidateBuilder = new ExistsCandidateBuilder($candidateRepository);
+            $existsUser = $existsCandidateBuilder->build($name, $surname);
+            if ($existsUser !== null) {
+                $context = new ContextForRelationStrategy(
+                    $strategyExistence, $objectManager
+                );
+            } else {
+                $context = new ContextForRelationStrategy(
+                    $strategyNonExistence, $objectManager);
+            }
+            $candidate = $context->execute($vacancy, $candidateVacancy, $name, $surname, self::VACANCY_ENTITY_IN_VIEW);
+            return $this->redirectToRoute(self::CANDIDATE_EDIT, [
+                'id' => $candidate->getId(),
+                self::VACANCY_ENTITY_IN_VIEW => $vacancy->getId()
+            ]);
+
+        }
+        return $this->render('vacancy/stepCvReceivedFromVacancy.html.twig', [
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy,
+            'form' => $form->createView(),
+            'link' => $candidateForms->vacancyLink($vacancy)
+        ]);
+    }
+
+    /**
+     * @IsGranted("ROLE_RECRUITER")
+     * @Route("/recruiter/received/fromHunting/{id}", name="vacancy_show_from_hunting", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param Request $request
+     * @param CandidateRepository $candidateRepository
+     * @param StrategyExistence $strategyExistence
+     * @param StrategyNonExistence $strategyNonExistence
+     * @param ObjectManager $objectManager
+     * @return NoDateException|RedirectResponse|Response
+     */
+    public function receivedFromHunting(
+        Vacancy $vacancy,
+        Request $request,
+        CandidateRepository $candidateRepository,
+        StrategyExistence $strategyExistence,
+        StrategyNonExistence $strategyNonExistence,
+        ObjectManager $objectManager
+    )
+    {
+        $candidateVacancy = new CandidateVacancy();
+        $form = $this->createForm(CandidateStepCvReceivedTypeForHunting::class, $candidateVacancy);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $name = $form->get(self::CANDIDATE_NAME)->getData();
+            $surname = $form->get(self::CANDIDATE_SURNAME)->getData();
+            $existsCandidateBuilder = new ExistsCandidateBuilder($candidateRepository);
+            $existsUser = $existsCandidateBuilder->build($name, $surname);
+            if ($existsUser !== null) {
+                $context = new ContextForRelationStrategy(
+                    $strategyExistence, $objectManager
+                );
+            } else {
+                $context = new ContextForRelationStrategy(
+                    $strategyNonExistence, $objectManager);
+            }
+            $candidate = $context->execute($vacancy, $candidateVacancy, $name, $surname, 'hunting');
+            return $this->redirectToRoute(self::CANDIDATE_EDIT, [
+                'id' => $candidate->getId(),
+                self::VACANCY_ENTITY_IN_VIEW => $vacancy->getId()
+            ]);
+
+        }
+        return $this->render('vacancy/stepCvReceivedFromHunting.html.twig', [
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy,
+            'form' => $form->createView()
+        ]);
+    }
+
+
+    /**
+     * @IsGranted("ROLE_RECRUITER")
+     * @Route("/recruiter/received/fromReccomandation/{id}", name="vacancy_show_from_recommendation", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param Request $request
+     * @param CandidateRepository $candidateRepository
+     * @param CandidateForms $candidateForms
+     * @param StrategyExistence $strategyExistence
+     * @param StrategyNonExistence $strategyNonExistence
+     * @param ObjectManager $objectManager
+     * @return NoDateException|RedirectResponse|Response
+     */
+    public function receivedFromRecommendation(
+        Vacancy $vacancy,
+        Request $request,
+        CandidateRepository $candidateRepository,
+        CandidateForms $candidateForms,
+        StrategyExistence $strategyExistence,
+        StrategyNonExistence $strategyNonExistence,
+        ObjectManager $objectManager
+    )
+    {
+        $candidateVacancy = new CandidateVacancy();
+        $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateVacancy);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $name = $form->get(self::CANDIDATE_NAME)->getData();
+            $surname = $form->get(self::CANDIDATE_SURNAME)->getData();
+            $existsCandidateBuilder = new ExistsCandidateBuilder($candidateRepository);
+            $existsUser = $existsCandidateBuilder->build($name, $surname);
+            if ($existsUser !== null) {
+                $context = new ContextForRelationStrategy(
+                    $strategyExistence, $objectManager
+                );
+            } else {
+                $context = new ContextForRelationStrategy(
+                    $strategyNonExistence, $objectManager);
+            }
+            $candidate = $context->execute($vacancy, $candidateVacancy, $name, $surname, 'recommendation');
+            return $this->redirectToRoute(self::CANDIDATE_EDIT, [
+                'id' => $candidate->getId(),
+                self::VACANCY_ENTITY_IN_VIEW => $vacancy->getId()
+            ]);
+
+        }
+        return $this->render('vacancy/stepCvReceivedFromRecommendation.html.twig', [
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy,
+            'form' => $form->createView(),
+            'link' => $candidateForms->vacancyLink($vacancy)
+        ]);
+    }
+
 
     /**
      * @Route("/{id}/edit", name="vacancy_edit", methods={"GET","POST"})
@@ -335,7 +507,7 @@ class VacancyController extends AbstractController
      */
     public function delete(Request $request, Vacancy $vacancy): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$vacancy->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $vacancy->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($vacancy);
             $entityManager->flush();

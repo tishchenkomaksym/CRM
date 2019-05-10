@@ -26,14 +26,6 @@
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.position }}</a></td>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.location }}</a></td>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.phone }}</a></td>
-                {% for vacancy in candidate.vacancy %}
-                    <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">Request#{{ vacancy.id }}</a></td>
-                {% endfor %}
-                {% if candidate.updatedDate is not null %}
-                    <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">Updated:{{ candidate.updatedDate|date('Y-m-d') }}</a></td>
-                {% else %}
-                    <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">Created:{{ candidate.createdAt|date('Y-m-d') }}</a></td>
-                {% endif %}
             </tr>
         {% else %}
             <tr>
@@ -42,6 +34,5 @@
         {% endfor %}
         </tbody>
     </table>
-
 
 {% endblock %}

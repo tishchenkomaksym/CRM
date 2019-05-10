@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Candidate</h1>
 
-    <table class="table">
+    <table class="table" style="table-layout: fixed">
         <tbody>
             <tr>
                 <th>Id</th>
@@ -14,15 +14,21 @@
             <tr>
                 <th>Photo</th>
                 <td><img class="img-fluid img-thumbnail" src="/uploads/{{ candidate.photo }}" alt="">
+                </td>
+                <td>
                     <a class="btn btn-secondary" href="{{ path('candidate_edit', {'id': candidate.id}) }}">edit</a>
                 </td>
                 <td>Created
-                    {{ candidate.createdAt|date('Y-m-d') }}</td>
-
+                    {{ candidate.createdAt|date('Y-m-d') }}
+                </td>
             </tr>
             <tr>
-                <th>Full name</th>
+                <th>Name</th>
                 <td>{{ candidate.name }}</td>
+            </tr>
+            <tr>
+                <th>Surname</th>
+                <td>{{ candidate.surname }}</td>
             </tr>
             <tr>
                 <th>Position</th>
@@ -38,6 +44,11 @@
             <tr>
                 <th>Phone number</th>
                 <td>{{ candidate.phone }}</td>
+            </tr>
+            <tr>
+                <th>
+                    {{ include('candidate/showVacancyIdForm.html.twig') }}
+                </th>
             </tr>
             <tr>
                 <th>Personal email</th>
@@ -72,7 +83,7 @@
             </tr>
             <tr>
                 <th>Comment</th>
-                <td>{{ candidate.comment }}</td>
+                <td style="word-break: break-all">{{ candidate.comment }}</td>
             </tr>
         </tbody>
     </table>
@@ -80,15 +91,15 @@
         <div class="d-flex justify-content-between">
             <div class="d-flex">
                 <div class="border border-warning rounded">Request#{{ vacancy.id }}</div>
-                <div class="border border-warning rounded">assigned to: {{ vacancy.assignee }}</div>
+                <div class="border border-warning rounded">assigned to: {{ vacancy.vacancy.assignee }}</div>
             </div>
             <div class="d-flex">
-                <div class="border border-warning rounded">Created{{ vacancy.createdAt|date('Y-m-d') }}</div>
-                <div class="border border-warning rounded">by {{ vacancy.createdBy }}</div>
+                <div class="border border-warning rounded">Created{{ vacancy.vacancy.createdAt|date('Y-m-d') }}</div>
+                <div class="border border-warning rounded">by {{ vacancy.vacancy.createdBy }}</div>
             </div>
         </div>
         <div class="border border-warning rounded">
-            Candidate Status: {{ vacancy.status }}
+            Candidate Status: {{ vacancy.vacancy.status }}
         </div>
     {% endfor %}
 
