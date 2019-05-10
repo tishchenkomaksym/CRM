@@ -6,7 +6,6 @@ use App\Entity\Vacancy;
 use App\Entity\VacancyLink;
 use App\Form\VacancyLinkType;
 use App\Repository\VacancyLinkRepository;
-use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,12 +17,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class VacancyLinkController extends AbstractController
 {
 
-//    /**
-//     * @var Environment
-//     */
-//    private $environment;
-
     public const VACANCY_LINK = 'vacancy_link';
+
+    public const VACANCY_LINK_INDEX = 'vacancy_link_index';
 
     /**
      * @Route("/{id}", name="vacancy_link_index", methods={"GET"})
@@ -43,7 +39,6 @@ class VacancyLinkController extends AbstractController
      * @Route("/new/{id}", name="vacancy_link_new", methods={"GET","POST"})
      * @param Vacancy $vacancy
      * @param Request $request
-     * @param Swift_Mailer $mailer
      * @return Response
      */
     public function new(Vacancy $vacancy,Request $request): Response
@@ -55,16 +50,11 @@ class VacancyLinkController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $vacancyLink->setVacancy($vacancy);
-            $vacancy->setStatus('CV Received');
+            $vacancy->setStatus('Search for a candidate(s) have been started');
             $entityManager->persist($vacancyLink);
             $entityManager->flush();
 
-//            $messageBuilder = new CreateForAliasDepartment(
-//                $vacancy, $this->environment
-//            );
-//            $mailer->send($messageBuilder->build());
-
-            return $this->redirectToRoute('vacancy_link_index',[
+            return $this->redirectToRoute(self::VACANCY_LINK_INDEX,[
             'id' => $vacancy->getId(),
             ]);
         }
@@ -102,7 +92,7 @@ class VacancyLinkController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('vacancy_link_index', [
+            return $this->redirectToRoute(self::VACANCY_LINK_INDEX, [
                 'id' => $vacancyLink->getId(),
             ]);
         }
@@ -127,6 +117,6 @@ class VacancyLinkController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('vacancy_link_index');
+        return $this->redirectToRoute(self::VACANCY_LINK_INDEX);
     }
 }

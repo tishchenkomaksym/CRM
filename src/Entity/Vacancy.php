@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
+use DateTime;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -89,6 +92,7 @@ class Vacancy
      */
     private $reasonDenied;
 
+
     /**
      * @var string $type
      *
@@ -135,9 +139,24 @@ class Vacancy
     private $approvedBy;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $updatedDate;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     */
+    private $assignedBy;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CandidateVacancy", mappedBy="vacancy")
+     */
+    private $candidateVacancies;
+
+    public function __construct()
+    {
+        $this->candidateVacancies = new ArrayCollection();
+    }
 
 
 
@@ -323,7 +342,7 @@ class Vacancy
     {
         $this->status = $status;
 
-        $this->setUpdatedDate(new DateTimeImmutable( 'now'));
+        $this->setUpdatedDate(new DateTime( 'now'));
 
         return $this;
     }
@@ -413,14 +432,57 @@ class Vacancy
         return $this;
     }
 
-    public function getUpdatedDate(): ?DateTimeImmutable
+    public function getUpdatedDate(): ?DateTime
     {
         return $this->updatedDate;
     }
 
-    public function setUpdatedDate(?DateTimeImmutable $updatedDate): self
+    public function setUpdatedDate(?DateTime $updatedDate): self
     {
         $this->updatedDate = $updatedDate;
+
+        return $this;
+    }
+
+    public function getAssignedBy(): ?User
+    {
+        return $this->assignedBy;
+    }
+
+    public function setAssignedBy(?User $assignedBy): self
+    {
+        $this->assignedBy = $assignedBy;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CandidateVacancy[]
+     */
+    public function getCandidateVacancies(): Collection
+    {
+        return $this->candidateVacancies;
+    }
+
+    public function addCandidateVacancy(CandidateVacancy $candidateVacancy): self
+    {
+        if (!$this->candidateVacancies->contains($candidateVacancy)) {
+            $this->candidateVacancies[] = $candidateVacancy;
+            $candidateVacancy->setVacancy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCandidateVacancy(CandidateVacancy $candidateVacancy): self
+    {
+        if ($this->candidateVacancies->contains($candidateVacancy)) {
+            $this->candidateVacancies->removeElement($candidateVacancy);
+            // set the owning side to null (unless already changed)
+            if ($candidateVacancy->getVacancy() === $this) {
+                $candidateVacancy->setVacancy(null);
+            }
+        }
 
         return $this;
     }
