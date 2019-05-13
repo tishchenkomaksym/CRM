@@ -140,9 +140,10 @@ class CandidateController extends AbstractController
     public function edit(Candidate $candidate, Request $request): Response
     {
         $photoNotNull = $candidate->getPhoto() !== null;
+        $photo = $candidate->getPhoto();
         if ($photoNotNull) {
             $candidate->setPhoto(
-                new File($this->getParameter(self::UPLOADS_DIRECTORY) . '/' . $candidate->getPhoto())
+                new File($this->getParameter(self::UPLOADS_DIRECTORY) . '/' . $candidate->getPhoto(), false)
             );
         }
         $form = $this->createForm(CandidateType::class, $candidate,
@@ -167,6 +168,9 @@ class CandidateController extends AbstractController
                 $fileName = md5(uniqid('', true)) . '.' . $file->guessExtension();
                 $file->move($this->getParameter('uploads_directory'), $fileName);
                 $candidate->setPhoto($fileName);
+            }
+            else {
+                $candidate->setPhoto($photo);
             }
             $candidate->setUpdatedDate(new DateTime('now'));
 
