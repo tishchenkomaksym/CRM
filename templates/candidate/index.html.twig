@@ -9,7 +9,8 @@
         <thead>
             <tr>
                 <th>Photo</th>
-                <th>Full name</th>
+                <th>Name</th>
+                <th>Surname</th>
                 <th>Position</th>
                 <th>Location</th>
                 <th>Phone</th>
@@ -23,6 +24,7 @@
             <tr>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}"><img class="img-fluid img-thumbnail" src="/uploads/{{ candidate.photo }}" alt=""></a></td>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.name }}</a></td>
+                <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.surname }}</a></td>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.position }}</a></td>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.location }}</a></td>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.phone }}</a></td>
