@@ -68,6 +68,8 @@ class VacancyController extends AbstractController
 
     public const CANDIDATE_EDIT = 'candidate_edit';
 
+    public const CONSTRAINTS = 'constraints';
+
     public function __construct(Environment $environment)
     {
         $this->environment = $environment;
@@ -342,7 +344,7 @@ class VacancyController extends AbstractController
     {
         $candidateVacancy = new CandidateVacancy();
         $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateVacancy,
-            ['constraints' => [new CandidateVacancyCheckExistence($vacancy)]]);
+            [self::CONSTRAINTS => [new CandidateVacancyCheckExistence($vacancy)]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $name = $form->get(self::CANDIDATE_NAME)->getData();
@@ -392,7 +394,8 @@ class VacancyController extends AbstractController
     )
     {
         $candidateVacancy = new CandidateVacancy();
-        $form = $this->createForm(CandidateStepCvReceivedTypeForHunting::class, $candidateVacancy);
+        $form = $this->createForm(CandidateStepCvReceivedTypeForHunting::class, $candidateVacancy,
+            [self::CONSTRAINTS => [new CandidateVacancyCheckExistence($vacancy)]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $name = $form->get(self::CANDIDATE_NAME)->getData();
@@ -444,7 +447,8 @@ class VacancyController extends AbstractController
     )
     {
         $candidateVacancy = new CandidateVacancy();
-        $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateVacancy);
+        $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateVacancy,
+            [self::CONSTRAINTS => [new CandidateVacancyCheckExistence($vacancy)]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $name = $form->get(self::CANDIDATE_NAME)->getData();
