@@ -10,16 +10,15 @@
             <tr>
                 <th>Id</th>
                 <th>Link</th>
-                <th>Description</th>
                 <th>actions</th>
             </tr>
         </thead>
         <tbody>
+
         {% for vacancy_link in vacancy_links %}
             <tr>
                 <td>{{ vacancy_link.id }}</td>
                 <td>{{ vacancy_link.link }}</td>
-                <td style="word-break: break-all">{{ vacancy_link.description }}</td>
                 <td>
                     <a href="{{ path('vacancy_link_show', {'id': vacancy_link.id}) }}">show</a>
                     <a href="{{ path('vacancy_link_edit', {'id': vacancy_link.id}) }}">edit</a>

@@ -24,7 +24,7 @@ class VacancyLink
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private $description;
+    private $letterText;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Vacancy")
@@ -48,14 +48,14 @@ class VacancyLink
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getLetterText(): ?string
     {
-        return $this->description;
+        return $this->letterText;
     }
 
-    public function setDescription(?string $description): self
+    public function setLetterText(?string $letterText): self
     {
-        $this->description = $description;
+        $this->letterText = $letterText;
 
         return $this;
     }

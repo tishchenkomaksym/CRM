@@ -51,8 +51,6 @@ class CandidateVacancyCheckExistenceValidator extends ConstraintValidator
                 $this->context->buildViolation($constraint->message)
                     ->addViolation();
             }
-
-
         }
     }
 }

@@ -34,6 +34,10 @@ services:
       arguments:
           $host: '%env(ELASTIC_URL)%'
 
+    App\Service\Candidate\CandidatePhotoDecorator:
+      arguments:
+        $targetDirectory: '%uploads_directory%'
+
 
     Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
       arguments:

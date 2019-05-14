@@ -5,6 +5,7 @@
         Для этого продумайте текст письма, которое будет рассылаться соответствующим сотрудникам, вставьте его ниже и нажмите
         "Send"
     </p>
-    {{ form_row(form.description) }}
+    {{ form_row(form.letterText) }}
+   {% set type = type|default('number') %}
     <button class="btn">{{ button_label|default('Send') }}</button>
 {{ form_end(form) }}

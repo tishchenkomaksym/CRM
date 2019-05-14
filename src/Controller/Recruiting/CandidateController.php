@@ -2,25 +2,25 @@
 
 namespace App\Controller\Recruiting;
 
+use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\Candidate;
-use App\Entity\CandidateVacancy;
 use App\Form\CandidateType;
 use App\Form\CandidateVacancyIdType;
 use App\Repository\CandidateRepository;
+use App\Repository\VacancyRepository;
+use App\Service\Candidate\CandidatePhotoDecorator;
+use App\Service\Candidate\VacancyFieldDecorator;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\FormValidators\CandidateVacancyCheckExistenceUpdateCandidate;
 use DateTime;
 use DateTimeImmutable;
 use Exception;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @IsGranted("ROLE_CANDIDATES_DATABASE_USER")
  * @Route("/candidate")
  */
 class CandidateController extends AbstractController
@@ -48,32 +48,27 @@ class CandidateController extends AbstractController
     /**
      * @Route("/new", name="candidate_new", methods={"GET","POST"})
      * @param Request $request
+     * @param CandidatePhotoDecorator $candidatePhotoDecorator
+     * @param VacancyFieldDecorator $vacancyFieldDecorator
      * @return Response
      * @throws Exception
      */
-    public function new(Request $request): Response
+    public function new(Request $request, CandidatePhotoDecorator $candidatePhotoDecorator,
+                        VacancyFieldDecorator $vacancyFieldDecorator): Response
     {
         $candidate = new Candidate();
         $form = $this->createForm(CandidateType::class, $candidate);
         $form->handleRequest($request);
 
-        $entityManager = $this->getDoctrine()->getManager();
         if ($form->isSubmitted() && $form->isValid()) {
             $vacancyIds = $form->get(self::VACANCY_ENTITY_IN_VIEW)->getData();
 
-            foreach ($vacancyIds as $vacancyId) {
-                $candidateVacancy = new CandidateVacancy();
-                $candidateVacancy->setCandidate($candidate);
-                $candidateVacancy->setVacancy($vacancyId);
-                $entityManager->persist($candidateVacancy);
-            }
-
+            $vacancyFieldDecorator->vacancyField($vacancyIds, $candidate);
 
             if ($candidate->getPhoto() !== null) {
                 /** @var UploadedFile $file */
                 $file = $candidate->getPhoto();
-                $fileName = md5(uniqid('', true)) . '.' . $file->guessExtension();
-                $file->move($this->getParameter(self::UPLOADS_DIRECTORY), $fileName);
+                $fileName = $candidatePhotoDecorator->upload($file);
                 $candidate->setPhoto($fileName);
             }
 
@@ -96,24 +91,20 @@ class CandidateController extends AbstractController
      * @Route("/{id}", name="candidate_show", methods={"GET","POST"})
      * @param Candidate $candidate
      * @param Request $request
+     * @param VacancyFieldDecorator $vacancyFieldDecorator
      * @return Response
      */
-    public function show(Candidate $candidate, Request $request): Response
+    public function show(Candidate $candidate, Request $request,
+                         VacancyFieldDecorator $vacancyFieldDecorator): Response
     {
         $form = $this->createForm(CandidateVacancyIdType::class, $candidate,
             ['constraints' => [new CandidateVacancyCheckExistenceUpdateCandidate()]]);
         $form->handleRequest($request);
 
-        $entityManager = $this->getDoctrine()->getManager();
         if ($form->isSubmitted() && $form->isValid()) {
             $vacancyIds = $form->get(self::VACANCY_ENTITY_IN_VIEW)->getData();
 
-            foreach ($vacancyIds as $vacancyId) {
-                $candidateVacancy = new CandidateVacancy();
-                $candidateVacancy->setCandidate($candidate);
-                $candidateVacancy->setVacancy($vacancyId);
-                $entityManager->persist($candidateVacancy);
-            }
+            $vacancyFieldDecorator->vacancyField($vacancyIds, $candidate);
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($candidate);
@@ -135,19 +126,20 @@ class CandidateController extends AbstractController
      * @Route("/{id}/edit", name="candidate_edit", methods={"GET","POST"})
      * @param Candidate $candidate
      * @param Request $request
+     * @param VacancyRepository $vacancyRepository
+     * @param CandidatePhotoDecorator $candidatePhotoDecorator
+     * @param VacancyFieldDecorator $vacancyFieldDecorator
      * @return Response
-     * @throws Exception
+     * @throws NoDateException
      */
 
-    public function edit(Candidate $candidate, Request $request): Response
+    public function edit(Candidate $candidate, Request $request, VacancyRepository $vacancyRepository,
+                         CandidatePhotoDecorator $candidatePhotoDecorator,
+                         VacancyFieldDecorator $vacancyFieldDecorator): Response
     {
-        $photoNotNull = $candidate->getPhoto() !== null;
         $photo = $candidate->getPhoto();
-        if ($photoNotNull) {
-            $candidate->setPhoto(
-                new File($this->getParameter(self::UPLOADS_DIRECTORY) . '/' . $candidate->getPhoto(), false)
-            );
-        }
+        $candidatePhotoDecorator->photoNotNull($candidate);
+
         $form = $this->createForm(CandidateType::class, $candidate,
             ['constraints' => [new CandidateVacancyCheckExistenceUpdateCandidate()]]);
         $form->handleRequest($request);
@@ -156,30 +148,30 @@ class CandidateController extends AbstractController
             // Check existence of vacancy
             $vacancyIds = $form->get(self::VACANCY_ENTITY_IN_VIEW)->getData();
 
-            // set Vacancy and Candidate to CandidateVacancyCheckExistenceUpdateCandidate
-            foreach ($vacancyIds as $vacancyId) {
-                $candidateVacancy = new CandidateVacancy();
-                $candidateVacancy->setCandidate($candidate);
-                $candidateVacancy->setVacancy($vacancyId);
-                $entityManager->persist($candidateVacancy);
-            }
+            $vacancyFieldDecorator->vacancyField($vacancyIds, $candidate);
 
             /** @var UploadedFile $file */
             $file = $candidate->getPhoto();
             if ($file !== null) {
-                $fileName = md5(uniqid('', true)) . '.' . $file->guessExtension();
-                $file->move($this->getParameter('uploads_directory'), $fileName);
+                $fileName = $candidatePhotoDecorator->upload($file);
                 $candidate->setPhoto($fileName);
-            }
-            else {
+            }else{
                 $candidate->setPhoto($photo);
             }
             $candidate->setUpdatedDate(new DateTime('now'));
 
             $this->getDoctrine()->getManager()->flush();
-            if (!empty($request->get(self::VACANCY_ENTITY_IN_VIEW))) {
-                return $this->redirectToRoute('vacancy_show_cv-received', [
-                        'id' => $request->get(self::VACANCY_ENTITY_IN_VIEW)
+            $vacancyId = $request->get(self::VACANCY_ENTITY_IN_VIEW);
+            if (!empty($vacancyId)) {
+                $vacancy = $vacancyRepository->findOneBy(['id' => $vacancyId]);
+                if ($vacancy === null){
+                    throw new NoDateException('Vacancy not found');
+                }
+                $entityManager->persist($candidate->setStatus('CV Received'));
+                $entityManager->persist($vacancy->setStatus('CV Received'));
+                $entityManager->flush();
+                return $this->redirectToRoute('vacancy_show_search_candidate', [
+                        'id' => $vacancyId
                     ]
                 );
             }

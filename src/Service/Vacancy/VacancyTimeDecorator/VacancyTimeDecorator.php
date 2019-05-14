@@ -16,7 +16,7 @@ class VacancyTimeDecorator
         $this->vacancy = $vacancy;
     }
 
-    public function timeDecorator()
+    public function expiredTimeDecorator(): ?DateTimeImmutable
     {
         if ($this->vacancy->getApproveDate() != null) {
             $object = $this->vacancy->getApproveDate();

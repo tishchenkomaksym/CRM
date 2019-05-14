@@ -2,87 +2,90 @@
 
 {% block title %}Vacancy{% endblock %}
 
-{% block menu %}
-    <ul class="list-group list-group-flush">
-        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
-            <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
-        {% endif %}
-        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
-            <li class="list-group-item"><a href="{{ path('candidate_index') }}">Candidate Database</a></li>
-        {% endif %}
-    </ul>
-{% endblock %}
-
 {% block breadcrumbs %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
             <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">View Request</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Status: {{ vacancy.status }}
-            </li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Request</a></li>
+            <li class="breadcrumb-item active" aria-current="page">View Request</li>
         </ol>
     </nav>
 {% endblock %}
 
 {% block body %}
-
-<table class="table" style="table-layout: fixed">
-    <tbody>
-    <tr>
-        <th>Request#</th>
-        <td>{{ vacancy.id }}</td>
-    </tr>
-    <tr>
-        <th>Created</th>
-        <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
-    </tr>
-    <tr>
-        <th>By</th>
-        <td>{{ vacancy.createdBy }}</td>
-    </tr>
-    </tbody>
-</table>
-    <div class="border border-danger rounded">
-        Status: {{ vacancy.status }}
-    </div>
+    <table class="table" style="table-layout: fixed">
+        <tbody>
+        <tr>
+            <th>Request#</th>
+            <td>{{ vacancy.id }}</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+        </tr>
+        <tr>
+            <th>By</th>
+            <td>{{ vacancy.createdBy }}</td>
+        </tr>
+        </tbody>
+    </table>
     <div>
-        <p>
-            После получения отклика (как результата размещения вакансии, хантинга или рекомендации сотрудника) следует добавить полученные от кандидата(ов) резюме.
-            Ниже вы увидите три пути, по которым вы могли получить CV. Перейдите в те из них, по которым было получено резюме, и совершите необходимые действия.
-            Вы сможете вернуться к этому пункту в любой момент если у вас появися дополнительная информация.
+        <p class="border border-warning rounded">Status:
+            {% if vacancy.status == 'Issue have been assigned' %}
+                <span>Search for a candidate(s) have been started</span>
+            {% elseif vacancy.status == 'Search for a candidate(s) have been started'%}
+                <span>CV Received</span>
+            {% elseif vacancy.status == 'CV Received' %}
+                <span>Candidates Interest is checked</span>
+            {% elseif vacancy.status == 'Candidates Interest is checked'%}
+                <span>CV approved by Department Manager</span>
+            {% else %}
+                <span>Search for a candidate(s) have been started</span>
+            {% endif %}
         </p>
     </div>
-    <div class="border border-warning btn d-block">
-        <a href="{{ path('vacancy_show_from_vacancy', {'id': vacancy.id}) }}">CVs received from vacancy</a>
-    </div>
-    <div class="border border-warning btn d-block">
-        <a href="{{ path('vacancy_show_from_hunting', {'id': vacancy.id}) }}">CVs received from hunting</a>
-    </div>
-    <div class="border border-warning btn d-block">
-        <a href="{{ path('vacancy_show_from_recommendation', {'id': vacancy.id}) }}">CVs received from recommendation</a>
-    </div>
-    <div>
-
-        {% if vacancy.status == 'Candidates Interest is checked' %}
-            <div class="btn btn-success">
-                <a href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">Done</a>
-            </div>
-        {% else %}
-            <span class="btn btn-danger">
-                 Not available
-             </span>
-        {% endif %}
-    </div>
-
-    <div class="navbar bg-light d-flex justify-content-between">
+    <table class="table" id="menu">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Position</th>
+        <th>Location</th>
+        <th>Phone</th>
+        <th>Request Status</th>
+        <th>Candidate Status</th>
+        <th>Updated</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for candidateVacancy in vacancy.candidateVacancies %}
+        <tr>
+            <td>{{ candidateVacancy.candidate.name }}</td>
+            <td>{{ candidateVacancy.candidate.position }}</td>
+            <td>{{ candidateVacancy.candidate.location }}</td>
+            <td>{{ candidateVacancy.candidate.phone }}</td>
+            <td>{{ vacancy.status }}</td>
+            <td>{{ candidateVacancy.candidate.status }}</td>
+            <td>{{ candidateVacancy.candidate.updatedDate|date('Y-m-d') }}
+                {% if candidateVacancy.commentInterest is null %}
+                    <a class="btn btn-primary" href="{{ path('check_interest', {'id': vacancy.id, 'candidateId': candidateVacancy.candidate.id}) }}">
+                        Check Candidate Interest
+                    </a>
+                {% else %}
+                    <span class="btn btn-secondary">
+                        Check Candidate Interest
+                    </span>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    {% if checkComment is empty %}
         <div>
-            assigned to you by:{{ vacancy.assignedBy }}
+            <a class="btn btn-success" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">
+                Done
+            </a>
         </div>
-        <div>
-            <span class="border border-success">Date of assigning</span>
-            {{ vacancy.assigneeDate|date('Y-m-d') }}
-        </div>
-    </div>
-
+    {% endif %}
 {% endblock %}

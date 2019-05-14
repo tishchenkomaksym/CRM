@@ -60,6 +60,16 @@ class CandidateVacancy
      */
     private $linkToProfile4;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $commentInterest;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $denialReason;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -157,6 +167,30 @@ class CandidateVacancy
     public function setLinkToProfile4(?string $linkToProfile4): self
     {
         $this->linkToProfile4 = $linkToProfile4;
+
+        return $this;
+    }
+
+    public function getCommentInterest(): ?string
+    {
+        return $this->commentInterest;
+    }
+
+    public function setCommentInterest(?string $commentInterest): self
+    {
+        $this->commentInterest = $commentInterest;
+
+        return $this;
+    }
+
+    public function getDenialReason(): ?string
+    {
+        return $this->denialReason;
+    }
+
+    public function setDenialReason(?string $denialReason): self
+    {
+        $this->denialReason = $denialReason;
 
         return $this;
     }
