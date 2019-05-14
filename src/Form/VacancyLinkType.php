@@ -19,7 +19,7 @@ class VacancyLinkType extends AbstractType
                     'attr' => ['placeholder' => 'Вставьте ссылку на вакансию']
                 ]
             )
-            ->add('description', null, [
+            ->add('letterText', null, [
                     'attr' => ['placeholder' => 'Вставьте текст рассылки']
                 ]
             )

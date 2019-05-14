@@ -20,10 +20,12 @@
             <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
             <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Your Requests</a></li>
             <li class="breadcrumb-item active" aria-current="page">Work on Issue - Step
-                {% if vacancy.status == 'CV Received' %}
+                {% if vacancy.status == 'Search for a candidate(s) have been started' %}
                     2
-                {% elseif vacancy.status == 'Candidates Interest is checked'%}
+                {% elseif vacancy.status == 'CV Received'%}
                     3
+                {% elseif vacancy.status == 'Candidates Interest is checked'%}
+                    4
                 {% else %}
                     1
                 {% endif %}
@@ -87,7 +89,9 @@
             {% endif %}
         </p>
         {% if vacancy.status == 'Search for a candidate(s) have been started' %}
-            <a class="btn btn-danger" href="{{ path('vacancy_show_cv-received', {'id': vacancy.id}) }}">Start Work</a>
+            <a class="btn btn-danger" href="{{ path('vacancy_show_search_candidate', {'id': vacancy.id}) }}">Start Work</a>
+        {% elseif vacancy.status == 'CV Received' %}
+            <a class="btn btn-danger" href="{{ path('vacancy_show_cv_received', {'id': vacancy.id}) }}">Start Work</a>
         {% else %}
             <a class="btn btn-danger" href="{{ path('vacancy_link_new', {'id': vacancy.id}) }}">Start Work</a>
         {% endif %}

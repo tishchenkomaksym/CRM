@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Recruiting;
 
 use App\Entity\Vacancy;
 use App\Entity\VacancyLink;
@@ -30,7 +30,9 @@ class VacancyLinkController extends AbstractController
     public function index(Vacancy $vacancy, VacancyLinkRepository $vacancyLinkRepository): Response
     {
         return $this->render('vacancy_link/index.html.twig', [
-            'vacancy_links' => $vacancyLinkRepository->findAll(),
+            'vacancy_links' => $vacancyLinkRepository->findBy([
+                'id' => $vacancy->getId()
+            ]),
             'vacancy' => $vacancy
         ]);
     }

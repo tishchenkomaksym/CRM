@@ -112,6 +112,14 @@ class Candidate
      */
     private $candidateVacancies;
 
+    /**
+     * @var string $type
+     *
+     * @ORM\Column(name="status", nullable=true, type="string", length=255, columnDefinition="ENUM('CV Received','Candidates Interest is checked','Waiting for response','Approved for the interview','Interview timing specification','Waiting for interview','Waiting for our final response','Closed')")
+     */
+
+    private $status;
+
     public function __construct()
     {
         $this->candidateVacancies = new ArrayCollection();
@@ -313,19 +321,6 @@ class Candidate
         return $this;
     }
 
-//    public function getLink()
-//    {
-//        return $this->link;
-//    }
-//
-//    public function setLink($link): self
-//    {
-//        $this->link = $link;
-//
-//        return $this;
-//    }
-
-
     public function getLinkToCv(): ?string
     {
         return $this->linkToCv;
@@ -366,6 +361,18 @@ class Candidate
                 $candidateVacancy->setCandidate(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }
