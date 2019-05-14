@@ -290,13 +290,21 @@ class VacancyController extends AbstractController
      * @Route("/recruiter/{id}", name="vacancy_show_recruiter", methods={"GET","POST"})
      * @param Vacancy $vacancy
      * @param ExpiredTimeCalculator $timeCalculator
+     * @param Request $request
      * @return Response
      * @throws Exception
      */
 
-    public function showRecruiter(Vacancy $vacancy, ExpiredTimeCalculator $timeCalculator): Response
+    public function showRecruiter(Vacancy $vacancy, ExpiredTimeCalculator $timeCalculator,
+                                    Request $request, ObjectManager $entityManager): Response
     {
         $vacancyTimeDecorator = new VacancyTimeDecorator($vacancy);
+        $checked = $request->get('checked');
+        if (!empty($checked)) {
+
+            $entityManager->persist($vacancy->setStatus('Candidates Interest is checked'));
+            $entityManager->flush();
+        }
             return  $this->render('vacancy/showRecruiter.html.twig', [
                 self::VACANCY_ENTITY_IN_VIEW => $vacancy,
                 self::VACANCY_EXPIRED_TIME => $timeCalculator->getExpiredTime($vacancyTimeDecorator->expiredTimeDecorator(),
@@ -392,7 +400,8 @@ class VacancyController extends AbstractController
     )
     {
         $candidateVacancy = new CandidateVacancy();
-        $form = $this->createForm(CandidateStepCvReceivedTypeForHunting::class, $candidateVacancy);
+        $form = $this->createForm(CandidateStepCvReceivedTypeForHunting::class, $candidateVacancy,
+            ['constraints' => [new CandidateVacancyCheckExistence($vacancy)]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $name = $form->get(self::CANDIDATE_NAME)->getData();
@@ -444,7 +453,8 @@ class VacancyController extends AbstractController
     )
     {
         $candidateVacancy = new CandidateVacancy();
-        $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateVacancy);
+        $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateVacancy,
+            ['constraints' => [new CandidateVacancyCheckExistence($vacancy)]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $name = $form->get(self::CANDIDATE_NAME)->getData();

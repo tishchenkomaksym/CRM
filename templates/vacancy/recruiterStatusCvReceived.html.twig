@@ -9,6 +9,11 @@
             <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
             <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Request</a></li>
             <li class="breadcrumb-item active" aria-current="page">View Request</li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {% if vacancy.status == 'CV Received'  %}
+                    Candidate Interest is checked
+                {% endif %}
+            </li>
         </ol>
     </nav>
 {% endblock %}
@@ -31,17 +36,9 @@
         </tbody>
     </table>
     <div>
-        <p class="border border-warning rounded">Status:
-            {% if vacancy.status == 'Issue have been assigned' %}
-                <span>Search for a candidate(s) have been started</span>
-            {% elseif vacancy.status == 'Search for a candidate(s) have been started'%}
-                <span>CV Received</span>
-            {% elseif vacancy.status == 'CV Received' %}
-                <span>Candidates Interest is checked</span>
-            {% elseif vacancy.status == 'Candidates Interest is checked'%}
-                <span>CV approved by Department Manager</span>
-            {% else %}
-                <span>Search for a candidate(s) have been started</span>
+        <p class="alert alert-danger">Status:
+            {% if vacancy.status == 'CV Received'  %}
+                Candidate Interest is checked
             {% endif %}
         </p>
     </div>
@@ -68,7 +65,8 @@
             <td>{{ candidateVacancy.candidate.status }}</td>
             <td>{{ candidateVacancy.candidate.updatedDate|date('Y-m-d') }}
                 {% if candidateVacancy.commentInterest is null %}
-                    <a class="btn btn-primary" href="{{ path('check_interest', {'id': vacancy.id, 'candidateId': candidateVacancy.candidate.id}) }}">
+                    <a class="btn btn-primary" href="{{ path('check_interest',
+                        {'id': vacancy.id, 'candidateId': candidateVacancy.candidate.id}) }}">
                         Check Candidate Interest
                     </a>
                 {% else %}
@@ -82,8 +80,8 @@
     </tbody>
     </table>
     {% if checkComment is empty %}
-        <div>
-            <a class="btn btn-success" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">
+        <div class="text-center">
+            <a class="btn btn-success" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id, 'checked': 'checked'}) }}">
                 Done
             </a>
         </div>

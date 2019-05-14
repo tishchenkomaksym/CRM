@@ -47,7 +47,8 @@ class CandidateVacancyCheckExistenceValidator extends ConstraintValidator
             $name = $form->get('name')->getData();
             $surname = $form->get('surname')->getData();
             $candidate = $this->existsCandidateBuilder->build($name, $surname);
-            if (($candidate !== null) && !empty($this->candidateVacancyExistenceLogic->existence($candidate->getId(), [$constraint->vacancy->getId()]))) {
+            if (($candidate !== null) && !empty($this->candidateVacancyExistenceLogic->existence($candidate->getId(),
+                    [$constraint->vacancy->getId()]))) {
                 $this->context->buildViolation($constraint->message)
                     ->addViolation();
             }

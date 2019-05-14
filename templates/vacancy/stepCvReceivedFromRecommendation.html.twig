@@ -19,11 +19,9 @@
             <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
             <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
             <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Your Requests</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Work on Issue - Step
-                {% if vacancy.status == 'CV Received' %}
-                    2
-                {% else %}
-                    1
+            <li class="breadcrumb-item active" aria-current="page">
+                {% if vacancy.status  == 'Search for a candidate(s) have been started' %}
+                    Status: CV Received
                 {% endif %}
             </li>
         </ol>
@@ -48,7 +46,7 @@
         </tbody>
     </table>
     <div>
-        <div class="border border-danger rounded d-flex align-items-">
+        <div class="alert alert-danger rounded d-flex align-items-">
             {% if vacancy.status is null %}
                 <p>Status:<span>Waiting for approval</span></p>
             {% else %}
@@ -62,24 +60,21 @@
             в базу кандидатов.
         </p>
     </div>
-    <div>
-        Link(s) to vacancy
-    </div>
-    {% for links in link %}
 
-        <div class="border border-primary rounded">
-            {{ links.link }}
+    {% for links in link %}
+        <div style="word-wrap: break-word" class="border border-primary rounded">
+            {{ links.letterText }}
         </div>
     {% endfor %}
 
     {{ include('vacancy/formForRecommendation.html.twig') }}
 
     <div class="navbar bg-light d-flex justify-content-between">
-        <div>
+        <div class="badge badge-success">
             assigned to:{{ vacancy.assignee }}
         </div>
         <div>
-            <span class="border border-success">Approved</span>
+            <span class="badge badge-success">Approved</span>
             {{ vacancy.approveDate|date('Y-m-d') }}
             by {{ vacancy.approvedBy }}
         </div>

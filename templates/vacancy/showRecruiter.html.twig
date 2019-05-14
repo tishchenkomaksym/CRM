@@ -59,7 +59,7 @@
         </tbody>
     </table>
     <div>
-        <div class="border border-danger rounded d-flex align-items-">
+        <div class="alert alert-danger text-center">
             {% if vacancy.status is null %}
                 <p>Status:<span>Waiting for approval</span></p>
             {% else %}
@@ -97,11 +97,11 @@
         {% endif %}
     </div>
     <div class="navbar bg-light d-flex justify-content-between">
-        <div>
+        <div class="badge badge-success">
             assigned to:{{ vacancy.assignee }}
         </div>
         <div>
-            <span class="border border-success">Approved</span>
+            <span class="badge badge-success">Approved</span>
             {{ vacancy.approveDate|date('Y-m-d') }}
             by {{ vacancy.approvedBy }}
         </div>
