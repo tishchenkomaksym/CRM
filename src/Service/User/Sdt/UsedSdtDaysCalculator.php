@@ -9,19 +9,14 @@
 namespace App\Service\User\Sdt;
 
 
-use App\Entity\User;
 use App\Service\Sdt\Interval\EndDateOfSdtCalculator;
 use App\Service\WorkingDays\BaseWorkingDaysCalculator;
 use DateTime;
-use DateTimeImmutable;
 use Exception;
+use RuntimeException;
 
 class UsedSdtDaysCalculator
 {
-    /**
-     * @var SdtRequestDaysCalculator
-     */
-    private $sdtRequestDaysCalculator;
     /**
      * @var EndDateOfSdtCalculator
      */
@@ -31,43 +26,37 @@ class UsedSdtDaysCalculator
      */
     private $workingDaysCalculator;
 
-    public function __construct(SdtRequestDaysCalculator $sdtRequestDaysCalculator, EndDateOfSdtCalculator $endDateOfSdtCalculator, BaseWorkingDaysCalculator $workingDaysCalculator)
-    {
-        $this->sdtRequestDaysCalculator = $sdtRequestDaysCalculator;
+    public function __construct(
+        EndDateOfSdtCalculator $endDateOfSdtCalculator,
+        BaseWorkingDaysCalculator $workingDaysCalculator
+    ) {
         $this->endDateOfSdtCalculator = $endDateOfSdtCalculator;
         $this->workingDaysCalculator = $workingDaysCalculator;
     }
 
     /**
-     * @param DateTimeImmutable $startPeriod
+     * @param DateTime $startPeriod
      * @param DateTime $endPeriod
-     * @param User $user
+     * @param array $sdtArray
      * @return int
      * @throws Exception
      */
-    public function calculate(DateTimeImmutable $startPeriod, DateTime $endPeriod, User $user): int
+    public function calculate(DateTime $startPeriod, DateTime $endPeriod, array $sdtArray): int
     {
-        $sdtArray = $user->getSdt();
         $usedSdt = 0;
         foreach ($sdtArray as $sdt) {
             $startDate = $sdt->getCreateDate();
+            if ($startDate === null) {
+                throw new RuntimeException('no date');
+            }
+            $startDate = new DateTime("@{$startDate->getTimeStamp()}");
             $endDate = $this->endDateOfSdtCalculator->calculate($sdt);
             if ($startPeriod < $startDate && $endPeriod > $endDate) {
-                $usedSdt += $this->sdtRequestDaysCalculator->calculateItem($sdt);
+                $usedSdt += $this->workingDaysCalculator->getWorkingDaysBetweenDates($startDate, $endDate);
             } elseif ($startPeriod < $startDate && $endPeriod < $endDate && $startDate < $endPeriod) {
-                $diffBetweenEndDate = $startDate->diff($endPeriod);
-                //cause count of days
-                $usedSdt += $diffBetweenEndDate->days + 1;
+                $usedSdt += $this->workingDaysCalculator->getWorkingDaysBetweenDates($startDate, $endPeriod);
             } elseif ($startPeriod > $startDate && $endPeriod > $endDate && $endDate > $startPeriod) {
-                $monthStartDate = new DateTime();
-                /** @noinspection NullPointerExceptionInspection */
-                $monthStartDate->setDate(
-                    (int)$startPeriod->format('Y'),
-                    $startPeriod->format('m'),
-                    $startPeriod->format('d')
-                );
-                $monthStartDate->setTime(0, 0);
-                $usedSdt += $this->workingDaysCalculator->getWorkingDaysBetweenDates($monthStartDate, $endDate);
+                $usedSdt += $this->workingDaysCalculator->getWorkingDaysBetweenDates($startPeriod, $endDate);
             }
         }
         return $usedSdt;

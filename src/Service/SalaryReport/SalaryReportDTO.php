@@ -16,6 +16,7 @@ class SalaryReportDTO
     public $calendarWorkingDays;
     public $sdtCount;
     public $sdtCountUsed;
+    public $sdtCountAtOwnExpenseUsed;
     public $salarySize;
     /** @var User */
     public $user;

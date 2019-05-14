@@ -15,10 +15,13 @@ use App\Repository\SalaryReportInfoRepository;
 use App\Service\SalaryReport\Builder\SDTDays\SdtDaysCalculator;
 use App\Service\SalaryReport\Builder\WorkingDays\WorkingDaysCalculator;
 use App\Service\SalaryReport\SalaryReportDTO;
+use App\Service\User\Sdt\Filter\AtOwnExpenseFilter;
+use App\Service\User\Sdt\Filter\NotAtOwnExpenseFilter;
 use App\Service\User\Sdt\UsedSdtDaysCalculator;
 use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Exception;
+use RuntimeException;
 
 class BaseSalaryReportBuilder
 {
@@ -41,8 +44,8 @@ class BaseSalaryReportBuilder
         SalaryReportInfoRepository $salaryReportInfoRepository,
         WorkingDaysCalculator $workingDaysCalculator,
         SdtDaysCalculator $sdtDaysCalculator,
-        UsedSdtDaysCalculator $usedSdtDaysCalculator)
-    {
+        UsedSdtDaysCalculator $usedSdtDaysCalculator
+    ) {
         $this->workingDaysCalculator = $workingDaysCalculator;
         $this->sdtDaysCalculator = $sdtDaysCalculator;
         $this->usedSdtDaysCalculator = $usedSdtDaysCalculator;
@@ -65,8 +68,10 @@ class BaseSalaryReportBuilder
         $dateTime->setDate($dateTime->format('Y'), $dateTime->format('m'), (int)$dateTime->format('d') - 1);
         $dateTime->setTime(23, 59, 59);
         $returnObject->sdtCountUsed = $this->getSdtCountUsed($newReport, $dateTime, $user);
-        $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport) - $returnObject->sdtCountUsed;
+        $returnObject->sdtCountAtOwnExpenseUsed = $this->getSdtAtOwnExpenseUsedCount($newReport, $dateTime, $user);
+        $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport) - $returnObject->sdtCountUsed - $returnObject->sdtCountAtOwnExpenseUsed;
         $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateTime, $user);
+
 
         $returnObject->user = $user;
         return $returnObject;
@@ -78,11 +83,37 @@ class BaseSalaryReportBuilder
      * @param User $user
      * @return int
      * @throws NonUniqueResultException
+     * @throws Exception
      */
     private function getSdtCountUsed(SalaryReportInfo $newReport, DateTime $nowTime, User $user): int
     {
         $previousReport = $this->salaryReportInfoRepository->getPreviousReport($newReport);
-        /** @noinspection PhpParamsInspection */
-        return $this->usedSdtDaysCalculator->calculate($previousReport->getCreateDate(), $nowTime, $user);
+        $createDate = $previousReport->getCreateDate();
+        if (!isset($createDate)) {
+            throw new RuntimeException('no date');
+        }
+        return $this->usedSdtDaysCalculator->calculate(new DateTime("@{$createDate->getTimeStamp()}"),
+            $nowTime, (new NotAtOwnExpenseFilter())->filter($user->getSdt()->toArray()));
+
+    }
+
+    /**
+     * @param SalaryReportInfo $newReport
+     * @param DateTime $nowTime
+     * @param User $user
+     * @return int
+     * @throws NonUniqueResultException
+     * @throws Exception
+     */
+    private function getSdtAtOwnExpenseUsedCount(SalaryReportInfo $newReport, DateTime $nowTime, User $user): int
+    {
+        $previousReport = $this->salaryReportInfoRepository->getPreviousReport($newReport);
+        $createDate = $previousReport->getCreateDate();
+        if (!isset($createDate)) {
+            throw new RuntimeException('no date');
+        }
+        return $this->usedSdtDaysCalculator->calculate(new DateTime("@{$createDate->getTimeStamp()}"),
+            $nowTime, (new AtOwnExpenseFilter())->filter($user->getSdt()->toArray()));
+
     }
 }

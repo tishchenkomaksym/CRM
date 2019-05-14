@@ -24,6 +24,7 @@
             <th>Working Days</th>
             <th>SDT used</th>
             <th>SDT left</th>
+            <th>SDT At own expense</th>
         </tr>
         </thead>
         <tbody>
@@ -33,6 +34,7 @@
                 <td>{{ item.calendarWorkingDays }}</td>
                 <td>{{ item.sdtCountUsed }}</td>
                 <td>{{ item.sdtCount }}</td>
+                <td>{{ item.sdtCountAtOwnExpenseUsed }}</td>
             </tr>
         {% endfor %}
         </tbody>

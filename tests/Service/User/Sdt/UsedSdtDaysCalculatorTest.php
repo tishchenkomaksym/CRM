@@ -3,12 +3,10 @@
 namespace App\Service\User\Sdt;
 
 use App\Entity\Sdt;
-use App\Entity\User;
 use App\Service\HolidayService;
 use App\Service\Sdt\Interval\EndDateOfSdtCalculator;
 use App\Service\WorkingDays\BaseWorkingDaysCalculator;
 use DateTime;
-use DateTimeImmutable;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -21,29 +19,27 @@ class UsedSdtDaysCalculatorTest extends TestCase
      * @param $end
      * @param $count
      * @param $createDate
+     * @param $result
      * @throws Exception
      */
-    public function testCalculate($start, $end, $count, $createDate, $result)
+    public function testCalculate($start, $end, $count, $createDate, $result): void
     {
         $mock = $this->createMock(HolidayService::class);
         $mock->method('getHolidayBetweenDate')->willReturn([]);
 
         $calculator = new UsedSdtDaysCalculator(
-            new SdtRequestDaysCalculator(),
             new EndDateOfSdtCalculator(),
             new BaseWorkingDaysCalculator($mock));
-        $user = new User();
         $sdt = (new Sdt())->setCount($count)->setCreateDate(new DateTime($createDate));
-        $user->addSdt($sdt);
-        $startDate = new DateTimeImmutable($start);
+        $startDate = new DateTime($start);
         $endDate = new DateTime($end);
-        $this->assertEquals($result, $calculator->calculate($startDate, $endDate, $user));
+        $this->assertEquals($result, $calculator->calculate($startDate, $endDate, [$sdt]));
     }
 
     /**
      * @return array
      */
-    public function calculateDateProvider()
+    public function calculateDateProvider(): array
     {
         return [
             ['2019-05-01', '2019-05-20', 1, '2019-05-08', 1],
