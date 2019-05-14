@@ -22,32 +22,50 @@
             <th>Department</th>
             <th>Team</th>
             <th>Position</th>
-            <th>Salary</th>
-            <th>Test</th>
-            <th>English</th>
-            <th>Amount</th>
-            <th>Bonus</th>
-            <th>actions</th>
         </tr>
         </thead>
         <tbody>
             <tr>
                 <td>{{ vacancy.id }}</td>
                 <td>{{ vacancy.createdAt|date('Y-m-d') }}</td>
-                <td>{{ vacancy.createdBy }}</td>
-                <td style="word-break: break-all">{{ vacancy.reason }}</td>
+                <td style="word-break: break-all">{{ vacancy.createdBy }}</td>
                 <td>{{ vacancy.office.name }}</td>
                 <td>{{ vacancy.department.name }}</td>
                 <td>{{ vacancy.team.name }}</td>
                 <td>{{ vacancy.position }}</td>
-                <td>{{ vacancy.salary }}</td>
-                <td>{{ vacancy.test }}</td>
-                <td>{{ vacancy.english }}</td>
-                <td>{{ vacancy.amount }}</td>
-                <td>{{ vacancy.bonus }}</td>
-                <td>{{ vacancy.responsibilities }}</td>
-                <td>{{ vacancy.requirements }}</td>>
             </tr>
+        </tbody>
+    </table>
+    <table class="table" style="table-layout: fixed">
+        <thead>
+        <tr>
+            <th>Salary</th>
+            <th>Test</th>
+            <th>English</th>
+            <th>Amount</th>
+            <th>Bonus</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ vacancy.salary }}</td>
+            <td style="word-break: break-all">{{ vacancy.test }}</td>
+            <td style="word-break: break-all">{{ vacancy.english }}</td>
+            <td style="word-break: break-all">{{ vacancy.amount }}</td>
+            <td style="word-break: break-all">{{ vacancy.bonus }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <table>
+        <thead>
+        <tr>
+            <th>Request Reason</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td style="word-break: break-all">{{ vacancy.reason }}</td>
+        </tr>
         </tbody>
     </table>
     <a href="{{ url('approved',{'id': vacancy.id}) }}">Approve</a>
