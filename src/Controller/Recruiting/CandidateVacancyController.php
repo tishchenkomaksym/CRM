@@ -42,9 +42,6 @@ class CandidateVacancyController extends AbstractController
             'commentInterest' => null,
             'vacancy' => $vacancy->getId()
         ]);
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($vacancy->setStatus('Candidates Interest is checked'));
-        $entityManager->flush();
 
         return  $this->render('vacancy/recruiterStatusCvReceived.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
