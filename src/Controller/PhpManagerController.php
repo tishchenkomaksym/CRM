@@ -3,13 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\PhpDeveloperTest\Exception\NoExistsNewLevelOfDeveloper;
+use App\Service\PhpDeveloperTest\PhpDeveloperTestBuilderException;
 use App\Service\PhpDeveloperTest\PhpDeveloperTestsInformationBuilder;
 use App\Service\User\PhpDeveloperLevel\EffectiveTime\BaseEffectiveTimeBuilder;
+use App\Service\User\PhpDeveloperLevel\EffectiveTime\NoRequiredHoursException;
 use App\Service\User\PhpDeveloperLevel\EffectiveTime\ProjectEffectiveTimeBuilder;
 use App\Service\User\PhpDeveloperLevel\ProjectEffectiveTime\UserToProjectTimeSpendBuilder;
 use App\Service\UserInformationService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -41,10 +45,10 @@ class PhpManagerController extends AbstractController
      * @param BaseEffectiveTimeBuilder $baseEffectiveTimeBuilder
      * @param ProjectEffectiveTimeBuilder $projectEffectiveTimeBuilder
      * @param UserToProjectTimeSpendBuilder $projectTimeSpendBuilder
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @throws \App\Service\PhpDeveloperTest\Exception\NoExistsNewLevelOfDeveloper
-     * @throws \App\Service\PhpDeveloperTest\PhpDeveloperTestBuilderException
-     * @throws \App\Service\User\PhpDeveloperLevel\EffectiveTime\NoRequiredHoursException
+     * @return Response
+     * @throws NoExistsNewLevelOfDeveloper
+     * @throws PhpDeveloperTestBuilderException
+     * @throws NoRequiredHoursException
      */
     public function makeRise(
         User $user,
