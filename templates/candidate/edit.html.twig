@@ -7,8 +7,10 @@
 
     {{ include('candidate/_form.html.twig', {'button_label': 'Update'}) }}
 
-    <div>
-        <a class="btn btn-primary" href="{{ path('candidate_index') }}">back to list</a>
-    </div>
+    {% if app.request.get('vacancy') is null %}
+        <div>
+            <a class="btn btn-primary" href="{{ path('candidate_index') }}">back to list</a>
+        </div>
+    {% endif %}
 
 {% endblock %}

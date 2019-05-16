@@ -68,6 +68,8 @@ class VacancyController extends AbstractController
 
     public const CANDIDATE_EDIT = 'candidate_edit';
 
+    public const CONSTRAINT = 'constraints';
+
     public function __construct(Environment $environment)
     {
         $this->environment = $environment;
@@ -291,6 +293,7 @@ class VacancyController extends AbstractController
      * @param Vacancy $vacancy
      * @param ExpiredTimeCalculator $timeCalculator
      * @param Request $request
+     * @param ObjectManager $entityManager
      * @return Response
      * @throws Exception
      */
@@ -350,7 +353,7 @@ class VacancyController extends AbstractController
     {
         $candidateVacancy = new CandidateVacancy();
         $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateVacancy,
-            ['constraints' => [new CandidateVacancyCheckExistence($vacancy)]]);
+            [self::CONSTRAINT => [new CandidateVacancyCheckExistence($vacancy)]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $name = $form->get(self::CANDIDATE_NAME)->getData();
@@ -401,7 +404,7 @@ class VacancyController extends AbstractController
     {
         $candidateVacancy = new CandidateVacancy();
         $form = $this->createForm(CandidateStepCvReceivedTypeForHunting::class, $candidateVacancy,
-            ['constraints' => [new CandidateVacancyCheckExistence($vacancy)]]);
+            [self::CONSTRAINT => [new CandidateVacancyCheckExistence($vacancy)]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $name = $form->get(self::CANDIDATE_NAME)->getData();
@@ -454,7 +457,7 @@ class VacancyController extends AbstractController
     {
         $candidateVacancy = new CandidateVacancy();
         $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateVacancy,
-            ['constraints' => [new CandidateVacancyCheckExistence($vacancy)]]);
+            [self::CONSTRAINT => [new CandidateVacancyCheckExistence($vacancy)]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $name = $form->get(self::CANDIDATE_NAME)->getData();
@@ -480,6 +483,22 @@ class VacancyController extends AbstractController
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView(),
             'link' => $candidateForms->vacancyLink($vacancy)
+        ]);
+    }
+
+
+    /**
+     * @IsGranted("ROLE_RECRUITER")
+     * @Route("/recruiter/history/{id}", name="vacancy_show_history", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param CandidateForms $candidateForms
+     * @return Response
+     */
+    public function history(Vacancy $vacancy,CandidateForms $candidateForms): Response
+    {
+        return  $this->render('vacancy/history.html.twig', [
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy,
+            'links' => $candidateForms->vacancyLink($vacancy)
         ]);
     }
 
