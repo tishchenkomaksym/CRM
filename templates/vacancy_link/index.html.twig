@@ -21,7 +21,9 @@
                 <td>{{ vacancy_link.link }}</td>
                 <td>
                     <a href="{{ path('vacancy_link_show', {'id': vacancy_link.id}) }}">show</a>
-                    <a href="{{ path('vacancy_link_edit', {'id': vacancy_link.id}) }}">edit</a>
+                    {% if app.request.get('edit') is not null %}
+                        <a href="{{ path('vacancy_link_edit', {'id': vacancy_link.id}) }}">edit</a>
+                    {% endif %}
                 </td>
             </tr>
         {% else %}

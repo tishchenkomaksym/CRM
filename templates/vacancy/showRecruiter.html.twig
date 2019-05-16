@@ -70,7 +70,7 @@
     <br>
     <div class="d-flex justify-content-around link-recruiter">
         <a class="btn btn-primary" href="{{ path('vacancy_show', {'id': vacancy.id}) }}" >View Request Info &#8594;</a>
-        <a class="btn btn-primary" href="#">View Request history &#8594;</a>
+        <a class="btn btn-primary" href="{{ path('vacancy_show_history', {'id': vacancy.id}) }}">View Request history &#8594;</a>
         <a class="btn btn-primary" href="#">View Candidates list &#8594;</a>
     </div>
     <h3 class="text-center">Work on Issue</h3>

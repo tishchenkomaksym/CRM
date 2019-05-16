@@ -70,6 +70,13 @@ class CandidateVacancy
      */
     private $denialReason;
 
+    /**
+     * @var string $type
+     *
+     * @ORM\Column(name="candidateStatus", nullable=true, type="string", length=255, columnDefinition="ENUM('CV Received','Candidates Interest is checked','Waiting for response','Approved for the interview','Interview timing specification','Waiting for interview','Waiting for our final response','Closed')")
+     */
+    private $candidateStatus;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -191,6 +198,18 @@ class CandidateVacancy
     public function setDenialReason(?string $denialReason): self
     {
         $this->denialReason = $denialReason;
+
+        return $this;
+    }
+
+    public function getCandidateStatus(): ?string
+    {
+        return $this->candidateStatus;
+    }
+
+    public function setCandidateStatus(?string $candidateStatus): self
+    {
+        $this->candidateStatus = $candidateStatus;
 
         return $this;
     }

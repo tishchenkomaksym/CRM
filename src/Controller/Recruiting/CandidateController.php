@@ -7,6 +7,7 @@ use App\Entity\Candidate;
 use App\Form\CandidateType;
 use App\Form\CandidateVacancyIdType;
 use App\Repository\CandidateRepository;
+use App\Repository\CandidateVacancyRepository;
 use App\Repository\VacancyRepository;
 use App\Service\Candidate\CandidatePhotoDecorator;
 use App\Service\Candidate\VacancyFieldDecorator;
@@ -129,13 +130,15 @@ class CandidateController extends AbstractController
      * @param VacancyRepository $vacancyRepository
      * @param CandidatePhotoDecorator $candidatePhotoDecorator
      * @param VacancyFieldDecorator $vacancyFieldDecorator
+     * @param CandidateVacancyRepository $candidateVacancyRepository
      * @return Response
      * @throws NoDateException
      */
 
     public function edit(Candidate $candidate, Request $request, VacancyRepository $vacancyRepository,
                          CandidatePhotoDecorator $candidatePhotoDecorator,
-                         VacancyFieldDecorator $vacancyFieldDecorator): Response
+                         VacancyFieldDecorator $vacancyFieldDecorator,
+                         CandidateVacancyRepository $candidateVacancyRepository): Response
     {
         $photo = $candidate->getPhoto();
         $candidatePhotoDecorator->photoNotNull($candidate);
@@ -167,7 +170,14 @@ class CandidateController extends AbstractController
                 if ($vacancy === null){
                     throw new NoDateException('Vacancy not found');
                 }
-                $entityManager->persist($candidate->setStatus('CV Received'));
+                $candidateVacancy = $candidateVacancyRepository->findOneBy([
+                    'candidate' => $candidate->getId(),
+                    'vacancy' => $vacancy->getId()
+                ]);
+                if ($candidateVacancy === null){
+                    throw new NoDateException('CandidateVacancy not found');
+                }
+                $entityManager->persist($candidateVacancy->setCandidateStatus('CV Received'));
                 $entityManager->persist($vacancy->setStatus('CV Received'));
                 $entityManager->flush();
                 return $this->redirectToRoute('vacancy_show_search_candidate', [
