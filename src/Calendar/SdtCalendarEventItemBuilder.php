@@ -15,6 +15,7 @@ use App\Entity\Sdt;
 use App\Entity\User;
 use App\Service\HolidayService;
 use DateTime;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class SdtCalendarEventItemBuilder
 {
@@ -36,6 +37,7 @@ class SdtCalendarEventItemBuilder
      * @param HolidayService $holidayService
      * @param SdtLinkGeneratorInterface $linkGenerator
      * @param SdtTitleGeneratorInterface $titleGenerator
+     * @param AuthorizationChecker $checker
      */
     public function __construct(
         HolidayService $holidayService,

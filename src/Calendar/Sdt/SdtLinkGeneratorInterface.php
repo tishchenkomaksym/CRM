@@ -9,5 +9,5 @@ use App\Entity\User;
 
 interface  SdtLinkGeneratorInterface
 {
-    public function getLink(User $currentUser, Sdt $sdt): string;
+    public function getLink(User $currentUser, Sdt $sdt): ?string;
 }

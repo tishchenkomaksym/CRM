@@ -22,7 +22,7 @@ class UserSdtLinkGenerator implements SdtLinkGeneratorInterface
         $this->router = $router;
     }
 
-    public function getLink(User $currentUser, Sdt $sdt): string
+    public function getLink(User $currentUser, Sdt $sdt): ?string
     {
         $link = null;
         if ($currentUser->getId() === $sdt->getUser()->getId()) {

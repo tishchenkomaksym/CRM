@@ -14,9 +14,7 @@
     <h4>Sdt left:{{ leftSdt }}</h4>
     <p></p>
     <a href="{{ path('sdt_new') }}" class="btn btn-primary" role="button">Create new</a>
-    {% if is_granted('ROLE_TOM') %}
-        <a href="{{ path('sdt_view_all') }}" class="btn btn-primary" role="button">View All</a>
-    {% endif %}
+    <a href="{{ path('sdt_view_all') }}" class="btn btn-primary" role="button">View All</a>
     <div id="calendar"></div>
 
     <script>

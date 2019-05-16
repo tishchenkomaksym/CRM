@@ -129,7 +129,7 @@ class Vacancy
     private $assigneeDate;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="assignee")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
      */
     private $assignee;
 
