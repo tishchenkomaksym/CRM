@@ -210,22 +210,31 @@ class ElasticSearchClient
                             'bool' =>
                                 [
                                     self::ELASTIC_FILTER_FIELD => [
-                                        [self::ELASTIC_RANGE_FIELD => [
-                                            self::ELASTIC_STARTED_FIELD => [
-                                                'gte' => $startDate->format(self::DEFAULT_DATE_FORMAT),
-                                                'lte' => (new DateTime())->format(self::DEFAULT_DATE_FORMAT),
-                                                self::ELASTIC_FORMAT_FIELD => self::DEFAULT_ELASTIC_DATE_FORMAT
+                                        [
+                                            self::ELASTIC_RANGE_FIELD => [
+                                                self::ELASTIC_STARTED_FIELD => [
+                                                    'gte' => $startDate->format(self::DEFAULT_DATE_FORMAT),
+                                                    'lte' => (new DateTime())->format(self::DEFAULT_DATE_FORMAT),
+                                                    self::ELASTIC_FORMAT_FIELD => self::DEFAULT_ELASTIC_DATE_FORMAT
+                                                ]
                                             ]
-                                        ]],
+                                        ],
                                         [
                                             'term' => [
                                                 'taskGroup.components.keyword' => 'Bonus project',
                                             ]
                                         ],
                                         [
-                                            ['term' => [
-                                                'author.userName.keyword' => $userName,
-                                            ]
+                                            [
+                                                'term' => [
+                                                    'author.userName.keyword' => $userName,
+                                                ]
+                                            ],
+
+                                        ],
+                                        [
+                                            'term' => [
+                                                'issueStatus.keyword' => 'Closed',
                                             ]
                                         ]
                                     ]
