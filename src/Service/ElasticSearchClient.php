@@ -68,6 +68,9 @@ class ElasticSearchClient
                                         [
                                             self::MATCH => ['technicalComponents' => $component],
                                         ],
+                                        [
+                                            self::MATCH => ['issueStatus' => 'Closed'],
+                                        ],
                                     ]
                                 ]
                         ]
