@@ -38,7 +38,7 @@ class ReportWorkHoursBuilderDecorator
      */
     public function build(User $user): WorkHoursInformation
     {
-        $createDate = $this->infoRepository->findOneBy([], ['createDate' => 'ASC']);
+        $createDate = $this->infoRepository->getTodaySalaryReport();
         if ($createDate) {
             $dateTime = new DateTime();
             if ($createDate->getCreateDate()) {

@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\SalaryReportInfo;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -22,13 +24,28 @@ class SalaryReportInfoRepository extends ServiceEntityRepository
     /**
      * @param SalaryReportInfo $salaryReportInfo
      * @return SalaryReportInfo
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function getPreviousReport(SalaryReportInfo $salaryReportInfo): SalaryReportInfo
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.createDate < :date')
             ->setParameter('date', $salaryReportInfo->getCreateDate())
+            ->orderBy('p.createDate', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()->getOneOrNullResult();
+    }
+
+
+    /**
+     * @return mixed
+     * @throws NonUniqueResultException
+     */
+    public function getTodaySalaryReport()
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.createDate < :date')
+            ->setParameter('date', new DateTime())
             ->orderBy('p.createDate', 'DESC')
             ->setMaxResults(1)
             ->getQuery()->getOneOrNullResult();
