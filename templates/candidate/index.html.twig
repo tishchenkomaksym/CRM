@@ -22,7 +22,20 @@
         </div>
         {% for candidate in candidates %}
             <tr>
-                <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}"><img class="img-fluid img-thumbnail" src="/uploads/{{ candidate.photo }}" alt=""></a></td>
+                {% if candidate.photo != null %}
+                    <td>
+                        <a href="{{ path('candidate_show', {'id': candidate.id}) }}">
+                            <img width="200px" height="200px" class="img-fluid " src="/uploads/{{ candidate.photo }}" alt="Photo">
+                        </a>
+                    </td>
+                {% else %}
+                    <td>
+                        <a href="{{ path('candidate_show', {'id': candidate.id}) }}">
+                            <img width="200px" height="200px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                        </a>
+                    </td>
+                {% endif %}
+
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.name }}</a></td>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.surname }}</a></td>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.position }}</a></td>

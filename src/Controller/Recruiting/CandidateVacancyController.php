@@ -81,14 +81,14 @@ class CandidateVacancyController extends AbstractController
             if($form instanceof Form)
             {
                 if ($form->getClickedButton() && 'save' === $form->getClickedButton()->getName()) {
-                    $candidateVacancy->getCandidate()->setStatus('Candidates Interest is checked');
+                    $candidateVacancy->setCandidateStatus('Candidates Interest is checked');
                     $entityManager->persist($candidateVacancy);
                     $entityManager->flush();
                     return $this->redirectToRoute('vacancy_show_cv_received', [
                     'id' => $vacancy->getId()]);
                 }
 
-                    $candidateVacancy->getCandidate()->setStatus('Closed');
+                    $candidateVacancy->setCandidateStatus('Closed');
                     $entityManager->persist($candidateVacancy);
                     $entityManager->flush();
                     return $this->redirectToRoute('checked_interest', [
