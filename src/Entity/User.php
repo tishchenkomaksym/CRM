@@ -103,6 +103,11 @@ class User implements UserInterface
      */
     private $vacancies;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Team", inversedBy="users")
+     */
+    private $team;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
@@ -504,6 +509,7 @@ class User implements UserInterface
 
         return $this;
     }
+
 
     public function getTeam(): ?Team
     {
