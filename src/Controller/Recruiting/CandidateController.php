@@ -7,10 +7,10 @@ use App\Entity\Candidate;
 use App\Form\CandidateType;
 use App\Form\CandidateVacancyIdType;
 use App\Repository\CandidateRepository;
-use App\Repository\CandidateVacancyRepository;
-use App\Repository\VacancyRepository;
 use App\Service\Candidate\CandidatePhotoDecorator;
 use App\Service\Candidate\VacancyFieldDecorator;
+use App\Service\Vacancy\CandidateEditRelationToCandidateLinkToCandidateVacancy\CandidateEditRelations;
+use App\Service\Vacancy\CandidateEditRelationToCandidateLinkToCandidateVacancy\NoDataException;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\FormValidators\CandidateVacancyCheckExistenceUpdateCandidate;
 use DateTime;
 use DateTimeImmutable;
@@ -36,6 +36,8 @@ class CandidateController extends AbstractController
 
     public const VACANCY_ENTITY_IN_VIEW = 'vacancy';
 
+    public const CV_RECEIVED = 'CV Received';
+
     /**
      * @Route("/", name="candidate_index", methods={"GET"})
      * @param CandidateRepository $candidateRepository
@@ -56,9 +58,11 @@ class CandidateController extends AbstractController
      * @return Response
      * @throws Exception
      */
-    public function new(Request $request, CandidatePhotoDecorator $candidatePhotoDecorator,
-                        VacancyFieldDecorator $vacancyFieldDecorator): Response
-    {
+    public function new(
+        Request $request,
+        CandidatePhotoDecorator $candidatePhotoDecorator,
+        VacancyFieldDecorator $vacancyFieldDecorator
+    ): Response {
         $candidate = new Candidate();
         $form = $this->createForm(CandidateType::class, $candidate);
         $form->handleRequest($request);
@@ -97,9 +101,11 @@ class CandidateController extends AbstractController
      * @param VacancyFieldDecorator $vacancyFieldDecorator
      * @return Response
      */
-    public function show(Candidate $candidate, Request $request,
-                         VacancyFieldDecorator $vacancyFieldDecorator): Response
-    {
+    public function show(
+        Candidate $candidate,
+        Request $request,
+        VacancyFieldDecorator $vacancyFieldDecorator
+    ): Response {
         $form = $this->createForm(CandidateVacancyIdType::class, $candidate,
             ['constraints' => [new CandidateVacancyCheckExistenceUpdateCandidate()]]);
         $form->handleRequest($request);
@@ -129,26 +135,27 @@ class CandidateController extends AbstractController
      * @Route("/{id}/edit", name="candidate_edit", methods={"GET","POST"})
      * @param Candidate $candidate
      * @param Request $request
-     * @param VacancyRepository $vacancyRepository
+     * @param CandidateEditRelations $candidateEditRelations
      * @param CandidatePhotoDecorator $candidatePhotoDecorator
      * @param VacancyFieldDecorator $vacancyFieldDecorator
-     * @param CandidateVacancyRepository $candidateVacancyRepository
      * @return Response
+     * @throws NoDataException
      * @throws NoDateException
      */
 
-    public function edit(Candidate $candidate, Request $request, VacancyRepository $vacancyRepository,
-                         CandidatePhotoDecorator $candidatePhotoDecorator,
-                         VacancyFieldDecorator $vacancyFieldDecorator,
-                         CandidateVacancyRepository $candidateVacancyRepository): Response
-    {
+    public function edit(
+        Candidate $candidate,
+        Request $request,
+        CandidateEditRelations $candidateEditRelations,
+        CandidatePhotoDecorator $candidatePhotoDecorator,
+        VacancyFieldDecorator $vacancyFieldDecorator
+    ): Response {
         $photo = $candidate->getPhoto();
         $candidatePhotoDecorator->photoNotNull($candidate);
 
         $form = $this->createForm(CandidateType::class, $candidate,
             ['constraints' => [new CandidateVacancyCheckExistenceUpdateCandidate()]]);
         $form->handleRequest($request);
-        $entityManager = $this->getDoctrine()->getManager();
         if ($form->isSubmitted() && $form->isValid()) {
             // Check existence of vacancy
             $vacancyIds = $form->get(self::VACANCY_ENTITY_IN_VIEW)->getData();
@@ -160,43 +167,32 @@ class CandidateController extends AbstractController
             if ($file !== null) {
                 $fileName = $candidatePhotoDecorator->upload($file);
                 $candidate->setPhoto($fileName);
-            }else{
+            } else {
                 $candidate->setPhoto($photo);
             }
             $candidate->setUpdatedDate(new DateTime('now'));
 
             $this->getDoctrine()->getManager()->flush();
             $vacancyId = $request->get(self::VACANCY_ENTITY_IN_VIEW);
-            if (!empty($vacancyId)) {
-                $vacancy = $vacancyRepository->findOneBy(['id' => $vacancyId]);
-                if ($vacancy === null){
-                    throw new NoDateException('Vacancy not found');
+            $vacancyLinkId = $request->get('vacancyLink');
+            if (!empty($vacancyId) || !empty($vacancyLinkId)) {
+                if (!empty($vacancyId)) {
+                    $id = $candidateEditRelations->candidateFromHunting($candidate, $vacancyId);
+                }else {
+                    $id = $candidateEditRelations->candidateFromVacancyRecommendation($candidate, $vacancyLinkId);
                 }
-                $candidateVacancy = $candidateVacancyRepository->findOneBy([
-                    'candidate' => $candidate->getId(),
-                    'vacancy' => $vacancy->getId()
-                ]);
-                if ($candidateVacancy === null){
-                    throw new NoDateException('CandidateVacancy not found');
-                }
-                $entityManager->persist($candidateVacancy->setCandidateStatus('CV Received'));
-                $entityManager->persist($vacancy->setStatus('CV Received'));
-                $entityManager->flush();
                 return $this->redirectToRoute('vacancy_show_search_candidate', [
-                        'id' => $vacancyId
+                        'id' => $id
                     ]
                 );
             }
-
             return $this->redirectToRoute(self::CANDIDATE_INDEX, [
-                'id' => $candidate->getId(),
-            ]);
+                    'id' => $candidate->getId(),
+                ]);
+            }
+        return $this->render('candidate/edit.html.twig', [self::CANDIDATE => $candidate,
+            'form' => $form->createView(),]);
         }
-        return $this->render('candidate/edit.html.twig', [
-            self::CANDIDATE => $candidate,
-            'form' => $form->createView(),
-        ]);
-    }
 
     /**
      * @Route("/{id}", name="candidate_delete", methods={"DELETE"})

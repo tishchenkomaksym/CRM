@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\CandidateVacancy;
+use App\Entity\CandidateLink;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
- * @method CandidateVacancy|null find($id, $lockMode = null, $lockVersion = null)
- * @method CandidateVacancy|null findOneBy(array $criteria, array $orderBy = null)
- * @method CandidateVacancy[]    findAll()
- * @method CandidateVacancy[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method CandidateLink|null find($id, $lockMode = null, $lockVersion = null)
+ * @method CandidateLink|null findOneBy(array $criteria, array $orderBy = null)
+ * @method CandidateLink[]    findAll()
+ * @method CandidateLink[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CandidateVacancyRepository extends ServiceEntityRepository
+class CandidateLinkRepository extends ServiceEntityRepository
 {
     public function __construct(RegistryInterface $registry)
     {
-        parent::__construct($registry, CandidateVacancy::class);
+        parent::__construct($registry, CandidateLink::class);
     }
 
     // /**
-    //  * @return CandidateLinkCheckExistenceUpdateCandidate[] Returns an array of CandidateLinkCheckExistenceUpdateCandidate objects
+    //  * @return CandidateLink[] Returns an array of CandidateLink objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class CandidateVacancyRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?CandidateLinkCheckExistenceUpdateCandidate
+    public function findOneBySomeField($value): ?CandidateLink
     {
         return $this->createQueryBuilder('c')
             ->andWhere('c.exampleField = :val')

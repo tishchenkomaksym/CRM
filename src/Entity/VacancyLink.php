@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -27,9 +29,21 @@ class VacancyLink
     private $letterText;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Vacancy")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Vacancy", inversedBy="vacancyLinks")
+     * @ORM\JoinColumn
      */
     private $vacancy;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CandidateLink", mappedBy="vacancyLink")
+     */
+    private $candidateLinks;
+
+
+    public function __construct()
+    {
+        $this->candidateLinks = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -68,6 +82,37 @@ class VacancyLink
     public function setVacancy(?Vacancy $vacancy): self
     {
         $this->vacancy = $vacancy;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CandidateLink[]
+     */
+    public function getCandidateLinks(): Collection
+    {
+        return $this->candidateLinks;
+    }
+
+    public function addCandidateLink(CandidateLink $candidateLink): self
+    {
+        if (!$this->candidateLinks->contains($candidateLink)) {
+            $this->candidateLinks[] = $candidateLink;
+            $candidateLink->setVacancyLink($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCandidateLink(CandidateLink $candidateLink): self
+    {
+        if ($this->candidateLinks->contains($candidateLink)) {
+            $this->candidateLinks->removeElement($candidateLink);
+            // set the owning side to null (unless already changed)
+            if ($candidateLink->getVacancyLink() === $this) {
+                $candidateLink->setVacancyLink(null);
+            }
+        }
 
         return $this;
     }
