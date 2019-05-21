@@ -24,6 +24,7 @@
                     Status: CV Received
                 {% endif %}
             </li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_show_search_candidate', { 'id': vacancy.id}) }}">Search candidate</a></li>
         </ol>
     </nav>
 {% endblock %}
@@ -46,7 +47,7 @@
         </tbody>
     </table>
     <div>
-        <div class="border border-danger rounded d-flex align-items-">
+        <div class="alert alert-danger">
             {% if vacancy.status is null %}
                 <p>Status:<span>Waiting for approval</span></p>
             {% else %}

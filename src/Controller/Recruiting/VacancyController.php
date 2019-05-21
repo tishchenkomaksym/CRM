@@ -3,8 +3,10 @@
 namespace App\Controller\Recruiting;
 
 use App\Data\Sdt\Mail\Adapter\NoDateException;
+use App\Entity\CandidateLink;
 use App\Entity\CandidateVacancy;
 use App\Entity\Vacancy;
+use App\Entity\VacancyLink;
 use App\Entity\VacancyViewerUser;
 use App\Form\CandidateStepCvReceivedType;
 use App\Form\CandidateStepCvReceivedTypeForHunting;
@@ -16,6 +18,11 @@ use App\Repository\CandidateRepository;
 use App\Repository\UserRepository;
 use App\Repository\VacancyRepository;
 use App\Service\CandidateForms\CandidateForms;
+use App\Service\Vacancy\CandidateLinkRelationsToCandidate\ContextForRelationStrategyLinks;
+use App\Service\Vacancy\CandidateLinkRelationsToCandidate\FormValidators\CandidateLinkCheckExistence;
+use App\Service\Vacancy\CandidateLinkRelationsToCandidate\StrategyExistenceLinks;
+use App\Service\Vacancy\CandidateLinkRelationsToCandidate\StrategyNonExistenceLinks;
+use App\Service\Vacancy\CandidateLinkRelationsToCandidate\VacancyCandidateBuilder\ExistsCandidateBuilderLinks;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\ContextForRelationStrategy;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\FormValidators\CandidateVacancyCheckExistence;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\StrategyExistence;
@@ -332,53 +339,60 @@ class VacancyController extends AbstractController
     /**
      * @IsGranted("ROLE_RECRUITER")
      * @Route("/recruiter/received/fromVacancy/{id}", name="vacancy_show_from_vacancy", methods={"GET","POST"})
-     * @param Vacancy $vacancy
+     * @param VacancyLink $vacancyLink
      * @param Request $request
      * @param CandidateRepository $candidateRepository
-     * @param CandidateForms $candidateForms
-     * @param StrategyExistence $strategyExistence
-     * @param StrategyNonExistence $strategyNonExistence
+     * @param VacancyRepository $vacancyRepository
+     * @param StrategyExistenceLinks $strategyExistenceLinks
+     * @param StrategyNonExistenceLinks $strategyNonExistenceLinks
      * @param ObjectManager $objectManager
      * @return NoDateException|RedirectResponse|Response
+     * @throws NoDateException
      */
     public function receivedFromVacancy(
-        Vacancy $vacancy,
+        VacancyLink $vacancyLink,
         Request $request,
         CandidateRepository $candidateRepository,
-        CandidateForms $candidateForms,
-        StrategyExistence $strategyExistence,
-        StrategyNonExistence $strategyNonExistence,
+        VacancyRepository $vacancyRepository,
+        StrategyExistenceLinks $strategyExistenceLinks,
+        StrategyNonExistenceLinks $strategyNonExistenceLinks,
         ObjectManager $objectManager
     )
     {
-        $candidateVacancy = new CandidateVacancy();
-        $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateVacancy,
-            [self::CONSTRAINT => [new CandidateVacancyCheckExistence($vacancy)]]);
+        $candidateLink = new CandidateLink();
+        $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateLink,
+            [self::CONSTRAINT => [new CandidateLinkCheckExistence($vacancyLink)]]);
         $form->handleRequest($request);
+        $vacancyId = $request->get(self::VACANCY_ENTITY_IN_VIEW);
+        if (!empty($vacancyId)) {
+            $vacancy = $vacancyRepository->findOneBy(['id' => $vacancyId]);
+        }
+        if (!isset($vacancy)){
+            throw new NoDateException('No data about vacancy');
+        }
         if ($form->isSubmitted() && $form->isValid()) {
             $name = $form->get(self::CANDIDATE_NAME)->getData();
             $surname = $form->get(self::CANDIDATE_SURNAME)->getData();
-            $existsCandidateBuilder = new ExistsCandidateBuilder($candidateRepository);
+            $existsCandidateBuilder = new ExistsCandidateBuilderLinks($candidateRepository);
             $existsUser = $existsCandidateBuilder->build($name, $surname);
             if ($existsUser !== null) {
-                $context = new ContextForRelationStrategy(
-                    $strategyExistence, $objectManager
+                $context = new ContextForRelationStrategyLinks(
+                    $strategyExistenceLinks, $objectManager
                 );
             } else {
-                $context = new ContextForRelationStrategy(
-                    $strategyNonExistence, $objectManager);
+                $context = new ContextForRelationStrategyLinks(
+                    $strategyNonExistenceLinks, $objectManager);
             }
-            $candidate = $context->execute($vacancy, $candidateVacancy, $name, $surname, self::VACANCY_ENTITY_IN_VIEW);
+            $candidate = $context->execute($vacancyLink, $candidateLink, $name, $surname, self::VACANCY_ENTITY_IN_VIEW, $vacancy);
             return $this->redirectToRoute(self::CANDIDATE_EDIT, [
                 'id' => $candidate->getId(),
-                self::VACANCY_ENTITY_IN_VIEW => $vacancy->getId()
+                'vacancyLink' => $vacancyLink->getId()
             ]);
 
         }
         return $this->render('vacancy/stepCvReceivedFromVacancy.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
-            'form' => $form->createView(),
-            'link' => $candidateForms->vacancyLink($vacancy)
+            'form' => $form->createView()
         ]);
     }
 
@@ -436,53 +450,60 @@ class VacancyController extends AbstractController
     /**
      * @IsGranted("ROLE_RECRUITER")
      * @Route("/recruiter/received/fromReccomandation/{id}", name="vacancy_show_from_recommendation", methods={"GET","POST"})
-     * @param Vacancy $vacancy
+     * @param VacancyLink $vacancyLink
      * @param Request $request
      * @param CandidateRepository $candidateRepository
-     * @param CandidateForms $candidateForms
-     * @param StrategyExistence $strategyExistence
-     * @param StrategyNonExistence $strategyNonExistence
+     * @param VacancyRepository $vacancyRepository
+     * @param StrategyExistenceLinks $strategyExistenceLinks
+     * @param StrategyNonExistenceLinks $strategyNonExistenceLinks
      * @param ObjectManager $objectManager
      * @return NoDateException|RedirectResponse|Response
+     * @throws NoDateException
      */
     public function receivedFromRecommendation(
-        Vacancy $vacancy,
+        VacancyLink $vacancyLink,
         Request $request,
         CandidateRepository $candidateRepository,
-        CandidateForms $candidateForms,
-        StrategyExistence $strategyExistence,
-        StrategyNonExistence $strategyNonExistence,
+        VacancyRepository $vacancyRepository,
+        StrategyExistenceLinks $strategyExistenceLinks,
+        StrategyNonExistenceLinks $strategyNonExistenceLinks,
         ObjectManager $objectManager
     )
     {
-        $candidateVacancy = new CandidateVacancy();
-        $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateVacancy,
-            [self::CONSTRAINT => [new CandidateVacancyCheckExistence($vacancy)]]);
+        $candidateLink = new CandidateLink();
+        $form = $this->createForm(CandidateStepCvReceivedType::class, $candidateLink,
+            [self::CONSTRAINT => [new CandidateLinkCheckExistence($vacancyLink)]]);
         $form->handleRequest($request);
+        $vacancyId = $request->get(self::VACANCY_ENTITY_IN_VIEW);
+        if (!empty($vacancyId)) {
+            $vacancy = $vacancyRepository->findOneBy(['id' => $vacancyId]);
+        }
+        if (!isset($vacancy)){
+            throw new NoDateException('No vacancy');
+        }
         if ($form->isSubmitted() && $form->isValid()) {
             $name = $form->get(self::CANDIDATE_NAME)->getData();
             $surname = $form->get(self::CANDIDATE_SURNAME)->getData();
-            $existsCandidateBuilder = new ExistsCandidateBuilder($candidateRepository);
+            $existsCandidateBuilder = new ExistsCandidateBuilderLinks($candidateRepository);
             $existsUser = $existsCandidateBuilder->build($name, $surname);
             if ($existsUser !== null) {
-                $context = new ContextForRelationStrategy(
-                    $strategyExistence, $objectManager
+                $context = new ContextForRelationStrategyLinks(
+                    $strategyExistenceLinks, $objectManager
                 );
             } else {
-                $context = new ContextForRelationStrategy(
-                    $strategyNonExistence, $objectManager);
+                $context = new ContextForRelationStrategyLinks(
+                    $strategyNonExistenceLinks, $objectManager);
             }
-            $candidate = $context->execute($vacancy, $candidateVacancy, $name, $surname, 'recommendation');
+            $candidate = $context->execute($vacancyLink, $candidateLink, $name, $surname, 'recommendation', $vacancy);
             return $this->redirectToRoute(self::CANDIDATE_EDIT, [
                 'id' => $candidate->getId(),
-                self::VACANCY_ENTITY_IN_VIEW => $vacancy->getId()
+                'vacancyLink' => $vacancyLink->getId()
             ]);
 
         }
         return $this->render('vacancy/stepCvReceivedFromRecommendation.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
-            'form' => $form->createView(),
-            'link' => $candidateForms->vacancyLink($vacancy)
+            'form' => $form->createView()
         ]);
     }
 

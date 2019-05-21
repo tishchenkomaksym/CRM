@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block menu %}
+    <ul class="list-group list-group-flush">
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
+        {% endif %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('candidate_index') }}">Candidate Database</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">View Request</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {% if vacancy.status  == 'Search for a candidate(s) have been started' or
+                    vacancy.status == 'CV Received'%}
+                    Status: CV Received
+                {% endif %}
+            </li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block body %}
+
+<table class="table" style="table-layout: fixed">
+    <tbody>
+    <tr>
+        <th>Request#</th>
+        <td>{{ vacancy.id }}</td>
+    </tr>
+    <tr>
+        <th>Created</th>
+        <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+    </tr>
+    <tr>
+        <th>By</th>
+        <td>{{ vacancy.createdBy }}</td>
+    </tr>
+    </tbody>
+</table>
+
+    <table class="table">
+        <thead>
+        <th>
+            Name
+        </th>
+        <th>
+            Surname
+        </th>
+        <th>
+            Candidate From
+        </th>
+        </thead>
+        <tbody>
+        {% for candidateLink in links.candidateLinks %}
+            <tr>
+                <td>
+                    {{ candidateLink.candidate.name }}
+                </td>
+                <td>
+                    {{ candidateLink.candidate.surname }}
+                </td>
+                <td>{{ candidateLink.candidateFrom }}</td>
+{#                <td>#}
+{#                    <a href="{{ path('vacancy_show_from_vacancy', {'id': candidateLink.id, 'vacancy': vacancy.id}) }}">#}
+{#                        Add more#}
+{#                    </a>#}
+{#                </td>#}
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div>
+        <a href="{{ path('vacancy_show_from_vacancy', {'id': app.request.get('id'), 'vacancy': vacancy.id }) }}">Add new</a>
+    </div>
+
+{% endblock %}

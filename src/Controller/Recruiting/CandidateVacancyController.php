@@ -7,6 +7,7 @@ use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\Vacancy;
 use App\Form\CandidateVacancyCommentInterestType;
 use App\Form\CandidateVacancyDenialReasonType;
+use App\Repository\CandidateLinkRepository;
 use App\Repository\CandidateVacancyRepository;
 use App\Service\Candidate\CandidatePhotoDecorator;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\FormValidators\CandidateVacancySearch;
@@ -20,7 +21,6 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @IsGranted("ROLE_VACANCY_VIEWER_USER")
  */
-
 class CandidateVacancyController extends AbstractController
 {
 
@@ -33,19 +33,31 @@ class CandidateVacancyController extends AbstractController
      * @Route("/recruiter/candidate/interest/{id}", name="vacancy_show_cv_received", methods={"GET","POST"})
      * @param Vacancy $vacancy
      * @param CandidateVacancyRepository $candidateVacancyRepository
+     * @param CandidateLinkRepository $candidateLinkRepository
      * @return NoDateException|Response
      */
-    public function recruiterStatusCvReceived(Vacancy $vacancy,
-                                              CandidateVacancyRepository $candidateVacancyRepository)
-    {
-        $notCheckedCandidate = $candidateVacancyRepository->findBy([
+    public function recruiterStatusCvReceived(
+        Vacancy $vacancy,
+        CandidateVacancyRepository $candidateVacancyRepository,
+        CandidateLinkRepository $candidateLinkRepository
+    ) {
+        $notCheckedCandidateHunting = $candidateVacancyRepository->findBy([
             'commentInterest' => null,
             'vacancy' => $vacancy->getId()
         ]);
 
-        return  $this->render('vacancy/recruiterStatusCvReceived.html.twig', [
+        $notCheckedCandidate = $candidateLinkRepository->findBy([
+            'commentInterest' => null,
+            'vacancyLink' => $vacancy->getVacancyLinks()->current()
+        ]);
+        $displayDone = false;
+        if (empty($notCheckedCandidateHunting) && empty($notCheckedCandidate)) {
+            $displayDone = true;
+        }
+
+        return $this->render('vacancy/recruiterStatusCvReceived.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
-            'checkComment' => $notCheckedCandidate
+            'displayDone' => $displayDone
         ]);
     }
 
@@ -59,13 +71,15 @@ class CandidateVacancyController extends AbstractController
      * @return NoDateException|Response
      * @throws NoDateException
      */
-    public function checkInterest(Vacancy $vacancy, Request $request,
-                                  CandidateVacancySearch $candidateVacancySearch,
-                                  CandidatePhotoDecorator $candidatePhotoDecorator)
-    {
+    public function checkInterest(
+        Vacancy $vacancy,
+        Request $request,
+        CandidateVacancySearch $candidateVacancySearch,
+        CandidatePhotoDecorator $candidatePhotoDecorator
+    ) {
         $candidateId = $request->get(self::CANDIDATE_ID);
         $candidateVacancy = $candidateVacancySearch->searchCandidateVacancy($candidateId, $vacancy->getId());
-        if($candidateVacancy === null){
+        if ($candidateVacancy === null) {
             throw new NoDateException('CandidateVacancy not Found');
         }
         $candidatePhotoDecorator->receivedCvNotNull($candidateVacancy);
@@ -75,23 +89,23 @@ class CandidateVacancyController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if ($candidateVacancy->getCandidate() === null){
+            if ($candidateVacancy->getCandidate() === null) {
                 throw new NoDateException('Candidate not Found');
             }
-            if($form instanceof Form)
-            {
+            if ($form instanceof Form) {
                 if ($form->getClickedButton() && 'save' === $form->getClickedButton()->getName()) {
                     $candidateVacancy->setCandidateStatus('Candidates Interest is checked');
                     $entityManager->persist($candidateVacancy);
                     $entityManager->flush();
                     return $this->redirectToRoute('vacancy_show_cv_received', [
-                    'id' => $vacancy->getId()]);
+                        'id' => $vacancy->getId()
+                    ]);
                 }
 
-                    $candidateVacancy->setCandidateStatus('Closed');
-                    $entityManager->persist($candidateVacancy);
-                    $entityManager->flush();
-                    return $this->redirectToRoute('checked_interest', [
+                $candidateVacancy->setCandidateStatus('Closed');
+                $entityManager->persist($candidateVacancy);
+                $entityManager->flush();
+                return $this->redirectToRoute('checked_interest', [
                         'id' => $vacancy->getId(),
                         self::CANDIDATE_ID => $candidateId
                     ]
@@ -99,7 +113,7 @@ class CandidateVacancyController extends AbstractController
             }
         }
 
-        return  $this->render('vacancy/checkCandidateInterest.html.twig', [
+        return $this->render('vacancy/checkCandidateInterest.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView()
         ]);
@@ -114,8 +128,11 @@ class CandidateVacancyController extends AbstractController
      * @param CandidateVacancySearch $candidateVacancySearch
      * @return NoDateException|Response
      */
-    public function interestIsChecked(Vacancy $vacancy, Request $request, CandidateVacancySearch $candidateVacancySearch)
-    {
+    public function interestIsChecked(
+        Vacancy $vacancy,
+        Request $request,
+        CandidateVacancySearch $candidateVacancySearch
+    ) {
         $candidateId = $request->get(self::CANDIDATE_ID);
         $candidateVacancy = $candidateVacancySearch->searchCandidateVacancy($candidateId, $vacancy->getId());
         $form = $this->createForm(CandidateVacancyDenialReasonType::class, $candidateVacancy);
@@ -126,8 +143,8 @@ class CandidateVacancyController extends AbstractController
             $entityManager->persist($candidateVacancy);
             $entityManager->flush();
             return $this->redirectToRoute('vacancy_show_cv_received', [
-                'id' => $vacancy->getId()
-                 ]
+                    'id' => $vacancy->getId()
+                ]
             );
         }
         return $this->render('vacancy/candidateInterestIsChecked.html.twig', [
