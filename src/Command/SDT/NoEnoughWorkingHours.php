@@ -84,7 +84,7 @@ class NoEnoughWorkingHours extends Command
         $nowDate = new DateTime();
         $nextSalaryReport = $this->infoRepository->getNextSalaryReport($nowDate);
         $dayOfWeek = $nowDate->format('w');
-        if ($nextSalaryReport !== null && ($dayOfWeek === 1 || $dayOfWeek === 4)) {
+        if ($nextSalaryReport !== null && ($dayOfWeek === '1' || $dayOfWeek === '4')) {
             foreach ($users as $user) {
                 $userInfo = $this->baseWorkHoursInformationBuilder->build($user, $nowDate);
                 $timeDiff = $userInfo->getRequiredTime() - $userInfo->getLoggedTime();
