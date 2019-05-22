@@ -5,6 +5,7 @@ namespace App\Form;
 
 
 use App\Constants\FormType;
+use App\Entity\CandidateLink;
 use App\Entity\CandidateVacancy;
 use App\Repository\CandidateRepository;
 use Symfony\Component\Form\AbstractType;
@@ -58,7 +59,7 @@ class CandidateStepCvReceivedType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => CandidateVacancy::class,
+            'data_class' => CandidateLink::class,
         ]);
     }
 }

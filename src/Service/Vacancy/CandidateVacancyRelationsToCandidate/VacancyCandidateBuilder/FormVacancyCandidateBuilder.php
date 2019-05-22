@@ -5,8 +5,10 @@ namespace App\Service\Vacancy\CandidateVacancyRelationsToCandidate\VacancyCandid
 
 
 use App\Entity\Candidate;
+use App\Entity\CandidateLink;
 use App\Entity\CandidateVacancy;
 use App\Entity\Vacancy;
+use App\Entity\VacancyLink;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -33,7 +35,7 @@ class FormVacancyCandidateBuilder
             $candidateVacancy->setReceivedCV($fileName);
         }
         if ($candidateVacancy->getLinkToProfile1() === null || $candidateVacancy->getLinkToProfile2() === null
-        || $candidateVacancy->getLinkToProfile3() === null || $candidateVacancy->getLinkToProfile4() === null){
+            || $candidateVacancy->getLinkToProfile3() === null || $candidateVacancy->getLinkToProfile4() === null){
             $candidateVacancy
                 ->setCandidate($candidate)
                 ->setVacancy($vacancy)
@@ -50,4 +52,5 @@ class FormVacancyCandidateBuilder
         }
         return $candidateVacancy;
     }
+
 }

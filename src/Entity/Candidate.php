@@ -112,10 +112,16 @@ class Candidate
      */
     private $candidateVacancies;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CandidateLink", mappedBy="candidate")
+     */
+    private $candidateLinks;
+
 
     public function __construct()
     {
         $this->candidateVacancies = new ArrayCollection();
+        $this->candidateLinks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -352,6 +358,37 @@ class Candidate
             // set the owning side to null (unless already changed)
             if ($candidateVacancy->getCandidate() === $this) {
                 $candidateVacancy->setCandidate(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CandidateLink[]
+     */
+    public function getCandidateLinks(): Collection
+    {
+        return $this->candidateLinks;
+    }
+
+    public function addCandidateLink(CandidateLink $candidateLink): self
+    {
+        if (!$this->candidateLinks->contains($candidateLink)) {
+            $this->candidateLinks[] = $candidateLink;
+            $candidateLink->setCandidate($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCandidateLink(CandidateLink $candidateLink): self
+    {
+        if ($this->candidateLinks->contains($candidateLink)) {
+            $this->candidateLinks->removeElement($candidateLink);
+            // set the owning side to null (unless already changed)
+            if ($candidateLink->getCandidate() === $this) {
+                $candidateLink->setCandidate(null);
             }
         }
 

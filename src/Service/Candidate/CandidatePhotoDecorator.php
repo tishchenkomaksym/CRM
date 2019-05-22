@@ -5,6 +5,7 @@ namespace App\Service\Candidate;
 
 
 use App\Entity\Candidate;
+use App\Entity\CandidateLink;
 use App\Entity\CandidateVacancy;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\File;
@@ -57,6 +58,16 @@ class CandidatePhotoDecorator
         if ($cvNotNull) {
             $candidateVacancy->setReceivedCv(
                 new File($this->params->get('uploads_directory') . '/' . $candidateVacancy->getReceivedCv())
+            );
+        }
+    }
+
+    public function receivedCvNotNullCandidateLink(CandidateLink $candidateLink): void
+    {
+        $cvNotNull = $candidateLink->getReceivedCv() !== null;
+        if ($cvNotNull) {
+            $candidateLink->setReceivedCv(
+                new File($this->params->get('uploads_directory') . '/' . $candidateLink->getReceivedCv())
             );
         }
     }

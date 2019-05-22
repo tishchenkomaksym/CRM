@@ -31,7 +31,7 @@ class VacancyLinkController extends AbstractController
     {
         return $this->render('vacancy_link/index.html.twig', [
             'vacancy_links' => $vacancyLinkRepository->findBy([
-                'id' => $vacancy->getId()
+                'vacancy' => $vacancy->getId()
             ]),
             'vacancy' => $vacancy
         ]);

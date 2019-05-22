@@ -24,6 +24,7 @@
                     Status: CV Received
                 {% endif %}
             </li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_show_search_candidate', { 'id': vacancy.id}) }}">Search candidate</a></li>
         </ol>
     </nav>
 {% endblock %}
@@ -46,7 +47,7 @@
     </tbody>
 </table>
 <div>
-    <div class="border border-danger rounded d-flex align-items-">
+    <div class="alert alert-danger">
         {% if vacancy.status is null %}
             <p>Status:<span>Waiting for approval</span></p>
         {% else %}
@@ -60,16 +61,13 @@
         в базу кандидатов.
     </p>
 </div>
-    <div>
-        Link(s) to vacancy
+    <div class="border border-warning rounded px-2 py-1">
+        {% for vacancyLink in vacancy.vacancyLinks %}
+            {% if app.request.get('id') == vacancyLink.id %}
+                {{ vacancyLink.link }}
+            {% endif %}
+        {% endfor %}
     </div>
-    {% for links in link %}
-
-            <div class="border border-primary rounded">
-                {{ links.link }}
-            </div>
-    {% endfor %}
-
         {{ include('vacancy/formForVacancy.html.twig') }}
 
     <div class="navbar bg-light d-flex justify-content-between">
