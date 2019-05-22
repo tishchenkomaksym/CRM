@@ -11,7 +11,7 @@ namespace App\Service\User\PhpDeveloper\Hours;
 use App\Entity\User;
 use App\Repository\SalaryReportInfoRepository;
 use DateTime;
-use Exception;
+use Doctrine\ORM\NonUniqueResultException;
 
 class ReportWorkHoursBuilderDecorator
 {
@@ -19,38 +19,50 @@ class ReportWorkHoursBuilderDecorator
      * @var BaseWorkHoursInformationBuilder
      */
     private $builder;
-    /**
-     * @var SalaryReportInfoRepository
-     */
-    private $infoRepository;
 
+    /**
+     * @var DateTime
+     */
+    private $salaryReportDate;
+
+    /**
+     * ReportWorkHoursBuilderDecorator constructor.
+     * @param BaseWorkHoursInformationBuilder $builder
+     * @param SalaryReportInfoRepository $infoRepository
+     * @throws NonUniqueResultException
+     */
     public function __construct(BaseWorkHoursInformationBuilder $builder, SalaryReportInfoRepository $infoRepository)
     {
-
         $this->builder = $builder;
-        $this->infoRepository = $infoRepository;
-    }
-
-    /**
-     * @param User $user
-     * @return WorkHoursInformation
-     * @throws Exception
-     */
-    public function build(User $user): WorkHoursInformation
-    {
-        $createDate = $this->infoRepository->getTodaySalaryReport();
+        $createDate = $infoRepository->getTodaySalaryReport();
         if ($createDate) {
             $dateTime = new DateTime();
             if ($createDate->getCreateDate()) {
                 $dateTime->setTimestamp($createDate->getCreateDate()->getTimestamp());
+                $this->salaryReportDate = $dateTime;
             }
-            return $this->builder->build(
-                $dateTime,
-                new DateTime(),
-                $user
-            );
         }
-        //TODO: remove this crutch
-        return null;
+    }
+
+    /**
+     * @param User $user
+     * @param DateTime $nowDate
+     * @return WorkHoursInformation
+     */
+    public function build(User $user, DateTime $nowDate): WorkHoursInformation
+    {
+        return $this->builder->build(
+            $this->salaryReportDate,
+            $nowDate,
+            $user
+        );
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getSalaryReportDate(): DateTime
+    {
+        return $this->salaryReportDate;
     }
 }

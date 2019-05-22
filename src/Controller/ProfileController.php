@@ -12,6 +12,7 @@ use App\Service\User\PhpDeveloperLevel\EffectiveTime\ProjectEffectiveTimeBuilder
 use App\Service\User\PhpDeveloperLevel\ProjectEffectiveTime\UserToProjectTimeSpendBuilder;
 use App\Service\User\Sdt\LeftSdtCalculator;
 use App\Service\UserInformationService;
+use DateTime;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,7 +44,7 @@ class ProfileController extends AbstractController
         $manager = $service->getPhpDeveloperManager($user);
         $leftSdt = $leftSdtCalculator->calculate($this->getUser());
 
-        $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser());
+        $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser(),new DateTime());
         return $this->render(
             'profile/index.html.twig',
             [
@@ -98,6 +99,7 @@ class ProfileController extends AbstractController
      * @throws NoExistsNewLevelOfDeveloper
      * @throws NoRequiredHoursException
      * @throws PhpDeveloperTestBuilderException
+     * @throws Exception
      */
     public function qaSalaryRaise(
         PhpDeveloperTestsInformationBuilder $builder,

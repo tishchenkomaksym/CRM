@@ -50,4 +50,19 @@ class SalaryReportInfoRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()->getOneOrNullResult();
     }
+
+    /**
+     * @param DateTime $dateTime
+     * @return SalaryReportInfo|null
+     * @throws NonUniqueResultException
+     */
+    public function getNextSalaryReport(DateTime $dateTime): ?SalaryReportInfo
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.createDate > :date')
+            ->setParameter('date', $dateTime)
+            ->orderBy('p.createDate', 'asc')
+            ->setMaxResults(1)
+            ->getQuery()->getOneOrNullResult();
+    }
 }

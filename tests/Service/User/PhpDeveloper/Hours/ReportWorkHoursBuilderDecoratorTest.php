@@ -11,6 +11,9 @@ namespace App\Service\User\PhpDeveloper\Hours;
 use App\Entity\SalaryReportInfo;
 use App\Entity\User;
 use App\Repository\SalaryReportInfoRepository;
+use DateTime;
+use DateTimeImmutable;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -18,7 +21,7 @@ class ReportWorkHoursBuilderDecoratorTest extends TestCase
 {
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testBuild()
     {
@@ -29,12 +32,12 @@ class ReportWorkHoursBuilderDecoratorTest extends TestCase
         /** @var SalaryReportInfoRepository|MockObject $mockSalaryReport */
         $mockSalaryReport = $this->createMock(SalaryReportInfoRepository::class);
         $salaryInfo = new SalaryReportInfo();
-        $salaryInfo->setCreateDate(new \DateTimeImmutable());
+        $salaryInfo->setCreateDate(new DateTimeImmutable());
         $mockSalaryReport->method('findOneBy')->willReturn($salaryInfo);
         $workHoursBuilder = New ReportWorkHoursBuilderDecorator($mockBuilder, $mockSalaryReport);
         $user = new User();
         $obj->setUser($user);
-        $result = $workHoursBuilder->build($user);
+        $result = $workHoursBuilder->build($user, new DateTime());
         $this->assertEquals($obj, $result);
     }
 }
