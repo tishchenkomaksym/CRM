@@ -11,7 +11,6 @@ namespace App\Service\SalaryReport\Builder;
 
 use App\Entity\SalaryReportInfo;
 use App\Entity\User;
-use App\Repository\SalaryReportInfoRepository;
 use App\Service\SalaryReport\Builder\SDTDays\SdtDaysCalculator;
 use App\Service\SalaryReport\Builder\WorkingDays\WorkingDaysCalculator;
 use App\Service\SalaryReport\SalaryReportDTO;
@@ -19,7 +18,6 @@ use App\Service\User\Sdt\Filter\AtOwnExpenseFilter;
 use App\Service\User\Sdt\Filter\NotAtOwnExpenseFilter;
 use App\Service\User\Sdt\UsedSdtDaysCalculator;
 use DateTime;
-use Doctrine\ORM\NonUniqueResultException;
 use Exception;
 use RuntimeException;
 
@@ -34,14 +32,8 @@ class BaseSalaryReportBuilder
      * @var UsedSdtDaysCalculator
      */
     private $usedSdtDaysCalculator;
-    /**
-     * @var SalaryReportInfoRepository
-     */
-    private $salaryReportInfoRepository;
-
 
     public function __construct(
-        SalaryReportInfoRepository $salaryReportInfoRepository,
         WorkingDaysCalculator $workingDaysCalculator,
         SdtDaysCalculator $sdtDaysCalculator,
         UsedSdtDaysCalculator $usedSdtDaysCalculator
@@ -49,7 +41,6 @@ class BaseSalaryReportBuilder
         $this->workingDaysCalculator = $workingDaysCalculator;
         $this->sdtDaysCalculator = $sdtDaysCalculator;
         $this->usedSdtDaysCalculator = $usedSdtDaysCalculator;
-        $this->salaryReportInfoRepository = $salaryReportInfoRepository;
     }
 
     /**
@@ -57,7 +48,6 @@ class BaseSalaryReportBuilder
      * @param SalaryReportInfo $newReport
      * @param User $user
      * @return SalaryReportDTO
-     * @throws NonUniqueResultException
      * @throws Exception
      */
     public function build(
@@ -73,7 +63,8 @@ class BaseSalaryReportBuilder
         $dateTime->setDate($dateTime->format('Y'), $dateTime->format('m'), (int)$dateTime->format('d') - 1);
         $dateTime->setTime(23, 59, 59);
         $returnObject->sdtCountUsed = $this->getSdtCountUsed($previousReportInfo, $dateTime, $user);
-        $returnObject->sdtCountAtOwnExpenseUsed = $this->getSdtAtOwnExpenseUsedCount($newReport, $dateTime, $user);
+        $returnObject->sdtCountAtOwnExpenseUsed = $this->getSdtAtOwnExpenseUsedCount($previousReportInfo, $dateTime,
+            $user);
         $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport) - $returnObject->sdtCountUsed - $returnObject->sdtCountAtOwnExpenseUsed;
         $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateTime, $user);
 
@@ -104,16 +95,17 @@ class BaseSalaryReportBuilder
     }
 
     /**
-     * @param SalaryReportInfo $newReport
+     * @param SalaryReportInfo $previousReport
      * @param DateTime $nowTime
      * @param User $user
      * @return int
-     * @throws NonUniqueResultException
      * @throws Exception
      */
-    private function getSdtAtOwnExpenseUsedCount(SalaryReportInfo $newReport, DateTime $nowTime, User $user): int
-    {
-        $previousReport = $this->salaryReportInfoRepository->getPreviousReport($newReport);
+    private function getSdtAtOwnExpenseUsedCount(
+        SalaryReportInfo $previousReport,
+        DateTime $nowTime,
+        User $user
+    ): int {
         $createDate = $previousReport->getCreateDate();
         if (!isset($createDate)) {
             throw new RuntimeException('no date');
