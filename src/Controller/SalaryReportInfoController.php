@@ -69,13 +69,18 @@ class SalaryReportInfoController extends AbstractController
      * @return Response
      * @throws Exception
      */
-    public function show(SalaryReportInfo $salaryReportInfo, BaseSalaryReportBuilder $baseSalaryReportBuilder, UserRepository $userRepository): Response
-    {
+    public function show(
+        SalaryReportInfoRepository $salaryReportInfoRepository,
+        SalaryReportInfo $salaryReportInfo,
+        BaseSalaryReportBuilder $baseSalaryReportBuilder,
+        UserRepository $userRepository
+    ): Response {
         $users = $userRepository->findAll();
         /** @var SalaryReportDTO[] $salaryReportDtoArray */
         $salaryReportDtoArray = [];
+        $previousReport = $salaryReportInfoRepository->getPreviousReport($salaryReportInfo);
         foreach ($users as $user) {
-            $salaryReportDtoArray[] = $baseSalaryReportBuilder->build($salaryReportInfo, $user);
+            $salaryReportDtoArray[] = $baseSalaryReportBuilder->build($previousReport, $salaryReportInfo, $user);
         }
         return $this->render('salary_report_info/show.html.twig', [
             self::SALARY_REPORT_INFO => $salaryReportInfo,

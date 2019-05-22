@@ -53,13 +53,18 @@ class BaseSalaryReportBuilder
     }
 
     /**
+     * @param SalaryReportInfo $previousReportInfo
      * @param SalaryReportInfo $newReport
      * @param User $user
      * @return SalaryReportDTO
+     * @throws NonUniqueResultException
      * @throws Exception
      */
-    public function build(SalaryReportInfo $newReport, User $user): SalaryReportDTO
-    {
+    public function build(
+        SalaryReportInfo $previousReportInfo,
+        SalaryReportInfo $newReport,
+        User $user
+    ): SalaryReportDTO {
 
         $returnObject = new SalaryReportDTO();
         $dateTime = new DateTime();
@@ -67,7 +72,7 @@ class BaseSalaryReportBuilder
         $dateTime->setTimestamp($newReport->getCreateDate()->getTimestamp());
         $dateTime->setDate($dateTime->format('Y'), $dateTime->format('m'), (int)$dateTime->format('d') - 1);
         $dateTime->setTime(23, 59, 59);
-        $returnObject->sdtCountUsed = $this->getSdtCountUsed($newReport, $dateTime, $user);
+        $returnObject->sdtCountUsed = $this->getSdtCountUsed($previousReportInfo, $dateTime, $user);
         $returnObject->sdtCountAtOwnExpenseUsed = $this->getSdtAtOwnExpenseUsedCount($newReport, $dateTime, $user);
         $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport) - $returnObject->sdtCountUsed - $returnObject->sdtCountAtOwnExpenseUsed;
         $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateTime, $user);
@@ -78,17 +83,18 @@ class BaseSalaryReportBuilder
     }
 
     /**
-     * @param SalaryReportInfo $newReport
+     * @param SalaryReportInfo $previousReportInfo
      * @param DateTime $nowTime
      * @param User $user
      * @return int
-     * @throws NonUniqueResultException
      * @throws Exception
      */
-    private function getSdtCountUsed(SalaryReportInfo $newReport, DateTime $nowTime, User $user): int
-    {
-        $previousReport = $this->salaryReportInfoRepository->getPreviousReport($newReport);
-        $createDate = $previousReport->getCreateDate();
+    private function getSdtCountUsed(
+        SalaryReportInfo $previousReportInfo,
+        DateTime $nowTime,
+        User $user
+    ): int {
+        $createDate = $previousReportInfo->getCreateDate();
         if (!isset($createDate)) {
             throw new RuntimeException('no date');
         }
