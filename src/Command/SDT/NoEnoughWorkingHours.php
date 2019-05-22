@@ -79,7 +79,7 @@ class NoEnoughWorkingHours extends Command
         InputInterface $input,
         OutputInterface $output
     ) {
-        $users = $this->userRepository->findAll();
+        $users = $this->userRepository->findBy(['email'=>'oleksandra.bi@onyx.com']);
 
         $nowDate = new DateTime();
         $nextSalaryReport = $this->infoRepository->getNextSalaryReport($nowDate);
