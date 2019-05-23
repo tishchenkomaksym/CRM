@@ -8,12 +8,12 @@ use App\Entity\CandidateVacancy;
 use App\Entity\Vacancy;
 use App\Entity\VacancyLink;
 use App\Entity\VacancyViewerUser;
-use App\Form\CandidateStepCvReceivedType;
-use App\Form\CandidateStepCvReceivedTypeForHunting;
-use App\Form\RecruiterType;
-use App\Form\VacancyType;
-use App\Form\VacancyTypeDenied;
-use App\Form\ViewerType;
+use App\Form\Recruiting\CandidateStepCvReceivedType;
+use App\Form\Recruiting\CandidateStepCvReceivedTypeForHunting;
+use App\Form\Recruiting\RecruiterType;
+use App\Form\Recruiting\VacancyType;
+use App\Form\Recruiting\VacancyTypeDenied;
+use App\Form\Recruiting\ViewerType;
 use App\Repository\CandidateRepository;
 use App\Repository\UserRepository;
 use App\Repository\VacancyRepository;
@@ -108,7 +108,7 @@ class VacancyController extends AbstractController
             }
         }
 
-        return $this->render('vacancy/index.html.twig', [
+        return $this->render('recruiting/vacancy/index.html.twig', [
             'vacancies' => $vacancies
         ]);
     }
@@ -149,7 +149,7 @@ class VacancyController extends AbstractController
         $mailer->send($messageBuilder->build());
         $mailer->send($messageBuilderHr->build());
 
-        return $this->render('vacancy/approved.html.twig', [
+        return $this->render('recruiting/vacancy/approved.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy
         ]);
     }
@@ -177,7 +177,7 @@ class VacancyController extends AbstractController
                 'id' => $vacancy->getId(),
             ]);
         }
-        return $this->render('vacancy/denied.html.twig', [
+        return $this->render('recruiting/vacancy/denied.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -187,7 +187,7 @@ class VacancyController extends AbstractController
      */
     public function result(): Response
     {
-        return $this->render('vacancy/result.html.twig', [
+        return $this->render('recruiting/vacancy/result.html.twig', [
             'controller_name' => 'ResultController',
         ]);
     }
@@ -209,7 +209,7 @@ class VacancyController extends AbstractController
         );
         $mailer->send($messageBuilder->build());
 
-        return $this->render('vacancy/deniedResult.html.twig', [
+        return $this->render('recruiting/vacancy/deniedResult.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy
         ]);
     }
@@ -246,7 +246,7 @@ class VacancyController extends AbstractController
         }
 
 
-        return $this->render('vacancy/new.html.twig', [
+        return $this->render('recruiting/vacancy/new.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView(),
         ]);
@@ -286,7 +286,7 @@ class VacancyController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->render('vacancy/show.html.twig', [
+        return $this->render('recruiting/vacancy/show.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView(),
             'formUser' => $formUser->createView(),
@@ -315,7 +315,7 @@ class VacancyController extends AbstractController
             $entityManager->persist($vacancy->setStatus('Candidates Interest is checked'));
             $entityManager->flush();
         }
-            return  $this->render('vacancy/showRecruiter.html.twig', [
+            return  $this->render('recruiting/vacancy/showRecruiter/showRecruiter.html.twig', [
                 self::VACANCY_ENTITY_IN_VIEW => $vacancy,
                 self::VACANCY_EXPIRED_TIME => $timeCalculator->getExpiredTime($vacancyTimeDecorator->expiredTimeDecorator(),
                     new DateTime()),
@@ -330,7 +330,7 @@ class VacancyController extends AbstractController
      */
     public function recruiterStatusSearchCandidate(Vacancy $vacancy)
     {
-        return  $this->render('vacancy/recruiterStatusSearchCandidate.html.twig', [
+        return  $this->render('recruiting/vacancy/showRecruiter/recruiterStatusSearchCandidate.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
         ]);
     }
@@ -384,13 +384,18 @@ class VacancyController extends AbstractController
                     $strategyNonExistenceLinks, $objectManager);
             }
             $candidate = $context->execute($vacancyLink, $candidateLink, $name, $surname, self::VACANCY_ENTITY_IN_VIEW, $vacancy);
+            if($existsUser === null){
+                return $this->redirectToRoute(self::CANDIDATE_EDIT, [
+                    'id' => $candidate->getId(),
+                ]);
+            }
             return $this->redirectToRoute(self::CANDIDATE_EDIT, [
                 'id' => $candidate->getId(),
                 'vacancyLink' => $vacancyLink->getId()
             ]);
 
         }
-        return $this->render('vacancy/stepCvReceivedFromVacancy.html.twig', [
+        return $this->render('recruiting/vacancy/showRecruiter/stepCvReceived/stepCvReceivedFromVacancy.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView()
         ]);
@@ -440,7 +445,7 @@ class VacancyController extends AbstractController
             ]);
 
         }
-        return $this->render('vacancy/stepCvReceivedFromHunting.html.twig', [
+        return $this->render('recruiting/vacancy/showRecruiter/stepCvReceived/stepCvReceivedFromHunting.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView()
         ]);
@@ -495,13 +500,18 @@ class VacancyController extends AbstractController
                     $strategyNonExistenceLinks, $objectManager);
             }
             $candidate = $context->execute($vacancyLink, $candidateLink, $name, $surname, 'recommendation', $vacancy);
+            if($existsUser === null){
+                return $this->redirectToRoute(self::CANDIDATE_EDIT, [
+                    'id' => $candidate->getId(),
+                ]);
+            }
             return $this->redirectToRoute(self::CANDIDATE_EDIT, [
                 'id' => $candidate->getId(),
                 'vacancyLink' => $vacancyLink->getId()
             ]);
 
         }
-        return $this->render('vacancy/stepCvReceivedFromRecommendation.html.twig', [
+        return $this->render('recruiting/vacancy/showRecruiter/stepCvReceived/stepCvReceivedFromRecommendation.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView()
         ]);
@@ -517,7 +527,7 @@ class VacancyController extends AbstractController
      */
     public function history(Vacancy $vacancy,CandidateForms $candidateForms): Response
     {
-        return  $this->render('vacancy/history.html.twig', [
+        return  $this->render('recruiting/vacancy/showRecruiter/history.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'links' => $candidateForms->vacancyLink($vacancy)
         ]);
@@ -542,7 +552,7 @@ class VacancyController extends AbstractController
             ]);
         }
 
-        return $this->render('vacancy/edit.html.twig', [
+        return $this->render('recruiting/vacancy/edit.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView(),
         ]);

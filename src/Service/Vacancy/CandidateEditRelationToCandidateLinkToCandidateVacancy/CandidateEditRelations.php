@@ -93,10 +93,6 @@ class CandidateEditRelations
             throw new NoDataException('CandidateLink Not found');
         }
 
-        if ($candidateLink === null) {
-            throw new NoDateException('CandidateLink not found');
-        }
-
         if ($candidateLink->getVacancyLink() === null) {
         throw new NoDateException('VacancyLink not found');
     }

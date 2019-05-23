@@ -5,10 +5,12 @@ namespace App\Controller\Recruiting;
 
 
 use App\Data\Sdt\Mail\Adapter\NoDateException;
+use App\Entity\CandidateLink;
 use App\Entity\Vacancy;
 use App\Entity\VacancyLink;
-use App\Form\CandidateLinkCommentInterestType;
-use App\Form\CandidateLinkDenialReasonType;
+use App\Form\Recruiting\CandidateLink\CandidateLinkCommentInterestType;
+use App\Form\Recruiting\CandidateLink\CandidateLinkDenialReasonType;
+use App\Repository\CandidateLinkRepository;
 use App\Repository\VacancyLinkRepository;
 use App\Repository\VacancyRepository;
 
@@ -29,6 +31,8 @@ class CandidateLinkController extends AbstractController
 
     public const LINKS = 'links';
 
+    public const VACANCY_SHOW_RECEIVED = 'vacancy_show_cv_received';
+
     /**
      * @IsGranted("ROLE_RECRUITER")
      * @Route("/recruiter/links/{id}", name="candidate_list_links", methods={"GET","POST"})
@@ -39,7 +43,7 @@ class CandidateLinkController extends AbstractController
     public function showListCandidateLinks(Vacancy $vacancy,
                                     VacancyLinkRepository $vacancyLinkRepository): Response
     {
-        return $this->render('vacancy/listCandidateLinksFromVacancy.html.twig', [
+        return $this->render('recruiting/candidateLinks/listCandidateLinksFromVacancy.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             self::LINKS => $vacancyLinkRepository->findBy([
                 self::VACANCY_ENTITY_IN_VIEW => $vacancy->getId()
@@ -57,7 +61,7 @@ class CandidateLinkController extends AbstractController
     public function showListCandidateLinksRecommendation(Vacancy $vacancy,
         VacancyLinkRepository $vacancyLinkRepository): Response
     {
-        return $this->render('vacancy/listCandidateLinksFromRecommendation.html.twig', [
+        return $this->render('recruiting/candidateLinks/listCandidateLinksFromRecommendation.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             self::LINKS => $vacancyLinkRepository->findBy([
                 self::VACANCY_ENTITY_IN_VIEW => $vacancy->getId()
@@ -83,7 +87,7 @@ class CandidateLinkController extends AbstractController
         if (!empty($vacancyId)) {
             $vacancy = $vacancyRepository->findOneBy(['id' => $vacancyId]);
         }
-        return $this->render('vacancy/candidateLinksFromVacancy.html.twig', [
+        return $this->render('recruiting/candidateLinks/candidateLinksFromVacancy.html.twig', [
             self::LINKS => $vacancyLink,
             self::VACANCY_ENTITY_IN_VIEW => $vacancy
         ]);
@@ -108,7 +112,7 @@ class CandidateLinkController extends AbstractController
         if (!empty($vacancyId)) {
             $vacancy = $vacancyRepository->findOneBy(['id' => $vacancyId]);
         }
-        return $this->render('vacancy/candidateLinksFromRecommendation.html.twig', [
+        return $this->render('recruiting/candidateLinks/candidateLinksFromRecommendation.html.twig', [
             self::LINKS => $vacancyLink,
             self::VACANCY_ENTITY_IN_VIEW => $vacancy
         ]);
@@ -149,7 +153,7 @@ class CandidateLinkController extends AbstractController
                     $candidateLink->setCandidateStatus('Candidates Interest is checked');
                     $entityManager->persist($candidateLink);
                     $entityManager->flush();
-                    return $this->redirectToRoute('vacancy_show_cv_received', [
+                    return $this->redirectToRoute(self::VACANCY_SHOW_RECEIVED, [
                         'id' => $vacancy->getId()]);
                 }
 
@@ -164,9 +168,49 @@ class CandidateLinkController extends AbstractController
             }
         }
 
-        return  $this->render('vacancy/checkCandidateInterest.html.twig', [
+        return  $this->render('recruiting/vacancy/showRecruiter/stepCandidateInterest/checkCandidateInterest.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/recruiter/candidate/interest/checklink/{id}/edit", name="check_interest_link_edit", methods={"GET","POST"})
+     * @param Request $request
+     * @param CandidateLink $candidateLink
+     * @return Response
+     */
+    public function editComment(CandidateLink $candidateLink,  Request $request): Response
+    {
+        $form = $this->createForm(CandidateLinkCommentInterestType::class, $candidateLink);
+        $form->handleRequest($request);
+        $vacancyId = $request->get(self::VACANCY_ENTITY_IN_VIEW);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            if($form instanceof Form){
+                if ($form->getClickedButton() && 'save' === $form->getClickedButton()->getName()) {
+                    $candidateLink->setCandidateStatus('Candidates Interest is checked');
+                    $entityManager->persist($candidateLink);
+                    $entityManager->flush();
+                    return $this->redirectToRoute(self::VACANCY_SHOW_RECEIVED, [
+                        'id' => $vacancyId,
+                    ]);
+                }
+                $candidateLink->setCandidateStatus('Closed');
+                $entityManager->persist($candidateLink);
+                $entityManager->flush();
+                return $this->redirectToRoute('checked_interest_link_denial_edit', [
+                        'id' => $candidateLink->getId(),
+                        'vacancy' => $vacancyId
+                    ]
+                );
+            }
+        }
+
+        return $this->render('recruiting/vacancy/showRecruiter/stepCandidateInterest/editComment.html.twig', [
+            'candidateLink' => $candidateLink,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -190,15 +234,45 @@ class CandidateLinkController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($candidateLink);
             $entityManager->flush();
-            return $this->redirectToRoute('vacancy_show_cv_received', [
+            return $this->redirectToRoute(self::VACANCY_SHOW_RECEIVED, [
                     'id' => $vacancy->getId()
                 ]
             );
         }
-        return $this->render('vacancy/candidateInterestIsChecked.html.twig', [
+        return $this->render('recruiting/vacancy/showRecruiter/stepCandidateInterest/candidateInterestIsChecked.html.twig', [
                 'id' => $vacancy->getId(),
                 'form' => $form->createView(),
                 self::CANDIDATE_ID => $candidateId
+            ]
+        );
+    }
+
+    /**
+     * @IsGranted("ROLE_RECRUITER")
+     * @Route("/recruiter/candidate/interest/checkedlink/edit/{id}", name="checked_interest_link_denial_edit", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param Request $request
+     * @param CandidateLinkRepository $candidateLinkRepository
+     * @return NoDateException|Response
+     */
+    public function interestIsCheckedEdit(Vacancy $vacancy, Request $request, CandidateLinkRepository $candidateLinkRepository)
+    {
+        $candidateLink = $candidateLinkRepository->findOneBy(['id' => $request->get('id')]);
+        $form = $this->createForm(CandidateLinkDenialReasonType::class, $candidateLink);
+        $form->handleRequest($request);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($candidateLink);
+            $entityManager->flush();
+            return $this->redirectToRoute(self::VACANCY_SHOW_RECEIVED, [
+                    'id' => $vacancy->getId()
+                ]
+            );
+        }
+        return $this->render('recruiting/vacancy/showRecruiter/stepCandidateInterest/candidateInterestIsChecked.html.twig', [
+                'id' => $vacancy->getId(),
+                'form' => $form->createView()
             ]
         );
     }

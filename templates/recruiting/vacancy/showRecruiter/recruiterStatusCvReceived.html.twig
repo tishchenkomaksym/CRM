@@ -1,0 +1,146 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Request</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">View Request</li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {% if vacancy.status == 'CV Received' %}
+                    Candidate Interest is checked
+                {% endif %}
+            </li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block body %}
+    <table class="table" style="table-layout: fixed">
+        <tbody>
+        <tr>
+            <th>Request#</th>
+            <td>{{ vacancy.id }}</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>{{ vacancy.createdAt|date('Y-m-d') }}</td>
+        </tr>
+        <tr>
+            <th>By</th>
+            <td>{{ vacancy.createdBy }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div>
+        <p class="alert alert-danger">Status:
+            {% if vacancy.status == 'CV Received' %}
+                Candidate Interest is checked
+            {% endif %}
+        </p>
+    </div>
+    <table class="table" id="menu">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Position</th>
+            <th>Location</th>
+            <th>Phone</th>
+            <th>Request Status</th>
+            <th>Candidate Status</th>
+            <th>Updated</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for candidateVacancy in vacancy.candidateVacancies %}
+            {% if candidateVacancy.candidate.name != null %}
+                <tr>
+                    <td>{{ candidateVacancy.candidate.name }}</td>
+                    <td>{{ candidateVacancy.candidate.surname }}</td>
+                    <td>{{ candidateVacancy.candidate.position }}</td>
+                    <td>{{ candidateVacancy.candidate.location }}</td>
+                    <td>{{ candidateVacancy.candidate.phone }}</td>
+                    <td>{{ vacancy.status }}</td>
+                    <td>{{ candidateVacancy.candidateStatus }}</td>
+                    <td>{{ candidateVacancy.candidate.updatedDate|date('Y-m-d') }}
+                        {% if candidateVacancy.commentInterest is null %}
+                            <a class="btn btn-primary" href="{{ path('check_interest',
+                                {'id': vacancy.id, 'candidateId': candidateVacancy.candidate.id}) }}">
+                                Check Candidate Interest
+                            </a>
+                        {% else %}
+                            <span class="btn btn-secondary">
+                            Check Candidate Interest
+                        </span>
+                        {% endif %}
+                    </td>
+                    {% if  app.request.get('edit') is not null%}
+                        <td>
+                            <a class="btn btn-primary" href="{{ path('check_interest_edit', {'id': candidateVacancy.id, 'vacancy': vacancy.id } ) }}">Edit</a>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+        {% for vacancyLink in vacancy.vacancyLinks %}
+            {% for candidate in vacancyLink.candidateLinks %}
+                {% if candidate.candidate.name != null %}
+                    <tr>
+                        <td>{{ candidate.candidate.name }}</td>
+                        <td>{{ candidate.candidate.surname }}</td>
+                        <td>{{ candidate.candidate.position }}</td>
+                        <td>{{ candidate.candidate.location }}</td>
+                        <td>{{ candidate.candidate.phone }}</td>
+                        <td>{{ vacancy.status }}</td>
+                        <td>{{ candidate.candidateStatus }}</td>
+                        <td>{{ candidate.candidate.updatedDate|date('Y-m-d') }}
+                            {% if candidate.commentInterest is null %}
+                                <a class="btn btn-primary" href="{{ path('check_interest_link',
+                                    {'id': vacancy.id, 'candidateId': candidate.candidate.id}) }}">
+                                    Check Candidate Interest
+                                </a>
+                                {#                            {{ dump(candidate.candidate.id) }}#}
+                            {% else %}
+                                <span class="btn btn-secondary">
+                        Check Candidate Interest
+                    </span>
+                            {% endif %}
+                        </td>
+                        {% if  app.request.get('edit') is not null%}
+                            <td>
+                                <a class="btn btn-primary" href="{{ path('check_interest_link_edit', {'id': candidate.id, 'vacancy': vacancy.id }) }}">Edit</a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if displayDone %}
+            <div class="text-center">
+                <a class="btn btn-success"
+                   href="{{ path('vacancy_show_recruiter', {'id': vacancy.id, 'checked': 'checked'}) }}">
+                    Done
+                </a>
+            </div>
+        <br/>
+    {% endif %}
+
+    <div class="navbar bg-light d-flex justify-content-between">
+        <div class="badge badge-success">
+            assigned to you by:{{ vacancy.assignedBy }}
+        </div>
+        <div>
+            <span class="badge badge-success">Date of assigning</span>
+            {{ vacancy.assigneeDate|date('Y-m-d') }}
+        </div>
+    </div>
+{% endblock %}

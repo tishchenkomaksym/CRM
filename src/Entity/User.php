@@ -108,6 +108,11 @@ class User implements UserInterface
      */
     private $team;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\UserInfo", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $userInfo;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
@@ -170,12 +175,12 @@ class User implements UserInterface
     /**
      * @see UserInterface
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword(?string $password): self
     {
         $this->password = $password;
 
@@ -510,7 +515,6 @@ class User implements UserInterface
         return $this;
     }
 
-
     public function getTeam(): ?Team
     {
         return $this->team;
@@ -519,6 +523,24 @@ class User implements UserInterface
     public function setTeam(?Team $team): self
     {
         $this->team = $team;
+
+        return $this;
+    }
+
+    public function getUserInfo(): ?UserInfo
+    {
+        return $this->userInfo;
+    }
+
+    public function setUserInfo(?UserInfo $userInfo): self
+    {
+        $this->userInfo = $userInfo;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newUser = $userInfo === null ? null : $this;
+        if ($newUser !== $userInfo->getUser()) {
+            $userInfo->setUser($newUser);
+        }
 
         return $this;
     }

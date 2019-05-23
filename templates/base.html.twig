@@ -37,9 +37,16 @@
                 <a class="nav-link" href="{{ path('default') }}">Log in</a>
             </li>
             {% else %}
-                <li class="nav-item text-nowrap">
+            <li class="nav-item text-nowrap">
+                {% if  app.user.team != null%}
+                    <a href="{{ path('user_show', {'id': app.user.userInfo.id}) }}">
+                        <img class="rounded-circle" width="50px" height="50px" src="/uploads/{{ app.user.userInfo.photo }}" alt="photo">
+                        {{ app.user.email }}
+                    </a>
+                {% else %}
                     <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
-                </li>
+                {% endif %}
+            </li>
         {% endif %}
     </ul>
 </nav>
@@ -57,9 +64,6 @@
                     {% endif %}
                     {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
                         <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
-                    {% endif %}
-                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER')  %}
-                        <li class="list-group-item"><a href="#">Employees</a></li>
                     {% endif %}
                     {% if is_granted('ROLE_USER') %}
                         <li class="list-group-item"><a href="{{ path('profile') }}">Profile</a></li>

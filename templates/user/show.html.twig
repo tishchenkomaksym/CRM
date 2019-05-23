@@ -8,43 +8,183 @@
     <table class="table">
         <tbody>
         <tr>
-            <th>Id</th>
-            <td>{{ user.id }}</td>
+            <th>Photo</th>
+            <td>
+                <img width="200px" height="200px" class="img-fluid " src="/uploads/{{ user.photo }}" alt="Photo">
+                <a class="btn btn-primary" href="{{ path('app_logout') }}">Logout</a>
+            </td>
+            <td>{{ user.user.createDate|date ('Y-m-d') }}</td>
         </tr>
         <tr>
-            <th>Email</th>
-            <td>{{ user.email }}</td>
+            <th>Full Name</th>
+            <td>{{ user.user.name }}</td>
         </tr>
         <tr>
-            <th>Name</th>
-            <td>{{ user.name }}</td>
+            <th>Position</th>
+            <td>{{ user.position }}</td>
         </tr>
         <tr>
-            <th>Roles</th>
-            <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+            <th>Office</th>
+            <td>{{ user.user.team.department.office.name }}</td>
         </tr>
-        {% if user.phpDeveloperLevelRelation %}
+        <tr>
+            <th>Department </th>
+            <td>{{ user.user.team.department.name }} </td>
+        </tr>
+        <tr>
+            <th>Team</th>
+            <td>{{ user.user.team.name }}</td>
+        </tr>
+        <tr>
+            <th>Sub team</th>
+            <td>{{ user.subTeam }}</td>
+        </tr>
+        <tr class="alert alert-dark">
+            <th>Contact Information</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Phone number</th>
+            <td>{{ user.phone }}</td>
+        </tr>
+        <tr>
+            <th>Work Skype</th>
+            <td>{{ user.skype }}</td>
+        </tr>
+        <tr>
+            <th>Work Email</th>
+            <td>{{ user.user.email }}</td>
+        </tr>
+        <tr>
+            <th>Personal Email</th>
+            <td>{{ user.personalEmail }}</td>
+        </tr>
+        <tr class="alert alert-dark">
+            <th>Personal Information</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Sex</th>
+            <td>{{ user.sex }}</td>
+        </tr>
+        <tr>
+            <th>BirthDay</th>
+            <td>{{ user.birthDay|date ('Y-m-d') }}</td>
+        </tr>
+        <tr>
+            <th>Marital Status</th>
+            <td>{{ user.maritalStatus }}</td>
+        </tr>
+        <tr>
+            <th>Children</th>
+            <td>{{ user.children }}</td>
+        </tr>
+        <tr>
+            <th>Location</th>
+            <td>{{ user.location }}</td>
+        </tr>
+        <tr class="alert alert-dark">
+            <th>Conditions of collaborations</th>
+            <td></td>
+        </tr>
+        <tr class="alert alert-secondary">
+            <th>SDT Info</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>SDT Used</th>
+            <td>{{ sdtUsed.sdtCountUsed }}</td>
+        </tr>
+        <tr>
+            <th>SDT Left</th>
+            <td>{{ leftSdt }}</td>
+        </tr>
+        <tr>
+            <th>SDT Added per month</th>
+            <td>
+                {% for sdt in user.user.monthlySdts.values %}
+                    {{ sdt.count }}
+                {% endfor %} </td>
+        </tr>
+        <tr class="alert alert-secondary">
+            <th>Salary Info</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Start Date:</th>
+            <td>{{ user.user.createDate|date('Y-m-d') }}</td>
+        </tr>
+        <tr>
+            <th>Current Salary:</th>
+            <td>{{ user.salary }}</td>
+        </tr>
+        <tr>
+            <th>Manager</th>
+            <td>
+                {% for manager in developerManagers %}
+                    {{ manager }}
+                {% endfor %}
+            </td>
+        </tr>
+        <tr>
+            <th>Current position and level</th>
+            <td>{{ userLevel }}</td>
+        </tr>
+        <tr>
+            <th>Latest raise</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Current month report time frame</th>
+            <td>From {{ todaySalaryReport.createDate|date('Y-m-d') }} to {{ nextSalaryReport.createdate|date('Y-m-d') }}</td>
+        </tr>
+        <tr class="alert alert-secondary">
+            <th>Working hours Info</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Tracking system</th>
+            <td class="border border-warning">Jira</td>
+        </tr>
+        <tr>
+            <th>Logged Hours</th>
+            <td>{{ workingHoursInformation.loggedTime|round(2, 'floor')}}</td>
+        </tr>
+        <tr>
+            <th>Needed hours this month</th>
+            <td>{{ workingHoursInformation.requiredTime|round(2, 'floor')}}</td>
+        </tr>
+        {% if is_granted("ROLE_ACCOUNT_MANAGER") %}
             <tr>
-                <th>Php Developer Level</th>
-                <td>{{ user.phpDeveloperLevelRelation.phpDeveloperLevel.title }}</td>
+                <th>Roles</th>
+                <td>{{ user.user.roles ? user.user.roles|json_encode : '' }}</td>
             </tr>
+            {% if user.user.phpDeveloperLevelRelation %}
+                <tr>
+                    <th>Php Developer Level</th>
+                    <td>{{ user.user.phpDeveloperLevelRelation.phpDeveloperLevel.title }}</td>
+                </tr>
+            {% endif %}
+            {% for relation in user.user.phpDeveloperManagerRelations %}
+                <tr>
+                    <th>Php Developer Manager</th>
+                    <td>{{ relation.manager.email }}</td>
+                </tr>
+            {% endfor %}
         {% endif %}
-        {% for relation in user.phpDeveloperManagerRelations %}
-            <tr>
-                <th>Php Developer Manager</th>
-                <td>{{ relation.manager.email }}</td>
-            </tr>
-        {% endfor %}
-
         </tbody>
     </table>
-    {% if user.phpDeveloperLevelRelation is null %}
-        <a class="btn" href="{{ path('user_php_developer_level_relation_new',{'id':user.id}) }}">Add PHP Level</a>
+    {% if is_granted("ROLE_ACCOUNT_MANAGER") %}
+        {% if user.user.phpDeveloperLevelRelation is null %}
+            <a class="btn" href="{{ path('user_php_developer_level_relation_new',{'id':user.user.id}) }}">Add PHP Level</a>
+        {% endif %}
+        <a class="btn" href="{{ path('php_developer_manager_relation_new',{'id':user.user.id}) }}">Add PHP Manager</a>
     {% endif %}
-    <a class="btn" href="{{ path('php_developer_manager_relation_new',{'id':user.id}) }}">Add PHP Manager</a>
-    <a href="{{ path('user_index') }}">back to list</a>
 
-    <a href="{{ path('user_edit', {'id': user.id}) }}">edit</a>
+    <a class="btn btn-primary" href="{{ path('user_edit', {'id': user.id}) }}">edit</a>
 
-    {{ include('user/_delete_form.html.twig') }}
+    <a class="btn btn-primary" href="{{ path('user_index') }}">back to list</a>
+    {% if is_granted("ROLE_ACCOUNT_MANAGER") %}
+        {{ include('user/_delete_form.html.twig') }}
+    {% endif %}
 {% endblock %}

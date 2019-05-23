@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit {% endblock %}
+
+{% block body %}
+    <h1>Edit VacancyLink</h1>
+
+    {{ include('recruiting/vacancy/showRecruiter/stepCandidateInterest/commentInterestForm.html.twig', {'button_label': 'Update'}) }}
+
+    <a class="btn btn-primary" href="{{ path('vacancy_show_cv_received', {'id': app.request.get('vacancy')}) }}">back to list</a>
+
+{% endblock %}

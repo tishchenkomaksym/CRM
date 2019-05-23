@@ -4,8 +4,8 @@ namespace App\Controller\Recruiting;
 
 use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\Candidate;
-use App\Form\CandidateType;
-use App\Form\CandidateVacancyIdType;
+use App\Form\Recruiting\CandidateType;
+use App\Form\Recruiting\CandidateVacancy\CandidateVacancyIdType;
 use App\Repository\CandidateRepository;
 use App\Service\Candidate\CandidatePhotoDecorator;
 use App\Service\Candidate\VacancyFieldDecorator;
@@ -45,7 +45,7 @@ class CandidateController extends AbstractController
      */
     public function index(CandidateRepository $candidateRepository): Response
     {
-        return $this->render('candidate/index.html.twig', [
+        return $this->render('recruiting/candidate/index.html.twig', [
             'candidates' => $candidateRepository->findAll(),
         ]);
     }
@@ -88,7 +88,7 @@ class CandidateController extends AbstractController
             return $this->redirectToRoute(self::CANDIDATE_INDEX);
         }
 
-        return $this->render('candidate/new.html.twig', [
+        return $this->render('recruiting/candidate/new.html.twig', [
             self::CANDIDATE => $candidate,
             'form' => $form->createView(),
         ]);
@@ -123,7 +123,7 @@ class CandidateController extends AbstractController
         }
 
         $vacancy = $candidate->getCandidateVacancies();
-        return $this->render('candidate/show.html.twig', [
+        return $this->render('recruiting/candidate/show.html.twig', [
             self::CANDIDATE => $candidate,
             'vacancies' => $vacancy,
             'form' => $form->createView()
@@ -190,7 +190,7 @@ class CandidateController extends AbstractController
                     'id' => $candidate->getId(),
                 ]);
             }
-        return $this->render('candidate/edit.html.twig', [self::CANDIDATE => $candidate,
+        return $this->render('recruiting/candidate/edit.html.twig', [self::CANDIDATE => $candidate,
             'form' => $form->createView(),]);
         }
 
