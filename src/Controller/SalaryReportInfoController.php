@@ -86,7 +86,6 @@ class SalaryReportInfoController extends AbstractController
         return $this->render('salary_report_info/show.html.twig', [
             self::SALARY_REPORT_INFO => $salaryReportInfo,
             'salaryReportItems' => $salaryReportDtoArray
-
         ]);
     }
 

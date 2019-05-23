@@ -4,7 +4,7 @@ namespace App\Controller\Recruiting;
 
 use App\Entity\Vacancy;
 use App\Entity\VacancyLink;
-use App\Form\VacancyLinkType;
+use App\Form\Recruiting\VacancyLinkType;
 use App\Repository\VacancyLinkRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +21,8 @@ class VacancyLinkController extends AbstractController
 
     public const VACANCY_LINK_INDEX = 'vacancy_link_index';
 
+    public const VACANCY_ENTITY_IN_VIEW = 'vacancy';
+
     /**
      * @Route("/{id}", name="vacancy_link_index", methods={"GET"})
      * @param Vacancy $vacancy
@@ -29,11 +31,11 @@ class VacancyLinkController extends AbstractController
      */
     public function index(Vacancy $vacancy, VacancyLinkRepository $vacancyLinkRepository): Response
     {
-        return $this->render('vacancy_link/index.html.twig', [
+        return $this->render('recruiting/vacancy_link/index.html.twig', [
             'vacancy_links' => $vacancyLinkRepository->findBy([
-                'vacancy' => $vacancy->getId()
+                self::VACANCY_ENTITY_IN_VIEW => $vacancy->getId()
             ]),
-            'vacancy' => $vacancy
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy
         ]);
     }
 
@@ -61,10 +63,10 @@ class VacancyLinkController extends AbstractController
             ]);
         }
 
-        return $this->render('vacancy_link/new.html.twig', [
+        return $this->render('recruiting/vacancy_link/new.html.twig', [
             self::VACANCY_LINK => $vacancyLink,
             'form' => $form->createView(),
-            'vacancy' => $vacancy
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy
         ]);
     }
 
@@ -75,7 +77,7 @@ class VacancyLinkController extends AbstractController
      */
     public function show(VacancyLink $vacancyLink): Response
     {
-        return $this->render('vacancy_link/show.html.twig', [
+        return $this->render('recruiting/vacancy_link/show.html.twig', [
             self::VACANCY_LINK => $vacancyLink,
         ]);
     }
@@ -95,11 +97,11 @@ class VacancyLinkController extends AbstractController
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute(self::VACANCY_LINK_INDEX, [
-                'id' => $vacancyLink->getId(),
+                'id' => $request->get('vacancy')
             ]);
         }
 
-        return $this->render('vacancy_link/edit.html.twig', [
+        return $this->render('recruiting/vacancy_link/edit.html.twig', [
             self::VACANCY_LINK => $vacancyLink,
             'form' => $form->createView(),
         ]);

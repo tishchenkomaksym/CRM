@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}VacancyLink index{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <a href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">
+                    Request  #{{ vacancy.id }} | Work on issue Step 1
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Request Links</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block body %}
+    <h1>VacancyLink index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Link</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        {% for vacancy_link in vacancy_links %}
+            <tr>
+                <td>{{ vacancy_link.id }}</td>
+                <td>{{ vacancy_link.link }}</td>
+                <td>
+                    <a href="{{ path('vacancy_link_show', {'id': vacancy_link.id}) }}">show</a>
+                    {% if app.request.get('edit') is not null %}
+                        <a href="{{ path('vacancy_link_edit', {'id': vacancy_link.id, 'vacancy': vacancy.id}) }}">edit</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('vacancy_link_new', {'id': vacancy.id}) }}">Add more</a>
+    <div class="">
+        <a class="btn btn-success" href="{{ path('vacancy_show_recruiter',{'id': vacancy.id}) }}">
+            Done
+        </a>
+    </div>
+{% endblock %}
