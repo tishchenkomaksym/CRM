@@ -11,6 +11,8 @@ namespace App\Service\SalaryReport\Builder\WorkingDays;
 use App\Entity\SalaryReportInfo;
 use App\Service\HolidayService;
 use App\Service\WorkingDays\BaseWorkingDaysCalculator;
+use DateTimeImmutable;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -18,7 +20,7 @@ class WorkingDaysCalculatorTest extends TestCase
 {
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testCalculate()
     {
@@ -26,9 +28,9 @@ class WorkingDaysCalculatorTest extends TestCase
         $holidayService = $this->createMock(HolidayService::class);
         $holidayService->method('getHolidayBetweenDate')->willReturn([]);
         $baseWorkingDayCalculator = new BaseWorkingDaysCalculator($holidayService);
-        $workingDaysCalculator = new WorkingDaysCalculator($baseWorkingDayCalculator);
+        $workingDaysCalculator = new CalendarWorkingDaysCalculator($baseWorkingDayCalculator);
         $salaryReportInfo = new SalaryReportInfo();
-        $date = new \DateTimeImmutable('2019-03-03');
+        $date = new DateTimeImmutable('2019-03-03');
         $salaryReportInfo->setCreateDate($date);
         $result = $workingDaysCalculator->calculate($salaryReportInfo);
         $this->assertEquals(21, $result);

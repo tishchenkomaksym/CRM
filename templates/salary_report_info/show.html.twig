@@ -25,6 +25,10 @@
             <th>SDT used</th>
             <th>SDT left</th>
             <th>SDT At own expense</th>
+            <th>Report working Days</th>
+            <th>Needed Time</th>
+            <th>Tracked Time</th>
+            <th>Dis-bonus</th>
         </tr>
         </thead>
         <tbody>
@@ -35,6 +39,9 @@
                 <td>{{ item.sdtCountUsed }}</td>
                 <td>{{ item.sdtCount }}</td>
                 <td>{{ item.sdtCountAtOwnExpenseUsed }}</td>
+                <td>{{ item.reportWorkingDays }}</td>
+                <td>{{ item.timeInfo.requiredTime }}</td>
+                <td>{{ item.timeInfo.loggedTime }}</td>
             </tr>
         {% endfor %}
         </tbody>

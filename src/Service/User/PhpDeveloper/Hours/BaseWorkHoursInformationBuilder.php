@@ -12,9 +12,11 @@ use App\Data\Sdt\SdtCollection;
 use App\Entity\User;
 use App\Repository\SdtRepository;
 use App\Service\ElasticSearchClient;
+use App\Service\User\Sdt\UsedSdtDaysCalculator;
 use App\Service\UserInformationService;
 use App\Service\WorkingDays\BaseWorkingDaysCalculator;
 use DateTime;
+use Exception;
 
 class BaseWorkHoursInformationBuilder
 {
@@ -32,15 +34,21 @@ class BaseWorkHoursInformationBuilder
      * @var BaseWorkingDaysCalculator
      */
     private $workingDaysCalculator;
+    /**
+     * @var UsedSdtDaysCalculator
+     */
+    private $usedSdtDaysCalculator;
 
     public function __construct(
         ElasticSearchClient $searchClient,
         SdtRepository $sdtRepository,
-        BaseWorkingDaysCalculator $workingDaysCalculator
+        BaseWorkingDaysCalculator $workingDaysCalculator,
+        UsedSdtDaysCalculator $usedSdtDaysCalculator
     ) {
         $this->searchClient = $searchClient;
         $this->sdtRepository = $sdtRepository;
         $this->workingDaysCalculator = $workingDaysCalculator;
+        $this->usedSdtDaysCalculator = $usedSdtDaysCalculator;
     }
 
     /**
@@ -48,11 +56,14 @@ class BaseWorkHoursInformationBuilder
      * @param DateTime $to
      * @param User $user
      * @return WorkHoursInformation
+     * @throws Exception
      */
     public function build(DateTime $from, DateTime $to, User $user): WorkHoursInformation
     {
         $information = new WorkHoursInformation();
-        $information->setRequiredTime($this->getRequiredTimeInHours($from, $to));
+        $sdtTime = $this->usedSdtDaysCalculator->calculate($from, $to,
+                $user->getSdt()->toArray()) * self::HOURS_IN_WORKING_DAY;
+        $information->setRequiredTime($this->getRequiredTimeInHours($from, $to, $user) - $sdtTime);
         $information->setLoggedTime($this->getLoggedTimeInHours($from, $to, $user));
         $information->setUser($user);
         return $information;
@@ -62,11 +73,15 @@ class BaseWorkHoursInformationBuilder
     {
         $time = $this->searchClient->getTimeFromDateToDate($from, $to, UserInformationService::getSystemName($user));
         $sdtCollection = new SdtCollection($this->sdtRepository->getSDTFromDateToDate($from, $to, $user));
-        return $time + $sdtCollection->getCountSum() * self::HOURS_IN_WORKING_DAY;
+        return round($time + $sdtCollection->getCountSum() * self::HOURS_IN_WORKING_DAY, 2);
     }
 
-    private function getRequiredTimeInHours(DateTime $from, DateTime $to)
+    private function getRequiredTimeInHours(DateTime $from, DateTime $to, User $user)
     {
-        return $this->workingDaysCalculator->getWorkingHoursBetweenDates($from,$to);
+        $fromDate = $from;
+        if ($from < $user->getCreateDate()) {
+            $fromDate = $user->getCreateDate();
+        }
+        return $this->workingDaysCalculator->getWorkingHoursBetweenDates($fromDate, $to);
     }
 }

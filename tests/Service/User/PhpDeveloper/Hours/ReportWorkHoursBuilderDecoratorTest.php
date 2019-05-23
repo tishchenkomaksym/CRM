@@ -33,7 +33,7 @@ class ReportWorkHoursBuilderDecoratorTest extends TestCase
         $mockSalaryReport = $this->createMock(SalaryReportInfoRepository::class);
         $salaryInfo = new SalaryReportInfo();
         $salaryInfo->setCreateDate(new DateTimeImmutable());
-        $mockSalaryReport->method('findOneBy')->willReturn($salaryInfo);
+        $mockSalaryReport->method('getTodaySalaryReport')->willReturn($salaryInfo);
         $workHoursBuilder = New ReportWorkHoursBuilderDecorator($mockBuilder, $mockSalaryReport);
         $user = new User();
         $obj->setUser($user);

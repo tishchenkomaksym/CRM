@@ -10,14 +10,41 @@ namespace App\Service\SalaryReport;
 
 
 use App\Entity\User;
+use App\Service\User\PhpDeveloper\Hours\WorkHoursInformation;
 
 class SalaryReportDTO
 {
+    /**
+     * @var WorkHoursInformation
+     */
+    private $timeInfo;
     public $calendarWorkingDays;
+    /**
+     * @var int
+     */
+    public $reportWorkingDays;
     public $sdtCount;
     public $sdtCountUsed;
     public $sdtCountAtOwnExpenseUsed;
     public $salarySize;
     /** @var User */
     public $user;
+
+    /**
+     * @return WorkHoursInformation
+     */
+    public function getTimeInfo(): WorkHoursInformation
+    {
+        return $this->timeInfo;
+    }
+
+    /**
+     * @param WorkHoursInformation $timeInfo
+     * @return SalaryReportDTO
+     */
+    public function setTimeInfo(WorkHoursInformation $timeInfo): SalaryReportDTO
+    {
+        $this->timeInfo = $timeInfo;
+        return $this;
+    }
 }

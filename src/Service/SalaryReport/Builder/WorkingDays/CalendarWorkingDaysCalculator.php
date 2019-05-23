@@ -10,9 +10,11 @@ namespace App\Service\SalaryReport\Builder\WorkingDays;
 
 use App\Entity\SalaryReportInfo;
 use App\Service\WorkingDays\BaseWorkingDaysCalculator;
+use DateInterval;
 use DateTime;
+use Exception;
 
-class WorkingDaysCalculator
+class CalendarWorkingDaysCalculator
 {
     /**
      * @var BaseWorkingDaysCalculator
@@ -27,7 +29,7 @@ class WorkingDaysCalculator
     /**
      * @param SalaryReportInfo $salaryReportInfo
      * @return float|int
-     * @throws \Exception
+     * @throws Exception
      */
     public function calculate(SalaryReportInfo $salaryReportInfo)
     {
@@ -39,7 +41,7 @@ class WorkingDaysCalculator
         $toDate = clone $monthStartDate;
         $toDate = date_modify($toDate, '+1 month');
         //Cause we have get here first day of next month
-        $interval = new \DateInterval('P1D');
+        $interval = new DateInterval('P1D');
         $interval->invert = 1;
         $toDate->add($interval);
         return $this->workingDaysCalculator->getWorkingDaysBetweenDates($monthStartDate, $toDate);
