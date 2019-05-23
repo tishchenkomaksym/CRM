@@ -22,10 +22,12 @@ class VacancyListEntryDTO
 
     public $assigneeDate;
 
-    public $expiredTime;
+    public $expiredTimeApprove;
 
     public $createdAt;
 
     public $updatedDate;
+
+    public $expiredTimeAssignee;
 
 }

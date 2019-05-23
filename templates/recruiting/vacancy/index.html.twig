@@ -64,15 +64,22 @@
                                 {{ vacancy.status }}
                             {% endif %}
                         </a>
-                    </td>
-                    <td>
-                        <span>
-                            {% if vacancy.expiredTime >= 17 %}
-                                <span>Expired in Status</span>
-                             {% elseif vacancy.expiredTime >= 12 %}
+                        {% if vacancy.status == 'Approved'%}
+                            {% if vacancy.expiredTimeApprove >= 17 %}
+                                <span>Expired in Status </span>
+                            {% elseif vacancy.expiredTimeApprove >= 12 %}
                                 <span>Soon to expire</span>
                             {% endif %}
-                        </span>
+                        {% endif %}
+                        {% if vacancy.status == 'Issue have been assigned' %}
+                            {% if vacancy.expiredTimeAssignee >= 17 %}
+                                <span>Expired in Status </span>
+                            {% elseif vacancy.expiredTimeAssignee >= 12 %}
+                                <span>Soon to expire</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
                         <a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.approveDate|date('Y-m-d') }}</a>
                     </td>
                 </tr>
@@ -95,13 +102,20 @@
                         {{ vacancy.status }}
                     {% endif %}
                     </a>
-                    <span>
-                            {% if vacancy.expiredTime >= 17 %}
-                                <span>Expired in Status</span>
-                             {% elseif vacancy.expiredTime >= 12 %}
-                                <span>Soon to expire</span>
-                            {% endif %}
-                        </span>
+                    {% if vacancy.status == 'Approved'%}
+                        {% if vacancy.expiredTimeApprove >= 17 %}
+                            <span>Expired in Status </span>
+                        {% elseif vacancy.expiredTimeApprove >= 12 %}
+                            <span>Soon to expire</span>
+                        {% endif %}
+                    {% endif %}
+                    {% if vacancy.status == 'Issue have been assigned' %}
+                        {% if vacancy.expiredTimeAssignee >= 17 %}
+                            <span>Expired in Status </span>
+                        {% elseif vacancy.expiredTimeAssignee >= 12 %}
+                            <span>Soon to expire</span>
+                        {% endif %}
+                    {% endif %}
                 </td>
                 <td><a class="d-block" href="{{ path('vacancy_show', {'id': vacancy.id}) }}">{{ vacancy.createdAt|date('Y-m-d') }}</a></td>
             </tr>
@@ -125,13 +139,20 @@
                                 {{ vacancy.status }}
                             {% endif %}
                         </a>
-                        <span>
-                            {% if vacancy.expiredTime >= 17 %}
+                        {% if vacancy.status == 'Approved'%}
+                            {% if vacancy.expiredTimeApprove >= 17 %}
                                 <span>Expired in Status </span>
-                             {% elseif vacancy.expiredTime >= 12 %}
+                            {% elseif vacancy.expiredTimeApprove >= 12 %}
                                 <span>Soon to expire</span>
                             {% endif %}
-                        </span>
+                        {% endif %}
+                        {% if vacancy.status == 'Issue have been assigned' %}
+                            {% if vacancy.expiredTimeAssignee >= 17 %}
+                                <span>Expired in Status </span>
+                            {% elseif vacancy.expiredTimeAssignee >= 12 %}
+                                <span>Soon to expire</span>
+                            {% endif %}
+                        {% endif %}
                     </td>
                     <td><a class="d-block" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">{{ vacancy.updatedDate|date('Y-m-d') }}</a></td>
                 </tr>
