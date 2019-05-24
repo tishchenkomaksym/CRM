@@ -21,12 +21,20 @@
         <tbody>
         {% for user in users %}
             <tr>
-                {% if user.photo != null %}
-                    <td>
-                        <a href="{{ path('user_show', {'id': user.id}) }}">
-                            <img width="200px" height="200px" class="img-fluid " src="/uploads/{{ user.photo }}" alt="Photo">
-                        </a>
-                    </td>
+                {% if user.userInfo != null  %}
+                    {% if user.userInfo.photo is not null %}
+                        <td>
+                            <a href="{{ path('user_show', {'id': user.userInfo.id}) }}">
+                                <img width="200px" height="200px" class="img-fluid " src="/uploads/{{ user.userInfo.photo }}" alt="Photo">
+                            </a>
+                        </td>
+                    {% else %}
+                        <td>
+                            <a href="{{ path('user_show', {'id': user.id}) }}">
+                                <img width="200px" height="200px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                            </a>
+                        </td>
+                    {% endif %}
                 {% else %}
                     <td>
                         <a href="{{ path('user_show', {'id': user.id}) }}">
@@ -34,16 +42,13 @@
                         </a>
                     </td>
                 {% endif %}
-                <td>{{ user.user.name }}</td>
-                <td>{{ user.position }}</td>
-                <td>{{ user.user.team.name }}</td>
-                <td>{{ user.user.team.department.office.name }}</td>
-                <td>{{ user.user.email }}</td>
-{#                <td><a href="{{ path('sdt_email_assignee_index',{'id':user.id}) }}">show</a></td>#}
-{#                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>#}
-{#                <td>#}
-{#                    <a href="{{ path('user_show', {'id': user.user.id}) }}">show</a>#}
-{#                </td>#}
+                <td>{{ user.name }}</td>
+                {% if  user.userInfo != null %}
+                    <td>{{ user.userInfo.position }}</td>
+                {% endif %}
+                <td>{{ user.team.name}}</td>
+                <td>{{ user.team.department.office.name }}</td>
+                <td>{{ user.email }}</td>
             </tr>
         {% else %}
             <tr>

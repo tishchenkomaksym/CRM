@@ -35,6 +35,7 @@ class UserCreateEditType extends AbstractType
             ->add('salary')
             ->add('sex', ChoiceType::class, [
                     'placeholder' => 'Choose sex',
+                    'required' => false,
                     'choices' => [
                         'male' => 'male',
                         'female' => 'female',
@@ -47,6 +48,7 @@ class UserCreateEditType extends AbstractType
             )
             ->add('maritalStatus', ChoiceType::class, [
                     'placeholder' => 'Choose marital status',
+                    'required' => false,
                     'choices' => [
                         'single' => 'single',
                         'married' => 'married',

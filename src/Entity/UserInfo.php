@@ -22,7 +22,7 @@ class UserInfo
     private $photo;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true))
      */
     private $position;
 
@@ -49,19 +49,19 @@ class UserInfo
     /**
      * @var string $type
      *
-     * @ORM\Column(name="sex",  type="string", length=255, columnDefinition="ENUM('male', 'female')")
+     * @ORM\Column(name="sex", nullable=true,  type="string", length=255, columnDefinition="ENUM('male', 'female')")
      */
     private $sex;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="date", nullable=true)
      */
     private $birthDay;
 
     /**
      * @var string $type
      *
-     * @ORM\Column(name="maritalStatus",  type="string", length=255, columnDefinition="ENUM('single', 'married', 'divorced')")
+     * @ORM\Column(name="maritalStatus", nullable=true, type="string", length=255, columnDefinition="ENUM('single', 'married', 'divorced')")
      */
     private $maritalStatus;
 
@@ -71,7 +71,7 @@ class UserInfo
     private $children;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $location;
 
