@@ -10,6 +10,7 @@ use App\Repository\SalaryReportInfoRepository;
 use App\Repository\SDTEmailAssigneeRepository;
 use App\Repository\SdtRepository;
 use App\Repository\UserInfoRepository;
+use App\Repository\UserRepository;
 use App\Service\Candidate\CandidatePhotoDecorator;
 use App\Service\SalaryReport\Builder\BaseSalaryReportBuilder;
 use App\Service\User\Builder\RegistrationUserBuilder;
@@ -42,15 +43,15 @@ class UserController extends AbstractController
     /**
      * @IsGranted("ROLE_ACCOUNT_MANAGER")
      * @Route("/", name="user_index", methods={"GET"})
-     * @param UserInfoRepository $userInfoRepository
+     * @param UserRepository $userRepository
      * @return Response
      */
-    public function index(UserInfoRepository $userInfoRepository): Response
+    public function index(UserRepository $userRepository): Response
     {
         return $this->render(
             'user/index.html.twig',
             [
-                'users' => $userInfoRepository->findAll(),
+                'users' => $userRepository->findAll(),
             ]
         );
     }
@@ -64,6 +65,7 @@ class UserController extends AbstractController
      * @param RegistrationUserBuilder $userBuilder
      * @param CandidatePhotoDecorator $candidatePhotoDecorator
      * @return Response
+     * @throws Exception
      */
     public function new(
         Request $request,
@@ -82,7 +84,6 @@ class UserController extends AbstractController
             $user->setEmail($form->get('user')->get('email')->getData());
             $user->setTeam($form->get('user')->get('team')->getData());
             $user->setPassword($form->get('user')->get('password')->getData());
-
             $user = RegistrationUserBuilder::build($user, $passwordEncoder, $user->getPassword());
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
@@ -116,30 +117,35 @@ class UserController extends AbstractController
 
     /**
      * @Route("/{id}", name="user_show", methods={"GET"})
-     * @param UserInfo $userInfo
+     * @param User $user
      * @param UserInformationService $service
-     * @param UsedSdtDaysCalculator $usedSdtDaysCalculator
+     * @param BaseSalaryReportBuilder $baseSalaryReportBuilder
      * @param LeftSdtCalculator $leftSdtCalculator
      * @param ReportWorkHoursBuilderDecorator $baseWorkHoursInformationBuilder
      * @param SalaryReportInfoRepository $reportInfoRepository
-     * @param SdtRepository $sdtRepository
      * @return Response
      * @throws NonUniqueResultException
-     * @throws Exception
      */
-    public function show(UserInfo $userInfo,
+    public function show(
+        User $user,
         UserInformationService $service,
         BaseSalaryReportBuilder $baseSalaryReportBuilder,
         LeftSdtCalculator $leftSdtCalculator,
         ReportWorkHoursBuilderDecorator $baseWorkHoursInformationBuilder,
-        SalaryReportInfoRepository $reportInfoRepository,
-        SdtRepository $sdtRepository
-        ): Response
-    {
-        $user = $this->getUser();
+        SalaryReportInfoRepository $reportInfoRepository
+    ): Response {
+        $userInfo = $user->getUserInfo();
+        if ($userInfo === null){
+            $userInfo = new UserInfo();
+            $userInfo->setUser($user);
+            $userInfo->setBirthDay(new DateTime());
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($userInfo);
+            $entityManager->flush();
+        }
         $todaySalaryReport = $reportInfoRepository->getTodaySalaryReport();
         $nextSalaryReport = $reportInfoRepository->getNextSalaryReport(new DateTime());
-        $sdtUsed = $baseSalaryReportBuilder->build($todaySalaryReport, $user);
+//        $sdtUsed = $baseSalaryReportBuilder->build($todaySalaryReport, $user);
         $manager = $service->getPhpDeveloperManager($user);
         $leftSdt = $leftSdtCalculator->calculate($this->getUser());
 //        $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser());
@@ -152,11 +158,12 @@ class UserController extends AbstractController
                 'leftSdt' => $leftSdt,
                 'todaySalaryReport' => $todaySalaryReport,
                 'nextSalaryReport' => $nextSalaryReport,
-                'sdtUsed' => $sdtUsed,
+//                'sdtUsed' => $sdtUsed,
 //                'workingHoursInformation' => $workingHoursInformation
             ]
         );
     }
+
 
     /**
      * @IsGranted("ROLE_ACCOUNT_MANAGER")
@@ -189,11 +196,11 @@ class UserController extends AbstractController
             if ($file !== null) {
                 $fileName = $candidatePhotoDecorator->upload($file);
                 $userInfo->setPhoto($fileName);
-            }else{
+            } else {
                 $userInfo->setPhoto($photo);
             }
             $user = $userInfo->getUser();
-            if ($user === null){
+            if ($user === null) {
                 throw new NoDataException('User not found');
             }
             $user->setName($form->get('user')->get('name')->getData());

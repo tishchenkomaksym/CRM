@@ -41,6 +41,7 @@ class UserCreateType extends AbstractType
             ->add('salary')
             ->add('sex', ChoiceType::class, [
                     'placeholder' => 'Choose sex',
+                    'required' => false,
                     'choices' => [
                         'male' => 'male',
                         'female' => 'female',
@@ -49,10 +50,12 @@ class UserCreateType extends AbstractType
             )
             ->add('birthDay', BirthdayType::class, [
                 'placeholder' => 'Select a value',
+                    'required' => false
                 ]
             )
             ->add('maritalStatus', ChoiceType::class, [
                     'placeholder' => 'Choose marital status',
+                'required' => false,
                     'choices' => [
                         'single' => 'single',
                         'married' => 'married',

@@ -38,20 +38,35 @@
             </li>
             {% else %}
             <li class="nav-item text-nowrap">
-                {% if  app.user.team != null%}
-                    <a href="{{ path('user_show', {'id': app.user.userInfo.id}) }}">
-                        <img class="rounded-circle" width="50px" height="50px" src="/uploads/{{ app.user.userInfo.photo }}" alt="photo">
-                        {{ app.user.email }}
-                    </a>
+                {% if app.user.userInfo != null  %}
+                    {% if app.user.userInfo.photo is not null %}
+                        <td>
+                            <a href="{{ path('user_show', {'id': app.user.userInfo.id}) }}">
+                                <img width="50px" height="50px" class="img-fluid " src="/uploads/{{ app.user.userInfo.photo }}" alt="Photo">
+                                {{ app.user.email }}
+                            </a>
+                        </td>
+                    {% else %}
+                        <td>
+                            <a href="{{ path('user_show', {'id': app.user.id}) }}">
+                                <img width="50px" height="50px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                                {{ app.user.email }}
+                            </a>
+                        </td>
+                    {% endif %}
                 {% else %}
-                    <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
+                    <td>
+                        <a href="{{ path('user_show', {'id': app.user.id}) }}">
+                            <img width="50px" height="50px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                            {{ app.user.email }}
+                        </a>
+                    </td>
                 {% endif %}
             </li>
         {% endif %}
     </ul>
 </nav>
 <div class="container" style="padding-top: 48px">
-
     <div class="row">
     </div>
     <div class="row">
