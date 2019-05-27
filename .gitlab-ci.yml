@@ -1,6 +1,9 @@
 stages:
 #- dich
 - testing
+- code check
+
+
 #- code check
 #  - test-api
 
@@ -39,7 +42,7 @@ unit-tests:
 #  - master
 
 
-#code check:
-#  image: emeraldsquad/sonar-scanner:latest
-#  stage: code check
-#  script: sonar-scanner -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectVersion=$CI_BUILD_ID -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.sources=src -Dsonar.coverage.exclusions=*.js,*.css,*.html,**Interface.php,**Kernel.php -Dsonar.php.tests.reportPath=build/index.xml -Dsonar.php.coverage.reportPaths=build/coverage/coverage_index.xml
+code check:
+  image: emeraldsquad/sonar-scanner:latest
+  stage: code check
+  script: sonar-scanner -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectVersion=$CI_BUILD_ID -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.sources=src -Dsonar.coverage.exclusions=*.js,*.css,*.html,**Interface.php,**Kernel.php -Dsonar.php.tests.reportPath=build/index.xml -Dsonar.php.coverage.reportPaths=build/coverage/coverage_index.xml
