@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -37,17 +39,27 @@ class Sdt
      */
     private $acting;
 
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private $reportDate;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $atOwnExpense;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCreateDate(): ?\DateTimeInterface
+    public function getCreateDate(): ?DateTimeInterface
     {
         return $this->create_date;
     }
 
-    public function setCreateDate(\DateTimeInterface $create_date): self
+    public function setCreateDate(DateTimeInterface $create_date): self
     {
         $this->create_date = $create_date;
 
@@ -62,7 +74,6 @@ class Sdt
     public function setCount(int $count): self
     {
         $this->count = $count;
-
         return $this;
     }
 
@@ -86,6 +97,30 @@ class Sdt
     public function setActing(string $acting): self
     {
         $this->acting = $acting;
+
+        return $this;
+    }
+
+    public function getReportDate(): ?DateTimeImmutable
+    {
+        return $this->reportDate;
+    }
+
+    public function setReportDate(DateTimeImmutable $reportDate): self
+    {
+        $this->reportDate = $reportDate;
+
+        return $this;
+    }
+
+    public function getAtOwnExpense(): ?bool
+    {
+        return $this->atOwnExpense;
+    }
+
+    public function setAtOwnExpense(bool $atOwnExpense): self
+    {
+        $this->atOwnExpense = $atOwnExpense;
 
         return $this;
     }

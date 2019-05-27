@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PhpDeveloperStartTimeAndDateValue{% endblock %}
+
+{% block body %}
+    <h1>PhpDeveloperStartTimeAndDateValue</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ php_developer_start_time_and_date_value.id }}</td>
+            </tr>
+            <tr>
+                <th>EffectiveTime</th>
+                <td>{{ php_developer_start_time_and_date_value.effectiveTime }}</td>
+            </tr>
+            <tr>
+                <th>EffectiveProjectTime</th>
+                <td>{{ php_developer_start_time_and_date_value.effectiveProjectTime }}</td>
+            </tr>
+            <tr>
+                <th>CreateDate</th>
+                <td>{{ php_developer_start_time_and_date_value.createDate ? php_developer_start_time_and_date_value.createDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('php_developer_start_time_and_date_value_index') }}">back to list</a>
+
+    <a href="{{ path('php_developer_start_time_and_date_value_edit', {'id': php_developer_start_time_and_date_value.id}) }}">edit</a>
+
+    {{ include('php_developer_start_time_and_date_value/_delete_form.html.twig') }}
+{% endblock %}

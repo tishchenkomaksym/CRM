@@ -15,7 +15,8 @@ class BaseSdtMailData
         'team.programmers@onyx.com',
         'valeriya.po@onyx.com',
         'dmitriy.la@onyx.com',
-        'vitaliy.ko@onyx.com'
+        'vitaliy.ko@onyx.com',
+        'ivan.melnichuk@onyx.com'
     ];
     private $userName;
 

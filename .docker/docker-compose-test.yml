@@ -1,0 +1,16 @@
+php-fpm-test-2:
+  image: registry.devzone.net/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
+  volumes:
+    - ../:/application
+  environment:
+    XDEBUG_CONFIG: remote_enable=1 remote_host=host.docker.internal
+    PHP_IDE_CONFIG: serverName=symfony-demo
+db:
+  image: mysql:5.7
+  environment:
+    MYSQL_ROOT_PASSWORD: my_secret_pw_shh
+    MYSQL_DATABASE: test_db
+    MYSQL_USER: devuser
+    MYSQL_PASSWORD: devpass
+  ports:
+  - "9906:3306"

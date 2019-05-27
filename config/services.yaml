@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
+    uploads_directory: '%kernel.project_dir%/public/uploads'
 
 services:
     # default configuration for services in *this* file
@@ -29,8 +30,13 @@ services:
     Elasticsearch\ClientBuilder:
 
     App\Service\ElasticSearchClient:
-        arguments:
-            $host: '%env(ELASTIC_URL)%'
+      public: true
+      arguments:
+          $host: '%env(ELASTIC_URL)%'
+
+    App\Service\Candidate\CandidatePhotoDecorator:
+      arguments:
+        $targetDirectory: '%uploads_directory%'
 
 
     Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
@@ -47,6 +53,6 @@ services:
       arguments:
         $ldap: '@Symfony\Component\Ldap\Ldap'
         $baseDn: "cn=users,cn=accounts,dc=onyxenterprises,dc=com"
-        $searchDn: "uid=ivan.melnichuk,cn=users,cn=accounts,dc=onyxenterprises,dc=com"
+        $searchDn: "uid={username},cn=users,cn=accounts,dc=onyxenterprises,dc=com"
         $defaultRoles: ['ROLE_USER']
         $uidKey: "uid"

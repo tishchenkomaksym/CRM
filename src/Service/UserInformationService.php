@@ -12,55 +12,29 @@ use App\Data\Sdt\SdtCollection;
 use App\Entity\PhpDeveloperLevelTest;
 use App\Entity\PhpDeveloperLevelTestPassed;
 use App\Entity\User;
-use App\Repository\SdtRepository;
 
 class UserInformationService
 {
-    /**
-     * UserInformationService constructor.
-     * @param SdtRepository $sdtRepository
-     * @param int $userId
-     */
-    public function __construct()
+    public static function getSystemName(User $user)
     {
-
+        $email = $user->getEmail();
+        $position = strpos($email, '@onyx.com');
+        return substr($email, 0, $position);
     }
 
-    public function getAllUserSdt(SdtRepository $sdtRepository, int $userId): SdtCollection
+    public function getAllUserSdt(User $user): SdtCollection
     {
-        return new SdtCollection($sdtRepository->findBy(['user' => $userId]));
+        return new SdtCollection($user->getSdt()->toArray());
     }
 
-    /**
-     * @param SdtCollection $sdtCollection
-     * @param User $user
-     * @return int
-     */
-    public function getSdtLeft(SdtCollection $sdtCollection, User $user): int
-    {
-        $existSDT = 0;
-        foreach ($user->getMonthlySdts() as $monthlySdt) {
-            $existSDT += $monthlySdt->getCount();
-        }
-        return $existSDT - $sdtCollection->getCountSum();
-    }
 
     public function getPhpUserLevel(User $user): ?string
     {
         if ($user->getPhpDeveloperLevelRelation() === null || $user->getPhpDeveloperLevelRelation(
             )->getPhpDeveloperLevel() === null) {
-            return 'Undefined';
+            return null;
         }
         return $user->getPhpDeveloperLevelRelation()->getPhpDeveloperLevel()->getTitle();
-    }
-
-    public function getPhpUserLevelTests(User $user): array
-    {
-        if ($user->getPhpDeveloperLevelRelation() === null || $user->getPhpDeveloperLevelRelation(
-            )->getPhpDeveloperLevel() === null) {
-            return [];
-        }
-        return $user->getPhpDeveloperLevelRelation()->getPhpDeveloperLevel()->getPhpDeveloperLevelTests()->getValues();
     }
 
     /**
@@ -79,15 +53,15 @@ class UserInformationService
 
     /**
      * @param User $user
-     * @return User
+     * @return User[]
      */
-    public function getPhpDeveloperManager(User $user): ?User
+    public function getPhpDeveloperManager(User $user): array
     {
-        $manager = null;
+        $managers = [];
         foreach ($user->getPhpDeveloperManagerRelations() as $relation) {
-            $manager = $relation->getManager();
+            $managers[] = $relation->getManager();
         }
-        return $manager;
+        return $managers;
     }
 
     /**
@@ -99,15 +73,18 @@ class UserInformationService
         /** @var PhpDeveloperLevelTestPassed[] $passedTests */
         $passedTests = $user->getPhpDeveloperLevelTestsPassed()->getValues();
         /** @var PhpDeveloperLevelTest[] $allTestsOfUserLevel */
+        /** @noinspection NullPointerExceptionInspection */
         $allTestsOfUserLevel = $user
             ->getPhpDeveloperLevelRelation()
             ->getPhpDeveloperLevel()
+            ->getNextLevel()
             ->getPhpDeveloperLevelTests()->getValues();
         $result = [];
 
         foreach ($allTestsOfUserLevel as $allTest) {
             $add = true;
             foreach ($passedTests as $passedTest) {
+                /** @noinspection NullPointerExceptionInspection */
                 if ($passedTest->getPhpDeveloperLevelTest()->getId()=== $allTest->getId()) {
                     $add = false;
                     break;

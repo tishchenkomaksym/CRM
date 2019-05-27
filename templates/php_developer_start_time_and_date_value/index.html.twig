@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PhpDeveloperStartTimeAndDateValue index{% endblock %}
+
+{% block body %}
+    <h1>PhpDeveloperStartTimeAndDateValue index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>EffectiveTime</th>
+                <th>EffectiveProjectTime</th>
+                <th>Person</th>
+                <th>CreateDate</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for php_developer_start_time_and_date_value in php_developer_start_time_and_date_values %}
+            <tr>
+                <td>{{ php_developer_start_time_and_date_value.id }}</td>
+                <td>{{ php_developer_start_time_and_date_value.effectiveTime }}</td>
+                <td>{{ php_developer_start_time_and_date_value.effectiveProjectTime }}</td>
+                <td>{{ php_developer_start_time_and_date_value.createDate ? php_developer_start_time_and_date_value.createDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ php_developer_start_time_and_date_value.user.name }}</td>
+                <td>
+                    <a href="{{ path('php_developer_start_time_and_date_value_show', {'id': php_developer_start_time_and_date_value.id}) }}">show</a>
+                    <a href="{{ path('php_developer_start_time_and_date_value_edit', {'id': php_developer_start_time_and_date_value.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('php_developer_start_time_and_date_value_new') }}">Create new</a>
+{% endblock %}

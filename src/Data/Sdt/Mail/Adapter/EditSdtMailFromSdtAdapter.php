@@ -11,24 +11,40 @@ namespace App\Data\Sdt\Mail\Adapter;
 use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
 use App\Data\Sdt\Mail\EditSdtMailData;
 use App\Entity\Sdt;
+use App\Repository\SDTEmailAssigneeRepository;
 use App\Service\HolidayService;
+use DateTimeInterface;
 
 class EditSdtMailFromSdtAdapter
 {
+
+    /**
+     * @var SDTEmailAssigneeRepository
+     */
+    private $SDTEmailAssigneeRepository;
+
+    public function __construct(SDTEmailAssigneeRepository $SDTEmailAssigneeRepository)
+    {
+        $this->SDTEmailAssigneeRepository = $SDTEmailAssigneeRepository;
+    }
+
+    public const LETTER_DATE_FORMAT = 'Y-m-d';
+
     /**
      * @param Sdt $sdt
-     * @param \DateTimeInterface $oldCreateDate
+     * @param DateTimeInterface $oldCreateDate
      * @param int $oldCount
      * @param HolidayService $holidayService
      * @return EditSdtMailData
      * @throws NoDateException
      */
-    public static function getEditSdtMail(
+    public function getEditSdtMail(
         Sdt $sdt,
-        \DateTimeInterface $oldCreateDate,
+        DateTimeInterface $oldCreateDate,
         int $oldCount,
         HolidayService $holidayService
-    ): EditSdtMailData {
+    ): EditSdtMailData
+    {
         $createDate = $sdt->getCreateDate();
         if ($createDate !== null) {
             $oldEndDate = DateCalculatorWithWeekends::getDateWithOffset(
@@ -37,14 +53,20 @@ class EditSdtMailFromSdtAdapter
                 $holidayService
             );
             $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(), $holidayService);
-
+            $emails = [];
+            foreach ($this->SDTEmailAssigneeRepository->findBy(['user' => $sdt->getUser()->getId()]) as $email) {
+                $emails[] = $email->getEmail();
+            }
             return new EditSdtMailData(
-                $oldCreateDate->format('Y-m-d'),
-                $oldEndDate->format('Y-m-d'),
-                $createDate->format('Y-m-d'),
-                $endDate->format('Y-m-d'),
+                $sdt->getUser()->getName(),
+                $oldCreateDate->format(self::LETTER_DATE_FORMAT),
+                $oldEndDate->format(self::LETTER_DATE_FORMAT),
+                $createDate->format(self::LETTER_DATE_FORMAT),
+                $endDate->format(self::LETTER_DATE_FORMAT),
                 $sdt->getActing(),
-                $sdt->getCount()
+                $sdt->getCount(),
+                $sdt->getAtOwnExpense(),
+                $emails
             );
         }
         throw new NoDateException('Entity has no create date');

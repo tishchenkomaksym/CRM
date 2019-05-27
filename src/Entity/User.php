@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -71,13 +72,58 @@ class User implements UserInterface
      */
     private $phpDeveloperRiseRequests;
 
+    /**
+     * @ORM\Column(type="string", length=255, options={"default":""})
+     */
+    private $name = '';
+
+    /**
+     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     */
+    private $createDate;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\SdtArchive", mappedBy="user", orphanRemoval=true)
+     */
+    private $sdtArchives;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\PhpDeveloperStartTimeAndDateValue", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $phpDeveloperStartTimeAndDateValue;
+
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Office", mappedBy="topManager")
+     */
+    private $offices;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Vacancy", mappedBy="createdBy")
+     */
+    private $vacancies;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Team", inversedBy="users")
+     */
+    private $team;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\UserInfo", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $userInfo;
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
+        $this->sdt = new ArrayCollection();
         $this->phpDeveloperLevelTestsPassed = new ArrayCollection();
         $this->phpDeveloperManagerRelations = new ArrayCollection();
         $this->phpManagerDeveloperRelations = new ArrayCollection();
         $this->phpDeveloperRiseRequests = new ArrayCollection();
+        $this->sdtArchives = new ArrayCollection();
+        $this->vacancies = new ArrayCollection();
+        $this->offices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -104,7 +150,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -129,12 +175,12 @@ class User implements UserInterface
     /**
      * @see UserInterface
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
-        return (string) $this->password;
+        return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword(?string $password): self
     {
         $this->password = $password;
 
@@ -158,18 +204,32 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
-    public function getSdt(): ?Sdt
+    /**
+     * @return Collection|Sdt[]
+     */
+    public function getSdt(): Collection
     {
         return $this->sdt;
     }
 
-    public function setSdt(Sdt $sdt): self
+    public function addSdt(Sdt $sdt): self
     {
-        $this->sdt = $sdt;
-
-        // set the owning side of the relation if necessary
-        if ($this !== $sdt->getUser()) {
+        if (!$this->sdt->contains($sdt)) {
+            $this->sdt[] = $sdt;
             $sdt->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSdt(Sdt $sdt): self
+    {
+        if ($this->sdt->contains($sdt)) {
+            $this->sdt->removeElement($sdt);
+            // set the owning side to null (unless already changed)
+            if ($sdt->getUser() === $this) {
+                $sdt->setUser(null);
+            }
         }
 
         return $this;
@@ -347,6 +407,139 @@ class User implements UserInterface
             if ($phpDeveloperRiseRequest->getPhpDeveloper() === $this) {
                 $phpDeveloperRiseRequest->setPhpDeveloper(null);
             }
+        }
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCreateDate(): ?DateTimeInterface
+    {
+        return $this->createDate;
+    }
+
+    public function setCreateDate(DateTimeInterface $createDate): self
+    {
+        $this->createDate = $createDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|SdtArchive[]
+     */
+    public function getSdtArchives(): Collection
+    {
+        return $this->sdtArchives;
+    }
+
+    public function addSdtArchive(SdtArchive $sdtArchive): self
+    {
+        if (!$this->sdtArchives->contains($sdtArchive)) {
+            $this->sdtArchives[] = $sdtArchive;
+            $sdtArchive->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSdtArchive(SdtArchive $sdtArchive): self
+    {
+        if ($this->sdtArchives->contains($sdtArchive)) {
+            $this->sdtArchives->removeElement($sdtArchive);
+            // set the owning side to null (unless already changed)
+            if ($sdtArchive->getUser() === $this) {
+                $sdtArchive->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPhpDeveloperStartTimeAndDateValue(): ?PhpDeveloperStartTimeAndDateValue
+    {
+        return $this->phpDeveloperStartTimeAndDateValue;
+    }
+
+    public function setPhpDeveloperStartTimeAndDateValue(PhpDeveloperStartTimeAndDateValue $phpDeveloperStartTimeAndDateValue): self
+    {
+        $this->phpDeveloperStartTimeAndDateValue = $phpDeveloperStartTimeAndDateValue;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $phpDeveloperStartTimeAndDateValue->getUser()) {
+            $phpDeveloperStartTimeAndDateValue->setUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Vacancy[]
+     */
+    public function getVacancies(): Collection
+    {
+        return $this->vacancies;
+    }
+
+    public function addVacancy(Vacancy $vacancy): self
+    {
+        if (!$this->vacancies->contains($vacancy)) {
+            $this->vacancies[] = $vacancy;
+            $vacancy->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVacancy(Vacancy $vacancy): self
+    {
+        if ($this->vacancies->contains($vacancy)) {
+            $this->vacancies->removeElement($vacancy);
+            // set the owning side to null (unless already changed)
+            if ($vacancy->getCreatedBy() === $this) {
+                $vacancy->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTeam(): ?Team
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?Team $team): self
+    {
+        $this->team = $team;
+
+        return $this;
+    }
+
+    public function getUserInfo(): ?UserInfo
+    {
+        return $this->userInfo;
+    }
+
+    public function setUserInfo(?UserInfo $userInfo): self
+    {
+        $this->userInfo = $userInfo;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newUser = $userInfo === null ? null : $this;
+        if ($newUser !== $userInfo->getUser()) {
+            $userInfo->setUser($newUser);
         }
 
         return $this;

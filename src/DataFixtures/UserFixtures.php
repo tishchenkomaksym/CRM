@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
+use App\Service\User\UserBuilder;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -16,6 +17,10 @@ class UserFixtures extends Fixture
         $this->passwordEncoder = $passwordEncoder;
     }
 
+    /**
+     * @param ObjectManager $manager
+     * @throws \Exception
+     */
     public function load(ObjectManager $manager)
     {
 //        $user = new User();
@@ -30,7 +35,10 @@ class UserFixtures extends Fixture
 //        $manager->persist($user);
 
         $user = new User();
+        UserBuilder::build($user);
         $user->setEmail('recrutier@onyx.com');
+        $user->setName('Recruter');
+
         $user->setPassword(
             $this->passwordEncoder->encodePassword(
                 $user,
@@ -43,7 +51,11 @@ class UserFixtures extends Fixture
         $manager->persist($user);
 
         $user = new User();
+        UserBuilder::build($user);
+
+
         $user->setEmail('accountmanager@onyx.com');
+        $user->setName('Account manager');
         $user->setPassword(
             $this->passwordEncoder->encodePassword(
                 $user,
@@ -56,6 +68,24 @@ class UserFixtures extends Fixture
         $manager->persist($user);
 
         $user = new User();
+        UserBuilder::build($user);
+
+
+        $user->setEmail('departmentmanager@onyx.com');
+        $user->setName('Department manager');
+        $user->setPassword(
+            $this->passwordEncoder->encodePassword(
+                $user,
+                'departmentmanager@onyx.com'
+            )
+        );
+        $user->setRoles(['ROLE_USER', 'ROLE_RECRUITING_DEPARTMENT_MANAGER']);
+        $manager->persist($user);
+        $manager->flush();
+
+        $user = new User();
+        UserBuilder::build($user);
+
         $user->setEmail('hr@onyx.com');
         $user->setPassword(
             $this->passwordEncoder->encodePassword(

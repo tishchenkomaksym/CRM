@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -16,6 +16,7 @@
     {% block script %}
         <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.js"></script>
+        <script type="text/javascript" src="/js/script.js"></script>
     {% endblock %}
     {% block css %}
         <link rel="stylesheet"
@@ -29,17 +30,44 @@
 </head>
 <body>
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Company name</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Nexteum</a>
     <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap">
-            <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
-        </li>
+        {% if is_granted('ROLE_USER') == false %}
+            <li class="nav-item text-nowrap">
+                <a class="nav-link" href="{{ path('default') }}">Log in</a>
+            </li>
+            {% else %}
+            <li class="nav-item text-nowrap">
+                {% if app.user.userInfo != null  %}
+                    {% if app.user.userInfo.photo is not null %}
+                        <td>
+                            <a href="{{ path('user_show', {'id': app.user.userInfo.id}) }}">
+                                <img width="50px" height="50px" class="img-fluid " src="/uploads/{{ app.user.userInfo.photo }}" alt="Photo">
+                                {{ app.user.email }}
+                            </a>
+                        </td>
+                    {% else %}
+                        <td>
+                            <a href="{{ path('user_show', {'id': app.user.id}) }}">
+                                <img width="50px" height="50px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                                {{ app.user.email }}
+                            </a>
+                        </td>
+                    {% endif %}
+                {% else %}
+                    <td>
+                        <a href="{{ path('user_show', {'id': app.user.id}) }}">
+                            <img width="50px" height="50px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                            {{ app.user.email }}
+                        </a>
+                    </td>
+                {% endif %}
+            </li>
+        {% endif %}
     </ul>
 </nav>
 <div class="container" style="padding-top: 48px">
-
     <div class="row">
-
     </div>
     <div class="row">
         <div class="col-2">
@@ -49,17 +77,32 @@
                     {% if is_granted('ROLE_SDT_REQUEST') %}
                         <li class="list-group-item"><a href="{{ path('sdt_index') }}">SDT request</a></li>
                     {% endif %}
-                    {% if is_granted('ROLE_PHP_DEVELOPER') %}
-                        <li class="list-group-item"><a href="{{ path('php_developer_profile') }}">Profile</a></li>
+                    {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+                        <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+                    {% endif %}
+                    {% if is_granted('ROLE_USER') %}
+                        <li class="list-group-item"><a href="{{ path('profile') }}">Profile</a></li>
                     {% endif %}
                     {% if is_granted('ROLE_PHP_MANAGER') %}
                         <li class="list-group-item"><a href="{{ path('php_manager') }}">Manage team</a></li>
                     {% endif %}
+                    {% if is_granted('ROLE_ACCOUNT_MANAGER') %}
+                        <li class="list-group-item"><a href="{{ path('user_index') }}">Users</a></li>
+                    {% endif %}
                     {% if is_granted('ROLE_MANAGE_HOLIDAYS') %}
                         <li class="list-group-item"><a href="{{ path('holiday_index') }}">Holidays</a></li>
                     {% endif %}
-                    {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
+                    {% if is_granted('ROLE_VIEW_SALARY_REPORT') %}
+                        <li class="list-group-item"><a href="{{ path('salary_report_info_index') }}">Salary report</a></li>
+                    {% endif %}
+                    {% if is_granted('ROLE_USER') %}
                     <li class="list-group-item"><a href="{{ path('monthly_sdt_index') }}">SDT monthly</a>
+                        {% endif %}
+                        {% if is_granted('ROLE_MANAGE_MONTHLY_SDT') %}
+                    <li class="list-group-item"><a href="{{ path('sdt_archive_index') }}">SDT Archive</a>
+                        {% endif %}
+                        {% if is_granted('ROLE_PHP_MANAGER') %}
+                    <li class="list-group-item"><a href="{{ path('salary_report_info_index') }}">Salary Report</a>
                         {% endif %}
                 </ul>
             {% endblock %}

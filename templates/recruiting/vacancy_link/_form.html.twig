@@ -1,0 +1,11 @@
+{{ form_start(form) }}
+    {{ form_row(form.link) }}
+    <p>
+        Инициируйте поиск кандидата средисотрудника нашей компании(актуально не для всех вакансий).
+        Для этого продумайте текст письма, которое будет рассылаться соответствующим сотрудникам, вставьте его ниже и нажмите
+        "Send"
+    </p>
+    {{ form_row(form.letterText) }}
+   {% set type = type|default('number') %}
+    <button class="btn">{{ button_label|default('Send') }}</button>
+{{ form_end(form) }}

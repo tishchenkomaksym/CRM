@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -64,12 +65,12 @@ class UserPhpDeveloperLevelRelation
         return $this;
     }
 
-    public function getCreateDate(): ?\DateTimeImmutable
+    public function getCreateDate(): ?DateTimeImmutable
     {
         return $this->createDate;
     }
 
-    public function setCreateDate(\DateTimeImmutable $createDate): self
+    public function setCreateDate(DateTimeImmutable $createDate): self
     {
         $this->createDate = $createDate;
 

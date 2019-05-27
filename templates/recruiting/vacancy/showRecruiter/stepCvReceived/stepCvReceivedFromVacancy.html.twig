@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block menu %}
+    <ul class="list-group list-group-flush">
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
+        {% endif %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('candidate_index') }}">Candidate Database</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <a href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">
+                    Request  #{{ vacancy.id }} | Work on issue Step 2
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_show_search_candidate', { 'id': vacancy.id}) }}">Search candidate</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {% if vacancy.status  == 'Search for a candidate(s) have been started' %}
+                    Status: CV Received
+                {% endif %}
+            </li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block body %}
+<table class="table" style="table-layout: fixed">
+    <tbody>
+    <tr>
+        <th>Request#</th>
+        <td>{{ vacancy.id }}</td>
+    </tr>
+    <tr>
+        <th>Created</th>
+        <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+    </tr>
+    <tr>
+        <th>By</th>
+        <td>{{ vacancy.createdBy }}</td>
+    </tr>
+    </tbody>
+</table>
+<div>
+    <div class="alert alert-danger">
+        {% if vacancy.status is null %}
+            <p>Status:<span>Waiting for approval</span></p>
+        {% else %}
+            <p>Status: <span>{{ vacancy.status }}</span></p>
+        {% endif %}
+    </div>
+    <p>
+        Ниже вы видите созданные вами вакансии. При получение резюме по вакансиям выберите имя и впишите фамилию
+        кандидата, затем нажмите на кнопку "Check Candidate" чтобы проверить его на наличие в базе кандидатов. Если кандидат
+        уже существует в базе кандидатов - прикрепите его к вакансиию Если кандидата нет в базе данных - добавьте кандидата
+        в базу кандидатов.
+    </p>
+</div>
+    <div class="border border-warning rounded px-2 py-1">
+        {% for vacancyLink in vacancy.vacancyLinks %}
+            {% if app.request.get('id') == vacancyLink.id %}
+                {{ vacancyLink.link }}
+            {% endif %}
+        {% endfor %}
+    </div>
+        {{ include('recruiting/vacancy/showRecruiter/stepCvReceived/formForVacancy.html.twig') }}
+
+    <div class="navbar bg-light d-flex justify-content-between">
+        <div class="badge badge-success">
+            assigned to:{{ vacancy.assignee }}
+        </div>
+        <div>
+            <span class="badge badge-success">Approved</span>
+            {{ vacancy.approveDate|date('Y-m-d') }}
+            by {{ vacancy.approvedBy }}
+        </div>
+    </div>
+
+
+{% endblock %}

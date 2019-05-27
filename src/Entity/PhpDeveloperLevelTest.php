@@ -38,9 +38,21 @@ class PhpDeveloperLevelTest
      */
     private $phpDeveloperLevelTestPasseds;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $information='';
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperLevelTestTechnicalComponent", mappedBy="phpDeveloperLevel",
+     *     orphanRemoval=true)
+     */
+    private $technicalComponents;
+
     public function __construct()
     {
         $this->phpDeveloperLevelTestPasseds = new ArrayCollection();
+        $this->technicalComponents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -109,6 +121,51 @@ class PhpDeveloperLevelTest
             // set the owning side to null (unless already changed)
             if ($phpDeveloperLevelTestPassed->getPhpDeveloperLevelTest() === $this) {
                 $phpDeveloperLevelTestPassed->setPhpDeveloperLevelTest(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getInformation(): ?string
+    {
+        return $this->information;
+    }
+
+    public function setInformation(string $information): self
+    {
+        $this->information = $information;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PhpDeveloperLevelTestTechnicalComponent[]
+     */
+    public function getTechnicalComponents(): Collection
+    {
+        return $this->technicalComponents;
+    }
+
+    public function addTestTechnicalComponent(
+        PhpDeveloperLevelTestTechnicalComponent $phpDeveloperLevelTestTechnicalComponent
+    ): self {
+        if (!$this->technicalComponents->contains($phpDeveloperLevelTestTechnicalComponent)) {
+            $this->technicalComponents[] = $phpDeveloperLevelTestTechnicalComponent;
+            $phpDeveloperLevelTestTechnicalComponent->setPhpDeveloperLevel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTechnicalComponent(
+        PhpDeveloperLevelTestTechnicalComponent $phpDeveloperLevelTestTechnicalComponent
+    ): self {
+        if ($this->technicalComponents->contains($phpDeveloperLevelTestTechnicalComponent)) {
+            $this->technicalComponents->removeElement($phpDeveloperLevelTestTechnicalComponent);
+            // set the owning side to null (unless already changed)
+            if ($phpDeveloperLevelTestTechnicalComponent->getPhpDeveloperLevel() === $this) {
+                $phpDeveloperLevelTestTechnicalComponent->setPhpDeveloperLevel(null);
             }
         }
 

@@ -1,0 +1,6 @@
+App\Entity\CandidateVacancy:
+  properties:
+    receivedCv:
+      - File:
+          mimeTypes: [application/pdf, application/x-pdf, application/doc, application/xls]
+          mimeTypesMessage: "Please upload a valid files: pdf, x-pdf, doc or excel(xls)"

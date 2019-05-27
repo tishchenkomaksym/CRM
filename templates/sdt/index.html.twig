@@ -13,10 +13,11 @@
     <h3>Information:</h3>
     <h4>Sdt left:{{ leftSdt }}</h4>
     <p></p>
-    <a href="{{ path('sdt_new') }}"  class="btn btn-primary" role="button">Create new</a>
+    <a href="{{ path('sdt_new') }}" class="btn btn-primary" role="button">Create new</a>
+    <a href="{{ path('sdt_view_all') }}" class="btn btn-primary" role="button">View All</a>
     <div id="calendar"></div>
 
     <script>
-        $('#calendar').fullCalendar({{ calendarEvents|raw }});
+        $('#calendar').fullCalendar({events:{{ calendarEvents|raw }}, displayEventTime: false});
     </script>
 {% endblock %}

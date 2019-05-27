@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SalaryReportInfo{% endblock %}
+
+{% block body %}
+    <h1>SalaryReportInfo</h1>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ salary_report_info.id }}</td>
+        </tr>
+        <tr>
+            <th>CreateDate</th>
+            <td>{{ salary_report_info.createDate ? salary_report_info.createDate|date('Y-m-d H:i:s') : '' }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>User</th>
+            <th>Working Days</th>
+            <th>SDT used</th>
+            <th>SDT left</th>
+            <th>SDT At own expense</th>
+            <th>Report working Days</th>
+            <th>Needed Time</th>
+            <th>Tracked Time</th>
+            <th>Dis-bonus</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in salaryReportItems %}
+            <tr>
+                <th>{{ item.user.name }}</th>
+                <td>{{ item.calendarWorkingDays }}</td>
+                <td>{{ item.sdtCountUsed }}</td>
+                <td>{{ item.sdtCount }}</td>
+                <td>{{ item.sdtCountAtOwnExpenseUsed }}</td>
+                <td>{{ item.reportWorkingDays }}</td>
+                <td>{{ item.timeInfo.requiredTime }}</td>
+                <td>{{ item.timeInfo.loggedTime }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('salary_report_info_index') }}">back to list</a>
+
+    <a href="{{ path('salary_report_info_edit', {'id': salary_report_info.id}) }}">edit</a>
+
+    {{ include('salary_report_info/_delete_form.html.twig') }}
+{% endblock %}

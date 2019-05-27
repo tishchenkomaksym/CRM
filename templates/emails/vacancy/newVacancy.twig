@@ -1,0 +1,72 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+    <h1>Vacancy index</h1>
+    <style>
+        td {
+            word-wrap: break-word;
+        }
+        table {
+            table-layout: fixed;
+        }
+    </style>
+
+    <table class="table" style="table-layout: fixed">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Created</th>
+            <th>CreatedBy</th>
+            <th>Office</th>
+            <th>Department</th>
+            <th>Team</th>
+            <th>Position</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ vacancy.id }}</td>
+                <td>{{ vacancy.createdAt|date('Y-m-d') }}</td>
+                <td style="word-break: break-all">{{ vacancy.createdBy }}</td>
+                <td>{{ vacancy.office.name }}</td>
+                <td>{{ vacancy.department.name }}</td>
+                <td>{{ vacancy.team.name }}</td>
+                <td>{{ vacancy.position }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table" style="table-layout: fixed">
+        <thead>
+        <tr>
+            <th>Salary</th>
+            <th>Test</th>
+            <th>English</th>
+            <th>Amount</th>
+            <th>Bonus</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ vacancy.salary }}</td>
+            <td style="word-break: break-all">{{ vacancy.test }}</td>
+            <td style="word-break: break-all">{{ vacancy.english }}</td>
+            <td style="word-break: break-all">{{ vacancy.amount }}</td>
+            <td style="word-break: break-all">{{ vacancy.bonus }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <table>
+        <thead>
+        <tr>
+            <th>Request Reason</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td style="word-break: break-all">{{ vacancy.reason }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <a href="{{ url('approved',{'id': vacancy.id}) }}">Approve</a>
+    <a href="{{ url('denied',{'id': vacancy.id})}}">Deny</a>
+{% endblock %}

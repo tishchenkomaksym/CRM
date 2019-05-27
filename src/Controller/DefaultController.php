@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Service\HolidayService;
-use App\UserDataProvider;
+use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
@@ -16,10 +16,12 @@ class DefaultController extends AbstractController
     /**
      *
      * @Route("/default", name="default")
+     * @param ObjectManager $objectManager
+     * @return Response
      */
-    public function index(UserDataProvider $userDataProvider, HolidayService $holidayService)
+    public function index(ObjectManager $objectManager): Response
     {
-//        $time = $userDataProvider->getUserTime('ivan.melnichuk', '01/01/2019', '31/01/2019');
+        $objectManager->flush();
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
         ]);

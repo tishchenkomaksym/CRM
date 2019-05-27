@@ -27,28 +27,12 @@ security:
           logout:
             path:   app_logout
           provider: chain_provider
-#        test:
-#          anonymous: ~
-#          pattern: '/login'
-#          guard:
-#            authenticators:
-#            - App\Security\LoginFormAuthenticator
-#          logout:
-#            path:   app_logout
-#          provider: app_user_provider
-
-
-  #          form_login_ldap:
-  #            service: Symfony\Component\Ldap\Ldap
-  #              dn_string: 'uid={username},dc=onyxenterprises,dc=com'
     access_control:
     - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
     - { path: ^/admin, roles: ROLE_ADMIN }
     - { path: ^/default, roles: IS_AUTHENTICATED_FULLY }
     - { path: ^/sdt, roles: ROLE_SDT_REQUEST }
     - { path: ^/holiday, roles: ROLE_MANAGE_HOLIDAYS }
-    - { path: ^/monthly/sdt/, roles: ROLE_MANAGE_MONTHLY_SDT }
-    - { path: ^/php/developer/, roles: [ROLE_PHP_DEVELOPER,ROLE_PHP_MANAGER] }
 
     role_hierarchy:
       ROLE_USER: [ROLE_SDT_REQUEST]

@@ -19,32 +19,4 @@ class PhpDeveloperManagerRelationRepository extends ServiceEntityRepository
         parent::__construct($registry, PhpDeveloperManagerRelation::class);
     }
 
-    // /**
-    //  * @return PhpDeveloperManagerRelation[] Returns an array of PhpDeveloperManagerRelation objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?PhpDeveloperManagerRelation
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

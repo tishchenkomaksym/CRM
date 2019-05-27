@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SdtArchive index{% endblock %}
+
+{% block body %}
+    <h1>SdtArchive index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>CreateDate</th>
+                <th>Count</th>
+                <th>Acting</th>
+                <th>ReportDate</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for sdt_archive in sdt_archives %}
+            <tr>
+                <td>{{ sdt_archive.id }}</td>
+                <td>{{ sdt_archive.createDate ? sdt_archive.createDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ sdt_archive.count }}</td>
+                <td>{{ sdt_archive.acting }}</td>
+                <td>{{ sdt_archive.reportDate ? sdt_archive.reportDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('sdt_archive_show', {'id': sdt_archive.id}) }}">show</a>
+                    <a href="{{ path('sdt_archive_edit', {'id': sdt_archive.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('sdt_archive_new') }}">Create new</a>
+{% endblock %}

@@ -15,7 +15,7 @@
         </tr>
         <tr>
             <th>End Date</th>
-            <td>{{ sdt.createDate ? sdt.createDate|date_modify('+'~sdt.count~' weekdays')|date('Y-m-d') : '' }}</td>
+            <td>{{ endDate|date('Y-m-d') }}</td>
         </tr>
         <tr>
             <th>Days Count</th>

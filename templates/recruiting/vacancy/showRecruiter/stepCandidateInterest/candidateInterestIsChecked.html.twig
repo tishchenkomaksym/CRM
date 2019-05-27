@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Request</a></li>
+            <li class="breadcrumb-item active" aria-current="page">View Request</li>
+            <li class="breadcrumb-item active" aria-current="page">View Request</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block body %}
+    {{ include('recruiting/vacancy/showRecruiter/stepCandidateInterest/interestCheckedForm.html.twig') }}
+{% endblock %}

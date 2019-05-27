@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit PhpDeveloperManagerRelation{% endblock %}
+
+{% block body %}
+    <h1>Edit PhpDeveloperManagerRelation</h1>
+
+    {{ include('php_developer_manager_relation/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('user_show',{'id':contextUser.id}) }}">back to list</a>
+
+    {{ include('php_developer_manager_relation/_delete_form.html.twig') }}
+{% endblock %}

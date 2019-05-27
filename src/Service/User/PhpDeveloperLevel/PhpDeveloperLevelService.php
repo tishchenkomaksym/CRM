@@ -8,6 +8,13 @@
 
 namespace App\Service\User\PhpDeveloperLevel;
 
+use App\Entity\User;
+
 class PhpDeveloperLevelService
 {
+    public static function resetPhpDeveloperRoles(User $user)
+    {
+        $user->setRoles(['ROLE_USER', 'ROLE_SDT_REQUEST', 'ROLE_PHP_DEVELOPER']);
+        return $user;
+    }
 }

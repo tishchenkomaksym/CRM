@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block menu %}
+{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+    {{ form_row(form.reasonDenied, {'label': 'The reason request have been denied'}) }}
+    <button class="btn">{{ button_label|default('Send') }}</button>
+    {{ form_end(form) }}
+
+{% endblock %}
+

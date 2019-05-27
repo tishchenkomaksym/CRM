@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New SDTEmailAssignee{% endblock %}
+
+{% block body %}
+    <h1>Create new SDTEmailAssignee</h1>
+
+    {{ include('sdt_email_assignee/_form.html.twig') }}
+
+    <a href="{{ path('sdt_email_assignee_index',{'id':user.id}) }}">back to list</a>
+{% endblock %}

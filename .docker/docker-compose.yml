@@ -1,0 +1,48 @@
+version: "3.6"
+services:
+  nginx:
+    networks:
+      - new
+    restart: always
+    image: registry.devzone.net/nexteum-user/nexteum-user-nginx:nginx
+    volumes:
+    - ../:/application
+    - "phpsocket:/var/run"
+    - ./site.conf:/etc/nginx/conf.d/site.conf
+    environment:
+      PHP_FPM_HOST: php-fpm-app
+      PHP_FPM_PORT: 9000
+    ports:
+    - 8080:90
+    links:
+    - php-fpm-app
+
+  php-fpm-app:
+    restart: always
+    networks:
+      - new
+    image: registry.devzone.net/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
+    volumes:
+      - ../:/application
+      - "phpsocket:/var/run"
+    environment:
+      XDEBUG_CONFIG: remote_enable=1 remote_host=host.docker.internal
+      PHP_IDE_CONFIG: serverName=symfony-demo
+
+  db:
+    image: mysql:5.7
+    networks:
+      new:
+        aliases:
+          - database
+    environment:
+      MYSQL_ROOT_PASSWORD: my_secret_pw_shh
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: devuser
+      MYSQL_PASSWORD: devpass
+    ports:
+    - "9906:3306"
+networks:
+  new:
+volumes:
+  phpsocket:

@@ -6,16 +6,19 @@ use App\Entity\PhpDeveloperLevelTestPassed;
 use App\Entity\User;
 use App\Form\PhpDeveloperLevelTestPassedType;
 use App\Repository\PhpDeveloperLevelTestPassedRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * @IsGranted("ROLE_PHP_MANAGER")
  * @Route("/php/developer/level/test/passed")
  */
 class PhpDeveloperLevelTestPassedController extends AbstractController
 {
+    public const PHP_DEVELOPER_LEVEL_TEST_PASSED_INDEX = 'php_developer_level_test_passed_index';
     /**
      * @Route("/index/{id}", name="php_developer_level_test_passed_index", methods={"GET"})
      * @param User $user
@@ -37,6 +40,9 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
 
     /**
      * @Route("/{id}/new", name="php_developer_level_test_passed_new", methods={"GET","POST"})
+     * @param User $user
+     * @param Request $request
+     * @return Response
      */
     public function new(User $user, Request $request): Response
     {
@@ -52,8 +58,7 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($phpDeveloperLevelTestPassed);
             $entityManager->flush();
-
-            return $this->redirectToRoute('php_developer_level_test_passed_index', ['id' => $user->getId()]);
+            return $this->redirectToRoute(self::PHP_DEVELOPER_LEVEL_TEST_PASSED_INDEX, ['id' => $user->getId()]);
         }
 
         return $this->render(
@@ -66,6 +71,8 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
 
     /**
      * @Route("/{id}", name="php_developer_level_test_passed_show", methods={"GET"})
+     * @param PhpDeveloperLevelTestPassed $phpDeveloperLevelTestPassed
+     * @return Response
      */
     public function show(PhpDeveloperLevelTestPassed $phpDeveloperLevelTestPassed): Response
     {
@@ -79,6 +86,9 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="php_developer_level_test_passed_edit", methods={"GET","POST"})
+     * @param Request $request
+     * @param PhpDeveloperLevelTestPassed $phpDeveloperLevelTestPassed
+     * @return Response
      */
     public function edit(Request $request, PhpDeveloperLevelTestPassed $phpDeveloperLevelTestPassed): Response
     {
@@ -89,7 +99,8 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute(
-                'php_developer_level_test_passed_index', [
+                self::PHP_DEVELOPER_LEVEL_TEST_PASSED_INDEX,
+                [
                                                            'id' => $phpDeveloperLevelTestPassed->getId(),
                                                        ]
             );
@@ -106,10 +117,14 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
 
     /**
      * @Route("/{id}", name="php_developer_level_test_passed_delete", methods={"DELETE"})
+     * @param Request $request
+     * @param PhpDeveloperLevelTestPassed $phpDeveloperLevelTestPassed
+     * @return Response
      */
     public function delete(Request $request, PhpDeveloperLevelTestPassed $phpDeveloperLevelTestPassed): Response
     {
-        $userId = $phpDeveloperLevelTestPassed->getUser()->getId();
+        $user = $phpDeveloperLevelTestPassed->getUser();
+
         if ($this->isCsrfTokenValid(
             'delete' . $phpDeveloperLevelTestPassed->getId(), $request->request->get('_token')
         )) {
@@ -117,7 +132,10 @@ class PhpDeveloperLevelTestPassedController extends AbstractController
             $entityManager->remove($phpDeveloperLevelTestPassed);
             $entityManager->flush();
         }
-
-        return $this->redirectToRoute('php_developer_level_test_passed_index', ['id' => $userId]);
+        if ($user !== null) {
+            $userId = $user->getId();
+            return $this->redirectToRoute(self::PHP_DEVELOPER_LEVEL_TEST_PASSED_INDEX, ['id' => $userId]);
+        }
+        return $this->redirectToRoute('default');
     }
 }

@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Your profile{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <h3>Status:</h3>
+    </div>
+    <div class="row">
+        {% if userLevel is not null %}
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">PHP developer Lvl</h5>
+                    {#<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
+                    <p class="card-text">PHP developer level: <span class="badge badge-info">{{ userLevel }}</span></p>
+                    {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+        {%  endif %}
+        {% if(developerManagers|length > 0) %}
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Your Manager</h5>
+                    {#<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
+                    {% for developerManager in developerManagers %}
+                        <p class="card-text">Your manager is: <span
+                                    class="badge badge-info">{{ developerManager.username }}</span></p>
+                    {% endfor %}
+                    {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">SDT Left</h5>
+                    {#<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
+                    <p class="card-text">Today you have: <span
+                                class="badge badge-info">{{ leftSdt}}</span></p>
+                    {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Working Hours information</h5>
+                    {#<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
+                    <p class="card-text">Начислено часов: <span
+                                class="badge badge-info">{{ workingHoursInformation.loggedTime|round(2, 'floor')}}</span></p>
+                    <p class="card-text">Требуеться часов: <span
+                                class="badge badge-info">{{ workingHoursInformation.requiredTime|round(2, 'floor')}}</span></p>
+                    {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row"><h3>Information:</h3></div>
+    <div class="row">
+        {% if is_granted('ROLE_PHP_DEVELOPER') %}
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Salary raise</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Rise info</h6>
+                    <p class="card-text">Click here if you want to take info about rise</p>
+                    <a href="{{ path('salary_raise') }}" class="card-link">Details</a>
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">SDT Request</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Make SDT request</h6>
+                    <p class="card-text">If you want to take sdt request click here</p>
+                    <a href="{{ path('sdt_new') }}" class="card-link">Make request</a>
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Documentation</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Read documentation</h6>
+                    <p class="card-text">Here you can read documentation</p>
+                    <a href="https://docs.auto-toyz.com/documentation/" class="card-link">Details</a>
+                    {#<a href="#" class="card-link">Another link</a>#}
+                </div>
+            </div>
+        </div>
+        {#<div class="col-3">#}
+            {#<div class="card">#}
+                {#<div class="card-body">#}
+                    {#<h5 class="card-title">Software request</h5>#}
+                    {#<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
+                    {#<p class="card-text">Some text</p>#}
+                    {#<a href="{{ path('sdt_new') }}" class="card-link">Make request</a>#}
+                    {#<a href="#" class="card-link">Another link</a>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    </div>
+{% endblock %}

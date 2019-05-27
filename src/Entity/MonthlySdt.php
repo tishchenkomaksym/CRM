@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -49,12 +50,12 @@ class MonthlySdt
         return $this;
     }
 
-    public function getCreateDate(): ?\DateTimeImmutable
+    public function getCreateDate(): ?DateTimeImmutable
     {
         return $this->create_date;
     }
 
-    public function setCreateDate(\DateTimeImmutable $create_date): self
+    public function setCreateDate(DateTimeImmutable $create_date): self
     {
         $this->create_date = $create_date;
 

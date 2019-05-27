@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Sdt;
+use App\Entity\User;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -19,32 +21,22 @@ class SdtRepository extends ServiceEntityRepository
         parent::__construct($registry, Sdt::class);
     }
 
-    // /**
-    //  * @return Sdt[] Returns an array of Sdt objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param DateTime $from
+     * @param DateTime $to
+     * @param User $user
+     * @return Sdt[]
+     */
+    public function getSDTFromDateToDate(DateTime $from, DateTime $to, User $user)
     {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $q = $this->createQueryBuilder('p')
+                  ->where('p.create_date >= :dateFrom')
+                  ->andWhere('p.create_date <= :dateTo')
+                  ->andWhere('p.user = :userId')
+                  ->setParameter('dateFrom', $from->format('Y-m-d'))
+                  ->setParameter('dateTo', $to->format('Y-m-d'))
+                  ->setParameter('userId', $user->getId())
+                  ->getQuery();
+        return $q->getResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Sdt
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
