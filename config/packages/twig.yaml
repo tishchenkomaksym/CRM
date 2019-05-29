@@ -3,3 +3,7 @@ twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     form_themes: ['bootstrap_4_layout.html.twig']
+
+    globals:
+        # the value is the service's id
+        userInfo: '@App\Service\GlobalObjects\GlobalObjects'

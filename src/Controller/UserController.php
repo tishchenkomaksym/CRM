@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
+use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\User;
 use App\Entity\UserInfo;
 use App\Form\UserProfile\UserCreateEditType;
 use App\Form\UserProfile\UserCreateType;
 use App\Repository\SalaryReportInfoRepository;
 use App\Repository\SDTEmailAssigneeRepository;
-use App\Repository\SdtRepository;
 use App\Repository\UserInfoRepository;
 use App\Repository\UserRepository;
 use App\Service\Candidate\CandidatePhotoDecorator;
@@ -16,7 +16,6 @@ use App\Service\SalaryReport\Builder\BaseSalaryReportBuilder;
 use App\Service\User\Builder\RegistrationUserBuilder;
 use App\Service\User\PhpDeveloper\Hours\ReportWorkHoursBuilderDecorator;
 use App\Service\User\Sdt\LeftSdtCalculator;
-use App\Service\User\Sdt\UsedSdtDaysCalculator;
 use App\Service\UserInformationService;
 use App\Service\Vacancy\CandidateEditRelationToCandidateLinkToCandidateVacancy\NoDataException;
 use DateTime;
@@ -44,14 +43,39 @@ class UserController extends AbstractController
      * @IsGranted("ROLE_ACCOUNT_MANAGER")
      * @Route("/", name="user_index", methods={"GET"})
      * @param UserRepository $userRepository
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
+     * @throws NoDateException
      */
-    public function index(UserRepository $userRepository): Response
-    {
+    public function index(
+        UserRepository $userRepository,
+        UserInfoRepository $userInfoRepository
+    ): Response {
+
+        $users = $userRepository->findAll();
+        $userInfos = $userInfoRepository->findAll();
+        $usersInformation = [];
+        $usersNoInfo = [];
+        foreach ($users as $user) {
+            foreach ($userInfos as $userInfo) {
+                if ($userInfo->getUser() === null) {
+                    throw new NoDateException('UserId not found');
+                }
+                if ($user->getId() === $userInfo->getUser()->getId()) {
+                    $usersInformation[$user->getId()] = $userInfo;
+                    break;
+                }
+            }
+            if (empty($usersInformation[$user->getId()])) {
+                $usersNoInfo[] = $user;
+            }
+        }
+
         return $this->render(
             'user/index.html.twig',
             [
-                'users' => $userRepository->findAll(),
+                'users' => $usersInformation,
+                'userNoInfos' => $usersNoInfo
             ]
         );
     }
@@ -118,6 +142,7 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}", name="user_show", methods={"GET"})
      * @param User $user
+     * @param UserInfoRepository $userInfoRepository
      * @param UserInformationService $service
      * @param BaseSalaryReportBuilder $baseSalaryReportBuilder
      * @param LeftSdtCalculator $leftSdtCalculator
@@ -125,17 +150,19 @@ class UserController extends AbstractController
      * @param SalaryReportInfoRepository $reportInfoRepository
      * @return Response
      * @throws NonUniqueResultException
+     * @throws Exception
      */
     public function show(
         User $user,
+        UserInfoRepository $userInfoRepository,
         UserInformationService $service,
         BaseSalaryReportBuilder $baseSalaryReportBuilder,
         LeftSdtCalculator $leftSdtCalculator,
         ReportWorkHoursBuilderDecorator $baseWorkHoursInformationBuilder,
         SalaryReportInfoRepository $reportInfoRepository
     ): Response {
-        $userInfo = $user->getUserInfo();
-        if ($userInfo === null){
+        $userInfo = $userInfoRepository->findOneBy(['user' => $user->getId()]);
+        if ($userInfo === null) {
             $userInfo = new UserInfo();
             $userInfo->setUser($user);
             $userInfo->setBirthDay(new DateTime());
@@ -145,10 +172,13 @@ class UserController extends AbstractController
         }
         $todaySalaryReport = $reportInfoRepository->getTodaySalaryReport();
         $nextSalaryReport = $reportInfoRepository->getNextSalaryReport(new DateTime());
-//        $sdtUsed = $baseSalaryReportBuilder->build($todaySalaryReport, $user);
+        if ($nextSalaryReport === null){
+            throw new NoDataException('Next salary report not found');
+        }
+        $sdtUsed = $baseSalaryReportBuilder->build($todaySalaryReport, $nextSalaryReport, $user);
         $manager = $service->getPhpDeveloperManager($user);
         $leftSdt = $leftSdtCalculator->calculate($this->getUser());
-//        $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser());
+        $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser(), new DateTime());
         return $this->render(
             'user/show.html.twig',
             [
@@ -158,8 +188,8 @@ class UserController extends AbstractController
                 'leftSdt' => $leftSdt,
                 'todaySalaryReport' => $todaySalaryReport,
                 'nextSalaryReport' => $nextSalaryReport,
-//                'sdtUsed' => $sdtUsed,
-//                'workingHoursInformation' => $workingHoursInformation
+                'sdtUsed' => $sdtUsed,
+                'workingHoursInformation' => $workingHoursInformation
             ]
         );
     }
@@ -206,10 +236,8 @@ class UserController extends AbstractController
             $user->setName($form->get('user')->get('name')->getData());
             $user->setEmail($form->get('user')->get('email')->getData());
             $user->setTeam($form->get('user')->get('team')->getData());
-
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($userInfo);
-            $entityManager->persist($user);
             $entityManager->flush();
 
             foreach ($assigneeRepository->findBy(['user' => $userInfo->getId()]) as $SDTEmailAssignee) {

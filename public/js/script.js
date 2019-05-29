@@ -1,7 +1,7 @@
 
 $(document).ready(function () {
     $(".department").prop("disabled", true);
-    $(".team").prop("disabled", true);
+    // $(".team").prop("disabled", true);
     $("#selectid option:selected").attr('disabled', 'disabled');
     $(".office").change(function () {
         var id = $(this).children("option:selected").val();
@@ -34,6 +34,8 @@ $(document).ready(function () {
         $('.team option').prop('selected', function () {
             return this.defaultSelected;
         });
+
+
     });
 
 });
