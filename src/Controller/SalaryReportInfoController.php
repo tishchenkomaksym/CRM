@@ -8,6 +8,7 @@ use App\Repository\SalaryReportInfoRepository;
 use App\Repository\UserRepository;
 use App\Service\SalaryReport\Builder\BaseSalaryReportBuilder;
 use App\Service\SalaryReport\SalaryReportDTO;
+use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,12 +28,17 @@ class SalaryReportInfoController extends AbstractController
     /**
      * @Route("/", name="salary_report_info_index", methods={"GET"})
      * @param SalaryReportInfoRepository $salaryReportInfoRepository
+     * @param SalaryReportInfoRepository $reportInfoRepository
      * @return Response
+     * @throws NonUniqueResultException
      */
-    public function index(SalaryReportInfoRepository $salaryReportInfoRepository): Response
+    public function index(SalaryReportInfoRepository $salaryReportInfoRepository,
+                            SalaryReportInfoRepository $reportInfoRepository): Response
     {
+        $nextSalaryReport = $reportInfoRepository->getNextSalaryReport(new DateTime());
         return $this->render('salary_report_info/index.html.twig', [
             'salary_report_infos' => $salaryReportInfoRepository->findAll(),
+            'next_salary_report' => $nextSalaryReport
         ]);
     }
 

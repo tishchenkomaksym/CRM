@@ -174,7 +174,7 @@
         {% if is_granted("ROLE_ACCOUNT_MANAGER") %}
             <tr>
                 <th>Roles</th>
-                <td>{{ user.user.roles ? user.user.roles|json_encode : '' }}</td>
+                <td style="word-break: break-all">{{ user.user.roles ? user.user.roles|json_encode : '' }}</td>
             </tr>
             {% if user.user.phpDeveloperLevelRelation %}
                 <tr>
