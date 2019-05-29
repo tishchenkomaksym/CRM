@@ -55,7 +55,7 @@ class UpdateSDTMessageBuilder implements MessageBuilderInterface
                     [
                         'oldFromDate' => $mailDataObject->getOldFromDate(),
                         'oldToDate' => $mailDataObject->getOldToDate(),
-                        'newFromDate' => $mailDataObject->getOldFromDate(),
+                        'newFromDate' => $mailDataObject->getNewFromDate(),
                         'newToDate' => $mailDataObject->getNewToDate(),
                         'actingPeople' => $mailDataObject->getActingPeople(),
                         'daysCount' => $mailDataObject->getDaysCount(),
