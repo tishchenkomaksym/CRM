@@ -48,7 +48,7 @@ class SdtType extends AbstractType
                 'count',
                 IntegerType::class,
                 [
-                    FormType::LABEL => 'Count of dates',
+                    FormType::LABEL => 'Amount of SDT days',
                     'attr' => ['min' => 1],
                 ]
             )
@@ -57,7 +57,7 @@ class SdtType extends AbstractType
                 DateType::class,
                 [
                     'widget' => 'single_text',
-                    FormType::LABEL => 'Date then your SDT starts',
+                    FormType::LABEL => 'Starting date of your SDT',
 //                  'attr' => ['value' => (new DateTime())->format('Y-m-d')]
                 ]
             )
