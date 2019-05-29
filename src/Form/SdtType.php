@@ -5,7 +5,6 @@ namespace App\Form;
 use App\Constants\FormType;
 use App\Entity\Sdt;
 use App\Repository\UserRepository;
-use DateTime;
 use Exception;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -59,7 +58,7 @@ class SdtType extends AbstractType
                 [
                     'widget' => 'single_text',
                     FormType::LABEL => 'Date then your SDT starts',
-                    'attr' => ['value' => (new DateTime())->format('Y-m-d')]
+//                  'attr' => ['value' => (new DateTime())->format('Y-m-d')]
                 ]
             )
             ->add(
