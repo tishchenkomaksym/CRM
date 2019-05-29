@@ -76,7 +76,7 @@ class UserInfo
     private $location;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy="userInfo", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\User",  cascade={"persist", "remove"})
      */
     private $user;
 
@@ -247,15 +247,20 @@ class UserInfo
         return $this;
     }
 
-//    public function getUser(): ?User
-//    {
-//        return $this->user;
-//    }
-//
-//    public function setUser(User $user): self
-//    {
-//        $this->user = $user;
-//
-//        return $this;
-//    }
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+            $this->photo,
+        ));
+    }
+
+    /** @see \Serializable::unserialize() */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+            $this->photo,
+            ) = unserialize($serialized, array('allowed_classes' => false));
+    }
 }

@@ -101,7 +101,10 @@
         </tr>
         <tr>
             <th>SDT Used</th>
-{#            <td>{{ sdtUsed.sdtCountUsed }}</td>#}
+            <td>{% if sdtUsed != null %}
+                    {{ sdtUsed.sdtCountUsed }}
+                {% endif %}
+            </td>
         </tr>
         <tr>
             <th>SDT Left</th>
@@ -144,7 +147,13 @@
         </tr>
         <tr>
             <th>Current month report time frame</th>
-{#            <td>From {{ todaySalaryReport.createDate|date('Y-m-d') }} to {{ nextSalaryReport.createdate|date('Y-m-d') }}</td>#}
+            <td>From {% if todaySalaryReport.createDate is not null %}
+                        {{ todaySalaryReport.createDate|date('Y-m-d') }}
+                    {% endif %}
+                to
+                    {% if nextSalaryReport.createdate is not null %}
+                        {{ nextSalaryReport.createdate|date('Y-m-d') }}
+                    {% endif %}</td>
         </tr>
         <tr class="alert alert-secondary">
             <th>Working hours Info</th>
@@ -156,11 +165,11 @@
         </tr>
         <tr>
             <th>Logged Hours</th>
-{#            <td>{{ workingHoursInformation.loggedTime|round(2, 'floor')}}</td>#}
+            <td>{{ workingHoursInformation.loggedTime|round(2, 'floor')}}</td>
         </tr>
         <tr>
             <th>Needed hours this month</th>
-{#            <td>{{ workingHoursInformation.requiredTime|round(2, 'floor')}}</td>#}
+            <td>{{ workingHoursInformation.requiredTime|round(2, 'floor')}}</td>
         </tr>
         {% if is_granted("ROLE_ACCOUNT_MANAGER") %}
             <tr>
@@ -187,6 +196,7 @@
             <a class="btn" href="{{ path('user_php_developer_level_relation_new',{'id':user.user.id}) }}">Add PHP Level</a>
         {% endif %}
         <a class="btn" href="{{ path('php_developer_manager_relation_new',{'id':user.user.id}) }}">Add PHP Manager</a>
+        <a href="{{ path('sdt_email_assignee_index',{'id':user.user.id}) }}">SDT Emails</a>
     {% endif %}
 
     <a class="btn btn-primary" href="{{ path('user_edit', {'id': user.id}) }}">edit</a>
