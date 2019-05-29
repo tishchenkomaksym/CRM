@@ -217,6 +217,17 @@ class UserController extends AbstractController
         $candidatePhotoDecorator->photoNotNull($userInfo);
 
         $form = $this->createForm(UserCreateEditType::class, $userInfo);
+        if ($userInfo->getUser() === null){
+            throw new NoDataException('User not found');
+        }
+        if ($userInfo->getUser()->getTeam() === null){
+            throw new NoDataException('User team not found');
+        }
+        if ($userInfo->getUser()->getTeam()->getDepartment() === null){
+            throw new NoDataException('Department not found');
+        }
+        $form->get('user')->get('office')->setData($userInfo->getUser()->getTeam()->getDepartment()->getOffice());
+        $form->get('user')->get('department')->setData($userInfo->getUser()->getTeam()->getDepartment());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
