@@ -65,7 +65,7 @@ class SdtType extends AbstractType
             ->add(
                 'acting',
                 ChoiceType::class,
-                [FormType::LABEL => 'Person who will change you for this period', 'choices' => $this->actingPeople]
+                [FormType::LABEL => 'Person who will be in charge instead of you for this period', 'choices' => $this->actingPeople]
             )
             ->add(
                 'atOwnExpense'
