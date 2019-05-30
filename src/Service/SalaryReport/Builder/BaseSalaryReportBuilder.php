@@ -99,7 +99,8 @@ class BaseSalaryReportBuilder
             $user
         );
         $returnObject->setTimeInfo($timeInfo);
-
+        $returnObject->timeUnlogged = number_format($returnObject->getTimeInfo()->getLoggedTime() -
+            $returnObject->getTimeInfo()->getRequiredTime(), 2);
 
         $returnObject->user = $user;
         return $returnObject;

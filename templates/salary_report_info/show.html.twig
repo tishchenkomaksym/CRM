@@ -43,7 +43,7 @@
                 <td>{{ item.reportWorkingDays }}</td>
                 <td>{{ item.timeInfo.requiredTime }}</td>
                 <td>{{ item.timeInfo.loggedTime }}</td>
-                <td>{{ item.timeInfo.loggedTime - item.timeInfo.requiredTime}}</td>
+                <td>{{ item.timeUnlogged}}</td>
             </tr>
         {% endfor %}
         </tbody>
