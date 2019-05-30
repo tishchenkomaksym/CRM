@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\User;
 use App\Entity\UserInfo;
+use App\Form\RolesType;
 use App\Form\UserProfile\UserCreateEditType;
 use App\Form\UserProfile\UserCreateType;
 use App\Repository\SalaryReportInfoRepository;
@@ -194,7 +195,6 @@ class UserController extends AbstractController
         );
     }
 
-
     /**
      * @IsGranted("ROLE_ACCOUNT_MANAGER")
      * @Route("/{id}/edit", name="user_edit", methods={"GET","POST"})
@@ -271,6 +271,39 @@ class UserController extends AbstractController
             [
                 'user' => $userInfo,
                 'form' => $form->createView(),
+            ]
+        );
+    }
+
+    /**
+     * @IsGranted("ROLE_MANAGE_ROLES")
+     * @Route("/{id}/roles", name="user_roles")
+     * @param User $user
+     * @param Request $request
+     * @return Response
+     */
+
+    public function allRoles(User $user, Request $request): Response
+    {
+        $form = $this->createForm(RolesType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+
+            return $this->redirectToRoute(
+                'user_show',
+                [
+                    'id' => $user->getId(),
+                ]
+            );
+        }
+        return $this->render('user/roles.html.twig',
+            [
+                'form' => $form->createView()
             ]
         );
     }
