@@ -92,14 +92,15 @@ class BaseSalaryReportBuilder
 
         $returnObject->reportWorkingDays = $this->getReportWorkingDays($previousDateTime, $user->getCreateDate(), $dateWorkingHours,
             $returnObject->sdtCountUsed + $returnObject->sdtCountAtOwnExpenseUsed);
-        $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateForSdt, $user);
+        $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateForSdt, $user) - $returnObject->sdtCountAtOwnExpenseUsed;
         $timeInfo = $this->baseWorkHoursInformationBuilder->build(
             $previousDateTime,
             $dateWorkingHours,
             $user
         );
         $returnObject->setTimeInfo($timeInfo);
-
+        $returnObject->timeUnlogged = number_format($returnObject->getTimeInfo()->getLoggedTime() -
+            $returnObject->getTimeInfo()->getRequiredTime(), 2);
 
         $returnObject->user = $user;
         return $returnObject;
