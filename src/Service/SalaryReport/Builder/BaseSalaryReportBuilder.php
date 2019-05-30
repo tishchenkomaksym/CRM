@@ -88,9 +88,9 @@ class BaseSalaryReportBuilder
         $returnObject->sdtCountUsed = $this->getSdtCountUsed($previousDateTime, $dateForSdt, $user);
         $returnObject->sdtCountAtOwnExpenseUsed = $this->getSdtAtOwnExpenseUsedCount($previousDateTime, $dateForSdt,
             $user);
-        $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport) - $returnObject->sdtCountUsed - $returnObject->sdtCountAtOwnExpenseUsed;
+        $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport, $user->getCreateDate()) - $returnObject->sdtCountUsed - $returnObject->sdtCountAtOwnExpenseUsed;
 
-        $returnObject->reportWorkingDays = $this->getReportWorkingDays($previousDateTime, $dateWorkingHours,
+        $returnObject->reportWorkingDays = $this->getReportWorkingDays($previousDateTime, $user->getCreateDate(), $dateWorkingHours,
             $returnObject->sdtCountUsed + $returnObject->sdtCountAtOwnExpenseUsed);
         $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateForSdt, $user);
         $timeInfo = $this->baseWorkHoursInformationBuilder->build(
@@ -105,10 +105,11 @@ class BaseSalaryReportBuilder
         return $returnObject;
     }
 
-    private function getReportWorkingDays(DateTime $previousDateTime, DateTime $dateForSdt, int $usedSdt)
+    private function getReportWorkingDays(DateTime $previousDateTime, DateTime $startDate,  DateTime $dateForSdt, int $usedSdt)
     {
-
-
+        if ($previousDateTime < $startDate) {
+            $previousDateTime = $startDate;
+        }
         return $this->baseWorkingDaysCalculator->getWorkingDaysBetweenDates($previousDateTime, $dateForSdt) - $usedSdt;
     }
 

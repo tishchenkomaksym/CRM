@@ -38,11 +38,12 @@
             </li>
             {% else %}
             <li class="nav-item text-nowrap">
-                {% if app.user.userInfo != null  %}
-                    {% if app.user.userInfo.photo is not null %}
+{#                {{ dump(userInfo.userInformation) }}#}
+                {% if userInfo != null  %}
+                    {% if userInfo.userInformation is not null %}
                         <td>
-                            <a href="{{ path('user_show', {'id': app.user.userInfo.id}) }}">
-                                <img width="50px" height="50px" class="img-fluid " src="/uploads/{{ app.user.userInfo.photo }}" alt="Photo">
+                            <a href="{{ path('user_show', {'id': app.user.id}) }}">
+                                <img width="50px" height="50px" class="img-fluid " src="/uploads/{{ userInfo.userInformation.photo }}" alt="Photo">
                                 {{ app.user.email }}
                             </a>
                         </td>
@@ -69,7 +70,7 @@
 <div class="container" style="padding-top: 48px">
     <div class="row">
     </div>
-    <div class="row">
+    <div class="row mt-3">
         <div class="col-2">
             <h1>Menu:</h1>
             {% block menu %}

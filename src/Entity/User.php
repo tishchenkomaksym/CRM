@@ -108,10 +108,6 @@ class User implements UserInterface
      */
     private $team;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\UserInfo", mappedBy="user", cascade={"persist", "remove"})
-     */
-    private $userInfo;
 
     public function __construct()
     {
@@ -527,21 +523,4 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getUserInfo(): ?UserInfo
-    {
-        return $this->userInfo;
-    }
-
-    public function setUserInfo(?UserInfo $userInfo): self
-    {
-        $this->userInfo = $userInfo;
-
-        // set (or unset) the owning side of the relation if necessary
-        $newUser = $userInfo === null ? null : $this;
-        if ($newUser !== $userInfo->getUser()) {
-            $userInfo->setUser($newUser);
-        }
-
-        return $this;
-    }
 }

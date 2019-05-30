@@ -21,38 +21,42 @@
         <tbody>
         {% for user in users %}
             <tr>
-                {% if user.userInfo != null  %}
-                    {% if user.userInfo.photo is not null %}
-                        <td>
-                            <a href="{{ path('user_show', {'id': user.id}) }}">
-                                <img width="200px" height="200px" src="/uploads/{{ user.userInfo.photo }}" alt="Photo">
-                            </a>
-                        </td>
-                    {% else %}
-                        <td>
-                            <a href="{{ path('user_show', {'id': user.id}) }}">
-                                <img width="200px" height="200px" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
-                            </a>
-                        </td>
-                    {% endif %}
+                {% if user.photo is not null %}
+                    <td>
+                        <a href="{{ path('user_show', {'id': user.user.id}) }}">
+                            <img width="200px" height="200px" src="/uploads/{{ user.photo }}" alt="Photo">
+                        </a>
+                    </td>
                 {% else %}
                     <td>
-                        <a href="{{ path('user_show', {'id': user.id}) }}">
+                        <a href="{{ path('user_show', {'id': user.user.id}) }}">
                             <img width="200px" height="200px" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
                         </a>
                     </td>
                 {% endif %}
-                <td>{{ user.name }}</td>
-                {% if  user.userInfo != null %}
-                    <td>{{ user.userInfo.position }}</td>
-                {% endif %}
-                <td>{{ user.team.name}}</td>
-                <td>{{ user.team.department.office.name }}</td>
-                <td>{{ user.email }}</td>
+                <td>{{ user.user.name }}</td>
+                <td>{{ user.position }}</td>
+                <td>{{ user.user.team.name}}</td>
+                <td>{{ user.user.team.department.office.name }}</td>
+                <td>{{ user.user.email }}</td>
             </tr>
         {% else %}
             <tr>
                 <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        {% for user in userNoInfos %}
+            <tr>
+                <td>
+                    <a href="{{ path('user_show', {'id': user.id}) }}">
+                        <img width="200px" height="200px" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                    </a>
+                </td>
+                <td>{{ user.name }}</td>
+                <td></td>
+                <td>{{ user.team.name}}</td>
+                <td>{{ user.team.department.office.name }}</td>
+                <td>{{ user.email }}</td>
             </tr>
         {% endfor %}
         </tbody>

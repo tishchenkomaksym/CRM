@@ -51,10 +51,11 @@ class UserEditType extends AbstractType
                 ]
             )
             ->add('team', EntityType::class, [
-//                    'attr' => ['class' => 'team'],
+                    'attr' => ['class' => 'team'],
                     'placeholder' => 'Select Team',
                     'class' => Team::class,
                     'choice_label' => 'name',
+                    'disabled' => true,
                     'choice_attr' => static function (Team $choiceValue) {
                         return ['data-DepartmentId' => $choiceValue->getDepartment()->getId()];
                     },
@@ -64,6 +65,7 @@ class UserEditType extends AbstractType
                 'email',
                 TextType::class
             )
+            ->add('createDate')
 
             ->add(
                 'name',
