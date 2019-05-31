@@ -19,7 +19,6 @@ use App\Data\Sdt\Mail\DeleteSdtMailData;
 use App\Entity\Sdt;
 use App\Entity\SdtArchive;
 use App\Form\SdtType;
-use App\Repository\SalaryReportInfoRepository;
 use App\Service\HolidayService;
 use App\Service\Sdt\Calendar\Tom\TomSdtCollectionBuilder;
 use App\Service\Sdt\Create\BaseCreateContext;
@@ -33,7 +32,6 @@ use App\Service\Sdt\Update\UpdateSDTMessageBuilder;
 use App\Service\SdtArchive\SdtArchiveBuilderFromSdt;
 use App\Service\User\Sdt\LeftSdtCalculator;
 use App\Service\UserInformationService;
-use Doctrine\ORM\NonUniqueResultException;
 use Exception;
 use Swift_Mailer;
 use Swift_Message;
@@ -44,6 +42,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Twig_Environment;
 
 /**
+ *
  * @Route("/sdt")
  */
 class SdtController extends AbstractController
@@ -165,7 +164,6 @@ class SdtController extends AbstractController
 
     /**
      * @Route("/new", name="sdt_new", methods={"GET","POST"})
-     * @param SalaryReportInfoRepository $salaryReportInfoRepository
      * @param Request $request
      * @param Swift_Mailer $mailer
      * @param HolidayService $holidayService
@@ -174,10 +172,8 @@ class SdtController extends AbstractController
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
-     * @throws NonUniqueResultException
      */
     public function new(
-        SalaryReportInfoRepository $salaryReportInfoRepository,
         Request $request,
         Swift_Mailer $mailer,
         HolidayService $holidayService,
@@ -192,12 +188,6 @@ class SdtController extends AbstractController
             ['constraints' => [new SdtCount($leftSdtCalculator)]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($todaySalaryReport = $salaryReportInfoRepository->getTodaySalaryReport()) {
-                $todaySalaryReport = $todaySalaryReport->getCreateDate();
-                if ($form->get('createDate')->getData() <= $todaySalaryReport) {
-                    return $this->redirectToRoute(self::SDT_INDEX_ROUTE);
-                }
-            }
             $messageBuilder = new NewSDTMessageBuilder(
                 $newSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService), $this->environment
             );
@@ -243,7 +233,6 @@ class SdtController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="sdt_edit", methods={"GET","POST"})
-     * @param SalaryReportInfoRepository $salaryReportInfoRepository
      * @param Request $request
      * @param Sdt $sdt
      * @param Swift_Mailer $mailer
@@ -253,10 +242,8 @@ class SdtController extends AbstractController
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
-     * @throws NonUniqueResultException
      */
     public function edit(
-        SalaryReportInfoRepository $salaryReportInfoRepository,
         Request $request,
         Sdt $sdt,
         Swift_Mailer $mailer,
@@ -276,12 +263,6 @@ class SdtController extends AbstractController
         $form->handleRequest($request);
 
         if ($oldFromDate !== null && $form->isSubmitted() && $form->isValid()) {
-            if ($todaySalaryReport = $salaryReportInfoRepository->getTodaySalaryReport()) {
-                $todaySalaryReport = $todaySalaryReport->getCreateDate();
-                if ($form->get('createDate')->getData() <= $todaySalaryReport) {
-                    return $this->redirectToRoute(self::SDT_INDEX_ROUTE);
-                }
-            }
             $messageBuilder = new UpdateSDTMessageBuilder(
                 $editSdtMailFromSdtAdapter->getEditSdtMail($sdt, $oldFromDate, $oldCount, $holidayService),
                 $this->environment
