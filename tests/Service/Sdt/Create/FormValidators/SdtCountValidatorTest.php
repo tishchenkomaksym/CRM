@@ -61,8 +61,8 @@ class SdtCountValidatorTest extends TestCase
     {
         return [
             [
-                5,
-                5,
+                3,
+                2,
             ],
         ];
     }
