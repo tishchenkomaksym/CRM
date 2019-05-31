@@ -179,7 +179,7 @@ class UserController extends AbstractController
         $sdtUsed = $baseSalaryReportBuilder->build($todaySalaryReport, $nextSalaryReport, $user);
         $manager = $service->getPhpDeveloperManager($user);
         $leftSdt = $leftSdtCalculator->calculate($user);
-        $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser(), new DateTime());
+        $workingHoursInformation = $baseWorkHoursInformationBuilder->build($user, new DateTime());
         return $this->render(
             'user/show.html.twig',
             [
