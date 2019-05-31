@@ -4,6 +4,7 @@
 namespace App\Service\Vacancy\CandidateLinkRelationsToCandidate\FormValidators;
 
 
+use App\Service\Vacancy\CandidateEditRelationToCandidateLinkToCandidateVacancy\NoDataException;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\VacancyCandidateBuilder\ExistsCandidateBuilder;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\Form;
@@ -12,7 +13,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class CandidateLinkCheckExistenceValidator extends ConstraintValidator
 {
-    private $message = 'This vacancy was already added';
+    private $message = 'This candidate was already added';
     /**
      * @var ExistsCandidateBuilder
      */
@@ -20,22 +21,22 @@ class CandidateLinkCheckExistenceValidator extends ConstraintValidator
     /**
      * @var CandidateLinkExistenceLogic
      */
-    private $candidateVacancyExistenceLogic;
+    private $candidateLinkExistenceLogic;
 
 
     public function __construct(ExistsCandidateBuilder $existsCandidateBuilder,
-                                CandidateLinkExistenceLogic $candidateVacancyExistenceLogic)
+                                CandidateLinkExistenceLogic $candidateLinkExistenceLogic)
     {
         $this->existsCandidateBuilder = $existsCandidateBuilder;
-        $this->candidateVacancyExistenceLogic = $candidateVacancyExistenceLogic;
+        $this->candidateLinkExistenceLogic = $candidateLinkExistenceLogic;
     }
 
     /**
      * @param mixed $value
      * @param Constraint $constraint
      * @return void
+     * @throws NoDataException
      */
-
     public function validate($value, Constraint $constraint):void
     {
         if (!$constraint instanceof CandidateLinkCheckExistence) {
@@ -47,7 +48,12 @@ class CandidateLinkCheckExistenceValidator extends ConstraintValidator
             $name = $form->get('name')->getData();
             $surname = $form->get('surname')->getData();
             $candidate = $this->existsCandidateBuilder->build($name, $surname);
-            if (($candidate !== null) && !empty($this->candidateVacancyExistenceLogic->existence($candidate->getId(),
+            if (($candidate !== null) && !empty($this->candidateLinkExistenceLogic->existence($candidate->getId(),
+                    [$constraint->vacancyLink->getId()]))) {
+                $this->context->buildViolation($constraint->message)
+                    ->addViolation();
+            }
+            if (($candidate !== null) && !empty($this->candidateLinkExistenceLogic->existenceVacancy($candidate->getId(),
                     [$constraint->vacancyLink->getId()]))) {
                 $this->context->buildViolation($constraint->message)
                     ->addViolation();

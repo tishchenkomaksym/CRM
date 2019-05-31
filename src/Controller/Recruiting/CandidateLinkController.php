@@ -11,17 +11,25 @@ use App\Entity\VacancyLink;
 use App\Form\Recruiting\CandidateLink\CandidateLinkCommentInterestType;
 use App\Form\Recruiting\CandidateLink\CandidateLinkDenialReasonType;
 use App\Repository\CandidateLinkRepository;
+use App\Repository\CandidateRepository;
 use App\Repository\VacancyLinkRepository;
 use App\Repository\VacancyRepository;
 
 use App\Service\Candidate\CandidatePhotoDecorator;
 use App\Service\Vacancy\CandidateLinkRelationsToCandidate\FormValidators\CandidateLinkSearch;
+use App\Service\Vacancy\Letters\CreateForDepartmentManagerCandidateApprove\NewMessageBuilderForDepartmentManagerCandidateApprove;
+use App\Service\Vacancy\Letters\CreateForViewerCandidateApprove\NewMessageBuilderForViewer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class CandidateLinkController extends AbstractController
 {
@@ -32,6 +40,15 @@ class CandidateLinkController extends AbstractController
     public const LINKS = 'links';
 
     public const VACANCY_SHOW_RECEIVED = 'vacancy_show_cv_received';
+    /**
+     * @var Environment
+     */
+    private $environment;
+
+    public function __construct(Environment $environment)
+    {
+        $this->environment = $environment;
+    }
 
     /**
      * @IsGranted("ROLE_RECRUITER")
@@ -125,12 +142,19 @@ class CandidateLinkController extends AbstractController
      * @param Request $request
      * @param CandidateLinkSearch $candidateLinkSearch
      * @param CandidatePhotoDecorator $candidatePhotoDecorator
+     * @param Swift_Mailer $mailer
+     * @param CandidateRepository $candidateRepository
      * @return NoDateException|Response
+     * @throws LoaderError
      * @throws NoDateException
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function checkInterest(Vacancy $vacancy, Request $request,
         CandidateLinkSearch $candidateLinkSearch,
-        CandidatePhotoDecorator $candidatePhotoDecorator)
+        CandidatePhotoDecorator $candidatePhotoDecorator,
+        Swift_Mailer $mailer,
+        CandidateRepository $candidateRepository)
     {
         $candidateId = $request->get(self::CANDIDATE_ID);
         $candidateLink = $candidateLinkSearch->searchCandidateLink($candidateId, $vacancy);
@@ -150,10 +174,20 @@ class CandidateLinkController extends AbstractController
             if($form instanceof Form)
             {
                 if ($form->getClickedButton() && 'save' === $form->getClickedButton()->getName()) {
-                    $candidateLink->setCandidateStatus('Candidates Interest is checked');
+                    $candidateLink->setCandidateStatus('Candidate is interested in vacancy');
                     $entityManager->persist($candidateLink);
                     $entityManager->flush();
-                    return $this->redirectToRoute(self::VACANCY_SHOW_RECEIVED, [
+                    $messageBuilder = new NewMessageBuilderForDepartmentManagerCandidateApprove(
+                        $vacancy, $candidateId, $candidateRepository, $this->environment
+                    );
+                    if ($vacancy->getVacancyViewerUser() !== null){
+                        $messageBuilderViewer = new NewMessageBuilderForViewer(
+                            $vacancy, $candidateId, $candidateRepository, $this->environment
+                        );
+                        $mailer->send($messageBuilderViewer->build());
+                    }
+                    $mailer->send($messageBuilder->build());
+                    return $this->redirectToRoute('vacancy_show_candidates', [
                         'id' => $vacancy->getId()]);
                 }
 
@@ -190,7 +224,7 @@ class CandidateLinkController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             if($form instanceof Form){
                 if ($form->getClickedButton() && 'save' === $form->getClickedButton()->getName()) {
-                    $candidateLink->setCandidateStatus('Candidates Interest is checked');
+                    $candidateLink->setCandidateStatus('Candidate is interested in vacancy');
                     $entityManager->persist($candidateLink);
                     $entityManager->flush();
                     return $this->redirectToRoute(self::VACANCY_SHOW_RECEIVED, [
@@ -234,7 +268,7 @@ class CandidateLinkController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($candidateLink);
             $entityManager->flush();
-            return $this->redirectToRoute(self::VACANCY_SHOW_RECEIVED, [
+            return $this->redirectToRoute('vacancy_show_candidates', [
                     'id' => $vacancy->getId()
                 ]
             );
