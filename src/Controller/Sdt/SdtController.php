@@ -194,7 +194,7 @@ class SdtController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             if ($todaySalaryReport = $salaryReportInfoRepository->getTodaySalaryReport()) {
                 $todaySalaryReport = $todaySalaryReport->getCreateDate();
-                if ($form->get('createDate')->getData() <= $todaySalaryReport) {
+                if ($this->isGranted(['ROLE_TOM']) === false && $form->get('createDate')->getData() <= $todaySalaryReport) {
                     return $this->redirectToRoute(self::SDT_INDEX_ROUTE);
                 }
             }
@@ -278,7 +278,7 @@ class SdtController extends AbstractController
         if ($oldFromDate !== null && $form->isSubmitted() && $form->isValid()) {
             if ($todaySalaryReport = $salaryReportInfoRepository->getTodaySalaryReport()) {
                 $todaySalaryReport = $todaySalaryReport->getCreateDate();
-                if ($form->get('createDate')->getData() <= $todaySalaryReport) {
+                if ($this->isGranted(['ROLE_TOM']) === false && $form->get('createDate')->getData() <= $todaySalaryReport) {
                     return $this->redirectToRoute(self::SDT_INDEX_ROUTE);
                 }
             }
