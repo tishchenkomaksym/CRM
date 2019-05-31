@@ -25,7 +25,7 @@ class SdtCountValidator extends ConstraintValidator
         if (!$value instanceof Sdt) {
             throw new UnexpectedTypeException($constraint, Sdt::class);
         }
-        if (!$value->getAtOwnExpense() && $value->getCount() <= $constraint->getLeftSdtCalculator()->calculate($value->getUser())) {
+        if (!$value->getAtOwnExpense() && $value->getCount() > $constraint->getLeftSdtCalculator()->calculate($value->getUser())) {
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }
