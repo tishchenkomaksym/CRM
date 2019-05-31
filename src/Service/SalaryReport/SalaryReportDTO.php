@@ -27,6 +27,8 @@ class SalaryReportDTO
     public $sdtCountUsed;
     public $sdtCountAtOwnExpenseUsed;
     public $salarySize;
+    /** @var float */
+    public $timeUnlogged;
     /** @var User */
     public $user;
 

@@ -100,49 +100,31 @@ class BaseSalaryReportBuilder
         $returnObject->reportWorkingDays = $this->getReportWorkingDays($previousDateTime, $user->getCreateDate(),
             $dateWorkingHours,
             $returnObject->sdtCountUsed + $returnObject->sdtCountAtOwnExpenseUsed);
-        $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateForSdt, $user);
+        $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateForSdt, $user) - $returnObject->sdtCountAtOwnExpenseUsed;
 
         $returnObject->setTimeInfo($this->getTimeInfo($previousDateTime, $dateWorkingHours, $user));
+
+        $returnObject->timeUnlogged = number_format($returnObject->getTimeInfo()->getLoggedTime() -
+            $returnObject->getTimeInfo()->getRequiredTime(), 2);
+
         $returnObject->user = $user;
         return $returnObject;
     }
 
     /**
-     * @param User $user
-     * @param DateTime $from
-     * @param DateTime $to
+     * @param SalaryReportInfo $newReport
+     * @return DateTime
      * @throws Exception
      */
-    private function getUserBonusInformation(User $user, DateTime $from, DateTime $to)
-    {
-        $projects = $this->projectDTOBuilder->buildArray();
-        $filteredProjects = [];
-        foreach ($projects as $project) {
-            $endDate = $project->getEndDate();
-            if (($from < $endDate && $endDate < $to) || $project->getStatus() !== 'Closed') {
-                $filteredProjects[] = $project;
-            }
-        }
-        $this->bonusInformationBuilder->buildArray($user, $filteredProjects);
-    }
-
-    /**
-     * @param $previousDateTime
-     * @param $dateWorkingHours
-     * @param $user
-     * @return WorkHoursInformation
-     * @throws Exception
-     */
-    private function getTimeInfo(
-        $previousDateTime,
-        $dateWorkingHours,
-        $user
-    ): WorkHoursInformation {
-        return $this->baseWorkHoursInformationBuilder->build(
-            $previousDateTime,
-            $dateWorkingHours,
-            $user
-        );
+    private function getDateForSDT(
+        SalaryReportInfo $newReport
+    ): DateTime {
+        $dateForSdt = new DateTime();
+        /** @noinspection NullPointerExceptionInspection */
+        $dateForSdt->setTimestamp($newReport->getCreateDate()->getTimestamp());
+        $dateForSdt->setDate($dateForSdt->format('Y'), $dateForSdt->format('m'), (int)$dateForSdt->format('d') - 1);
+        $dateForSdt->setTime(23, 59, 59);
+        return $dateForSdt;
     }
 
     /**
@@ -165,19 +147,42 @@ class BaseSalaryReportBuilder
     }
 
     /**
-     * @param SalaryReportInfo $newReport
-     * @return DateTime
+     * @param $previousDateTime
+     * @param $dateWorkingHours
+     * @param $user
+     * @return WorkHoursInformation
      * @throws Exception
      */
-    private function getDateForSDT(
-        SalaryReportInfo $newReport
-    ): DateTime {
-        $dateForSdt = new DateTime();
-        /** @noinspection NullPointerExceptionInspection */
-        $dateForSdt->setTimestamp($newReport->getCreateDate()->getTimestamp());
-        $dateForSdt->setDate($dateForSdt->format('Y'), $dateForSdt->format('m'), (int)$dateForSdt->format('d') - 1);
-        $dateForSdt->setTime(23, 59, 59);
-        return $dateForSdt;
+    private function getTimeInfo(
+        $previousDateTime,
+        $dateWorkingHours,
+        $user
+    ): WorkHoursInformation {
+        return $this->baseWorkHoursInformationBuilder->build(
+            $previousDateTime,
+            $dateWorkingHours,
+            $user
+        );
+    }
+
+
+    /**
+     * @param User $user
+     * @param DateTime $from
+     * @param DateTime $to
+     * @throws Exception
+     */
+    private function getUserBonusInformation(User $user, DateTime $from, DateTime $to)
+    {
+        $projects = $this->projectDTOBuilder->buildArray();
+        $filteredProjects = [];
+        foreach ($projects as $project) {
+            $endDate = $project->getEndDate();
+            if (($from < $endDate && $endDate < $to) || $project->getStatus() !== 'Closed') {
+                $filteredProjects[] = $project;
+            }
+        }
+        $this->bonusInformationBuilder->buildArray($user, $filteredProjects);
     }
 
     private function getReportWorkingDays(
