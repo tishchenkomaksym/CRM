@@ -181,7 +181,7 @@ class CandidateController extends AbstractController
                 }else {
                     $id = $candidateEditRelations->candidateFromVacancyRecommendation($candidate, $vacancyLinkId);
                 }
-                return $this->redirectToRoute('vacancy_show_search_candidate', [
+                return $this->redirectToRoute('vacancy_show_candidates', [
                         'id' => $id
                     ]
                 );

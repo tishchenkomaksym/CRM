@@ -68,42 +68,44 @@
         </div>
     </div>
     <br>
-    <div class="d-flex justify-content-around link-recruiter">
+    <div class="d-flex justify-content-between link-recruiter">
         <a class="btn btn-primary" href="{{ path('vacancy_show', {'id': vacancy.id}) }}" >View Request Info &#8594;</a>
         <a class="btn btn-primary" href="{{ path('vacancy_show_history', {'id': vacancy.id}) }}">View Request history &#8594;</a>
-        <a class="btn btn-primary" href="#">View Candidates list &#8594;</a>
     </div>
-    <h3 class="text-center">Work on Issue</h3>
-    <div class="wrapStart text-center border border-warning rounded">
-        <p class="border border-warning rounded">Status:
-            {% if vacancy.status == 'Issue have been assigned' %}
-                <span>Search for a candidate(s) have been started</span>
-            {% elseif vacancy.status == 'Search for a candidate(s) have been started'%}
-                <span>CV Received</span>
-            {% elseif vacancy.status == 'CV Received' %}
-                <span>Candidates Interest is checked</span>
-            {% elseif vacancy.status == 'Candidates Interest is checked'%}
-                <span>CV approved by Department Manager</span>
-            {% else %}
-                <span>Search for a candidate(s) have been started</span>
-            {% endif %}
+    <br>
+    {% if vacancy.status == 'Search for a candidate(s) have been started' %}
+        <p>
+            Для продолжения работы над вакансией перейдите в окно работы над кандидатами. Начните с добавления кандидатов
+            как только Вы получите отклик на вакансию. После добавления кандидатов начните работу над ними (активные кнопки
+            под каждым кандидатом).
         </p>
-        {% if vacancy.status == 'Search for a candidate(s) have been started' %}
-            <a class="btn btn-danger" href="{{ path('vacancy_show_search_candidate', {'id': vacancy.id}) }}">Start Work</a>
-        {% elseif vacancy.status == 'CV Received' %}
-            <a class="btn btn-danger" href="{{ path('vacancy_show_cv_received', {'id': vacancy.id}) }}">Start Work</a>
-        {% else %}
-            <a class="btn btn-danger" href="{{ path('vacancy_link_new', {'id': vacancy.id}) }}">Start Work</a>
-        {% endif %}
-    </div>
-    <div class="navbar bg-light d-flex justify-content-between">
-        <div class="badge badge-success">
-            assigned to:{{ vacancy.assignee }}
+    {% endif %}
+    <br>
+    {% if vacancy.status == 'Search for a candidate(s) have been started' %}
+        <div class="text-center">
+            <a class="btn btn-success" href="{{ path('vacancy_show_candidates', {'id': vacancy.id}) }}">
+                View Candidates List
+            </a>
         </div>
-        <div>
-            <span class="badge badge-success">Approved</span>
-            {{ vacancy.approveDate|date('Y-m-d') }}
-            by {{ vacancy.approvedBy }}
+    {% else %}
+    <div class="text-center">
+        <a class="btn btn-success" href="{{ path('vacancy_link_new', {'id': vacancy.id}) }}">
+            START WORK ON ISSUE
+        </a>
+    </div>
+    {% endif %}
+    <br>
+    <br>
+    <div class="fixed-bottom container">
+        <div class="navbar bg-light d-flex justify-content-between">
+            <div class="badge badge-success">
+                assigned to:{{ vacancy.assignee }}
+            </div>
+            <div>
+                <span class="badge badge-success">Approved</span>
+                {{ vacancy.approveDate|date('Y-m-d') }}
+                by {{ vacancy.approvedBy }}
+            </div>
         </div>
     </div>
 

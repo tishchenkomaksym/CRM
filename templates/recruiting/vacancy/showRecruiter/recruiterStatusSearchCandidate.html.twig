@@ -74,16 +74,9 @@
         <a href="{{ path('candidate_list_links_recommendation', {'id': vacancy.id}) }}">CVs received from recommendation</a>
     </div>
     <div class="text-center">
-
-        {% if vacancy.status == 'CV Received' %}
-            <div>
-                <a class="btn btn-success" href="{{ path('vacancy_show_recruiter', {'id': vacancy.id}) }}">Done</a>
-            </div>
-        {% else %}
-            <div class="btn btn-danger">
-                 Not available
-             </div>
-        {% endif %}
+        <div>
+            <a class="btn btn-success" href="{{ path('vacancy_show_candidates', {'id': vacancy.id}) }}">Done</a>
+        </div>
     </div>
 
     <div class="navbar bg-light d-flex justify-content-between">

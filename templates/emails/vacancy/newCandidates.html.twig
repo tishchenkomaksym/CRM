@@ -1,0 +1,10 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+
+    <p>
+        По открытой Вами вакансии появился кандидат. Кликните на кнопку ниже чтобы проверить его
+    </p>
+
+{#    <a href="{{ url('vacancy_show_approved_interview_top_manager',{'id': vacancy.id}) }}">Check candidates</a>#}
+{% endblock %}
