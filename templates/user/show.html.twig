@@ -174,8 +174,7 @@
         {% if is_granted("ROLE_ACCOUNT_MANAGER") %}
             <tr>
                 <th>Roles</th>
-                <td style="word-break: break-all">{{ user.user.roles ? user.user.roles|json_encode : '' }}</td>
-                <td>{{ user.user.roles ? user.user.roles|json_encode : '' }}
+                <td style="word-break: break-all">{{ user.user.roles ? user.user.roles|json_encode : '' }}
                     {% if is_granted('ROLE_MANAGE_ROLES') %}
                         <a class="btn btn-secondary" href="{{ path('user_roles', {'id': user.user.id}) }}">Add Role</a>
                     {% endif %}
