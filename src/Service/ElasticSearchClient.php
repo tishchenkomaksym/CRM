@@ -357,7 +357,7 @@ class ElasticSearchClient
         if (!empty($data['aggregations']['project']['buckets'])) {
             $result = [];
             foreach ($data['aggregations']['project']['buckets'] as $bucket) {
-                $result['key'] = $bucket['key']['developerEstimate']['value'];
+                $result['key'] = $bucket['developerEstimate']['value'];
             }
             return $result;
         }
