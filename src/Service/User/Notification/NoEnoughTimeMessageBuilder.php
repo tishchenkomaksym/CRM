@@ -43,7 +43,7 @@ class NoEnoughTimeMessageBuilder
         string $email
     ): Swift_Message {
         return (new Swift_Message('Logged time check'))
-            ->setFrom('')
+            ->setFrom(getenv('LOCAL_EMAIL'))
             ->setTo($email, $email)
             ->setBody(
                 $this->templating->render(
