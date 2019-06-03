@@ -194,7 +194,7 @@ class BaseSalaryReportBuilder
         DateTime $startDate,
         DateTime $dateForSdt,
         int $usedSdt
-    ) {
+    ): int {
         if ($previousDateTime < $startDate) {
             $previousDateTime = $startDate;
         }
@@ -229,7 +229,7 @@ class BaseSalaryReportBuilder
         DateTime $previousReportDate,
         DateTime $nowTime,
         User $user
-    ) {
+    ): int {
         return $this->usedSdtDaysCalculator->calculate($previousReportDate,
             $nowTime, (new AtOwnExpenseFilter())->filter($user->getSdt()->toArray()));
 
