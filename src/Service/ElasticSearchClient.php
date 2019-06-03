@@ -95,8 +95,8 @@ class ElasticSearchClient
     public function getTimeFromDateToDate(DateTime $from, DateTime $to, $userName)
     {
         $params = [
-            self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
-            self::ELASTIC_TYPE_FIELD => self::INDEX_TYPE_WORK_LOG_NAME,
+            self::ELASTIC_INDEX_FIELD => 'user_work_logs',
+            self::ELASTIC_TYPE_FIELD => 'user_work_log',
             'size' => 0,
             'body' => [
                 self::ELASTIC_QUERY_FIELD => [
@@ -104,12 +104,12 @@ class ElasticSearchClient
                         [
                             'must' => [
                                 [
-                                    self::MATCH => [self::FIELD_AUTHOR_USER_NAME => $userName],
+                                    self::MATCH => ['user' => $userName],
                                 ],
                             ],
                             self::ELASTIC_FILTER_FIELD => [
                                 self::ELASTIC_RANGE_FIELD => [
-                                    self::ELASTIC_STARTED_FIELD => [
+                                    'workLogDate' => [
                                         'gte' => $from->format(self::DEFAULT_DATE_FORMAT),
                                         'lte' => $to->format(self::DEFAULT_DATE_FORMAT),
                                         self::ELASTIC_FORMAT_FIELD => self::DEFAULT_ELASTIC_DATE_FORMAT
@@ -122,7 +122,7 @@ class ElasticSearchClient
                 'aggs' => [
                     self::FIELD_TIME => [
                         'sum' => [
-                            self::ELASTIC_FIELD_FIELD => self::FIELD_TIME
+                            self::ELASTIC_FIELD_FIELD => 'time'
                         ]
                     ]
                 ]
