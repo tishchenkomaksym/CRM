@@ -44,7 +44,7 @@ class NoEnoughTimeMessageBuilder
     ): Swift_Message {
         return (new Swift_Message('Logged time check'))
             ->setFrom('')
-            ->setTo([$email])
+            ->setTo($email, $email)
             ->setBody(
                 $this->templating->render(
                     'emails/user/time/noEnoughTime.twig',
