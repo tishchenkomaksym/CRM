@@ -50,8 +50,8 @@ class NoEnoughTimeMessageBuilder
                     'emails/user/time/noEnoughTime.twig',
                     [
                         'time' => $time,
-                        'toDate' => $toDate,
-                        'fromDate' => $fromDate,
+                        'toDate' => $toDate->format('Y-m-d'),
+                        'fromDate' => $fromDate->format('Y-m-d'),
                         'salaryReportDate' => $salaryReportDate
                     ]
                 ),
