@@ -88,7 +88,7 @@ class NoEnoughWorkingHours extends Command
             foreach ($users as $user) {
                 $userInfo = $this->baseWorkHoursInformationBuilder->build($user, $nowDate);
                 $timeDiff = $userInfo->getRequiredTime() - $userInfo->getLoggedTime();
-                if ($timeDiff > 0) {
+//                if ($timeDiff > 0) {
                     $message = $this->enoughTimeMessageBuilder->build(
                         $timeDiff,
                         $nowDate,
@@ -98,7 +98,7 @@ class NoEnoughWorkingHours extends Command
                         //$user->getEmail()
                     );
                     $this->mailer->send($message);
-                }
+//                }
             }
         }
     }
