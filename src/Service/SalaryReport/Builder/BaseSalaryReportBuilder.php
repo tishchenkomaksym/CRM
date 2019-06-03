@@ -83,6 +83,7 @@ class BaseSalaryReportBuilder
         $dateWorkingHours->setTimestamp($newReport->getCreateDate()->getTimestamp());
         $dateWorkingHours->setDate($dateWorkingHours->format('Y'), $dateWorkingHours->format('m'),
             (int)$dateWorkingHours->format('d'));
+        /** @noinspection NullPointerExceptionInspection */
         $previousDateTime = new DateTime("@{$previousReportInfo->getCreateDate()->getTimeStamp()}");
 
         $returnObject->sdtCountUsed = $this->getSdtCountUsed($previousDateTime, $dateForSdt, $user);
@@ -92,16 +93,18 @@ class BaseSalaryReportBuilder
 
         $returnObject->reportWorkingDays = $this->getReportWorkingDays($previousDateTime, $user->getCreateDate(), $dateWorkingHours,
             $returnObject->sdtCountUsed + $returnObject->sdtCountAtOwnExpenseUsed);
-        $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateForSdt, $user) - $returnObject->sdtCountAtOwnExpenseUsed;
+        $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateForSdt, $user);
         $timeInfo = $this->baseWorkHoursInformationBuilder->build(
             $previousDateTime,
             $dateWorkingHours,
             $user
         );
         $returnObject->setTimeInfo($timeInfo);
+        if($userTeam = $user->getTeam()) {
+            $returnObject->team = $userTeam;
+        }
         $returnObject->timeUnlogged = number_format($returnObject->getTimeInfo()->getLoggedTime() -
             $returnObject->getTimeInfo()->getRequiredTime(), 2);
-
         $returnObject->user = $user;
         return $returnObject;
     }

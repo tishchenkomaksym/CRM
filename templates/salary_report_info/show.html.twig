@@ -21,6 +21,7 @@
         <thead>
         <tr>
             <th>User</th>
+            <th>Team</th>
             <th>Working Days</th>
             <th>SDT used</th>
             <th>SDT left</th>
@@ -34,8 +35,10 @@
         </thead>
         <tbody>
         {% for item in salaryReportItems %}
+            {% if item.team is not null %}
             <tr>
                 <th>{{ item.user.name }}</th>
+                <th>{{ item.team.name }}</th>
                 <td>{{ item.calendarWorkingDays }}</td>
                 <td>{{ item.sdtCountUsed }}</td>
                 <td>{{ item.sdtCount }}</td>
@@ -45,6 +48,7 @@
                 <td>{{ item.timeInfo.loggedTime }}</td>
                 <td>{{ item.timeUnlogged}}</td>
             </tr>
+            {% endif %}
         {% endfor %}
         </tbody>
     </table>
