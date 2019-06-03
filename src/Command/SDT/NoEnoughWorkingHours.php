@@ -79,7 +79,10 @@ class NoEnoughWorkingHours extends Command
         InputInterface $input,
         OutputInterface $output
     ) {
-        $users = $this->userRepository->findBy(['email'=>'oleksandra.bi@onyx.com']);
+        $users = $this->userRepository->findBy(
+            []
+//            ['email'=>'oleksandra.bi@onyx.com']
+        );
 
         $nowDate = new DateTime();
         $nextSalaryReport = $this->infoRepository->getNextSalaryReport($nowDate);
@@ -88,17 +91,17 @@ class NoEnoughWorkingHours extends Command
             foreach ($users as $user) {
                 $userInfo = $this->baseWorkHoursInformationBuilder->build($user, $nowDate);
                 $timeDiff = $userInfo->getRequiredTime() - $userInfo->getLoggedTime();
-//                if ($timeDiff > 0) {
+                if ($timeDiff > 0) {
                     $message = $this->enoughTimeMessageBuilder->build(
                         $timeDiff,
                         $nowDate,
                         $this->baseWorkHoursInformationBuilder->getSalaryReportDate(),
                         $nextSalaryReport->getCreateDate(),
                         'oleksandra.bi@onyx.com'
-                        //$user->getEmail()
+//                        $user->getEmail()
                     );
                     $this->mailer->send($message);
-//                }
+                }
             }
         }
     }
