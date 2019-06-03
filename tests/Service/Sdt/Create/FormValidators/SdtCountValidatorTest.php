@@ -66,6 +66,46 @@ class SdtCountValidatorTest extends TestCase
             ],
         ];
     }
+    /**
+     * @dataProvider dataProviderTestValidatePassed
+     * @param int $value
+     * @param float $calculated
+     */
+    public function testValidatePassed(int $value, float $calculated) : void
+    {
+        /** @var Sdt|MockObject $valueMock */
+        $valueMock = $this->createMock(Sdt::class);
+        $valueMock->method('getAtOwnExpense')->willReturn(false);
+        /** @var SdtCount|MockObject $constraintMock */
+        $constraintMock = $this->createMock(SdtCount::class);
+
+
+        $object = new SdtCountValidator();
+        $object->initialize($this->contextMock);
+
+        /** @var LeftSdtCalculator|MockObject $leftSdtCalculatorMock */
+        $leftSdtCalculatorMock = $this->createMock(LeftSdtCalculator::class);
+        $constraintMock->method('getLeftSdtCalculator')->willReturn($leftSdtCalculatorMock);
+        $leftSdtCalculatorMock->method('calculate')->willReturn($calculated);
+        $valueMock->method('getCount')->willReturn($value);
+
+        $this->violationBuilderMock->expects($this->never())->method('addViolation');
+        $this->contextMock->expects($this->never())->method('buildViolation')->willReturn($this->violationBuilderMock);
+        $object->validate($valueMock, $constraintMock);
+    }
+    public function dataProviderTestValidatePassed()
+    {
+        return [
+            [
+                5,
+                5,
+            ],
+            [
+                4,
+                5,
+            ],
+        ];
+    }
 
 
 }
