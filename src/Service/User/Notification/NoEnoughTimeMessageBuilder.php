@@ -52,7 +52,7 @@ class NoEnoughTimeMessageBuilder
                         'time' => $time,
                         'toDate' => $toDate->format('Y-m-d'),
                         'fromDate' => $fromDate->format('Y-m-d'),
-                        'salaryReportDate' => $salaryReportDate
+                        'salaryReportDate' => $salaryReportDate->format('Y-m-d')
                     ]
                 ),
                 'text/html'
