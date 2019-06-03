@@ -9,7 +9,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class CandidateLinkCheckExistenceUpdateCandidateValidator extends ConstraintValidator
 {
-    private $message = 'This vacancy was already added';
+    private $message = 'This candidate was already added';
 
     /**
      * @var CandidateLinkExistenceLogic

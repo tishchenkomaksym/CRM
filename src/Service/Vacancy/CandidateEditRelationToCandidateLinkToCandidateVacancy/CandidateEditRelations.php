@@ -69,7 +69,6 @@ class CandidateEditRelations
                 throw new NoDateException('Vacancy not found');
             }
             $this->entityManager->persist($candidateVacancy->setCandidateStatus(self::CV_RECEIVED));
-            $this->entityManager->persist($vacancy->setStatus(self::CV_RECEIVED));
             $this->entityManager->flush();
         }
         return $vacancyId;
@@ -101,7 +100,6 @@ class CandidateEditRelations
             throw new NoDateException('Vacancy not found');
         }
         $this->entityManager->persist($candidateLink->setCandidateStatus(self::CV_RECEIVED));
-            $this->entityManager->persist($candidateLink->getVacancyLink()->getVacancy()->setStatus(self::CV_RECEIVED));
             $this->entityManager->flush();
 
             return $candidateLink->getVacancyLink()->getVacancy()->getId();

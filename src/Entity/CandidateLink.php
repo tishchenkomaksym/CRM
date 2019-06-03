@@ -54,7 +54,7 @@ class CandidateLink
     /**
      * @var string $type
      *
-     * @ORM\Column(name="candidateStatus", nullable=true, type="string", length=255, columnDefinition="ENUM('CV Received','Candidates Interest is checked','Waiting for response','Approved for the interview','Interview timing specification','Waiting for interview','Waiting for our final response','Closed')")
+     * @ORM\Column(name="candidateStatus", nullable=true, type="string", length=255, columnDefinition="ENUM('CV Received','Candidate is interested in vacancy','Candidate is waiting for approval','Approved for the interview','Interview timing specification','Waiting for interview','Waiting for our final response','Closed')")
      */
     private $candidateStatus;
 

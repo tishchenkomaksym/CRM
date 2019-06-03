@@ -87,6 +87,7 @@ class BaseSalaryReportBuilder
         $returnObject = new SalaryReportDTO();
         $dateForSdt = $this->getDateForSDT($newReport);
         $dateWorkingHours = $this->getDateWorkingHours($newReport);
+        /** @noinspection NullPointerExceptionInspection */
         $previousDateTime = new DateTime("@{$previousReportInfo->getCreateDate()->getTimeStamp()}");
 
         $this->getUserBonusInformation($user, $previousDateTime, $dateForSdt);
@@ -108,6 +109,9 @@ class BaseSalaryReportBuilder
             $returnObject->getTimeInfo()->getRequiredTime(), 2);
 
         $returnObject->user = $user;
+        if($userTeam = $user->getTeam()) {
+            $returnObject->team = $userTeam;
+        }
         return $returnObject;
     }
 

@@ -6,6 +6,7 @@ use App\Entity\SDTEmailAssignee;
 use App\Entity\User;
 use App\Form\SDTEmailAssigneeType;
 use App\Repository\SDTEmailAssigneeRepository;
+use App\Service\Vacancy\CandidateEditRelationToCandidateLinkToCandidateVacancy\NoDataException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,9 +17,14 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SDTEmailAssigneeController extends AbstractController
 {
+    public const SDT_EMAIL_ASSIGNEE = 'sdt_email_assignee';
+
+    public const SDT_EMAIL_ASSIGNEE_INDEX = 'sdt_email_assignee_index';
+
     /**
      * @Route("/{id}", name="sdt_email_assignee_index", methods={"GET"})
      * @param User $user
+     * @param SDTEmailAssigneeRepository $SDTEmailAssigneeRepository
      * @return Response
      */
     public function index(User $user, SDTEmailAssigneeRepository $SDTEmailAssigneeRepository): Response
@@ -47,11 +53,11 @@ class SDTEmailAssigneeController extends AbstractController
             $entityManager->persist($sDTEmailAssignee);
             $entityManager->flush();
 
-            return $this->redirectToRoute('sdt_email_assignee_index', ['id' => $user->getId()]);
+            return $this->redirectToRoute(self::SDT_EMAIL_ASSIGNEE_INDEX, ['id' => $user->getId()]);
         }
 
         return $this->render('sdt_email_assignee/new.html.twig', [
-            'sdt_email_assignee' => $sDTEmailAssignee,
+            self::SDT_EMAIL_ASSIGNEE => $sDTEmailAssignee,
             'user' => $user,
             'form' => $form->createView(),
         ]);
@@ -59,11 +65,13 @@ class SDTEmailAssigneeController extends AbstractController
 
     /**
      * @Route("/entry/{id}", name="sdt_email_assignee_show", methods={"GET"})
+     * @param SDTEmailAssignee $sDTEmailAssignee
+     * @return Response
      */
     public function show(SDTEmailAssignee $sDTEmailAssignee): Response
     {
         return $this->render('sdt_email_assignee/show.html.twig', [
-            'sdt_email_assignee' => $sDTEmailAssignee,
+            self::SDT_EMAIL_ASSIGNEE => $sDTEmailAssignee,
         ]);
     }
 
@@ -72,21 +80,25 @@ class SDTEmailAssigneeController extends AbstractController
      * @param Request $request
      * @param SDTEmailAssignee $sDTEmailAssignee
      * @return Response
+     * @throws NoDataException
      */
-    public function edit(Request $request, SDTEmailAssignee $sDTEmailAssignee): Response
+    public function edit(SDTEmailAssignee $sDTEmailAssignee, Request $request): Response
     {
         $form = $this->createForm(SDTEmailAssigneeType::class, $sDTEmailAssignee);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
-            return $this->redirectToRoute('sdt_email_assignee_index', [
-                'id' => $sDTEmailAssignee->getId(),
+            if ($sDTEmailAssignee->getUser() === null){
+                throw new NoDataException('User not found');
+            }
+            return $this->redirectToRoute(self::SDT_EMAIL_ASSIGNEE_INDEX, [
+                'id' => $sDTEmailAssignee->getUser()->getId(),
             ]);
         }
 
         return $this->render('sdt_email_assignee/edit.html.twig', [
-            'sdt_email_assignee' => $sDTEmailAssignee,
+            self::SDT_EMAIL_ASSIGNEE => $sDTEmailAssignee,
             'form' => $form->createView(),
         ]);
     }
@@ -96,6 +108,7 @@ class SDTEmailAssigneeController extends AbstractController
      * @param Request $request
      * @param SDTEmailAssignee $sDTEmailAssignee
      * @return Response
+     * @throws NoDataException
      */
     public function delete(Request $request, SDTEmailAssignee $sDTEmailAssignee): Response
     {
@@ -105,6 +118,11 @@ class SDTEmailAssigneeController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('sdt_email_assignee_index');
+        if ($sDTEmailAssignee->getUser() === null){
+            throw new NoDataException('User not found');
+        }
+        return $this->redirectToRoute(self::SDT_EMAIL_ASSIGNEE_INDEX, [
+            'id' => $sDTEmailAssignee->getUser()->getId(),
+        ]);
     }
 }
