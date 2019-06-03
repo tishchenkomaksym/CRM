@@ -94,7 +94,7 @@ class NoEnoughWorkingHours extends Command
                         $nowDate,
                         $this->baseWorkHoursInformationBuilder->getSalaryReportDate(),
                         $nextSalaryReport->getCreateDate(),
-                        'oleksandra.bi@onyx.com'
+                        ['oleksandra.bi@onyx.com']
                         //$user->getEmail()
                     );
                     $this->mailer->send($message);
