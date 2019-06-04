@@ -241,7 +241,7 @@ class SdtController extends AbstractController
             $this->denyAccessUnlessGranted('ROLE_TOM');
         }
         $userInfo = $userInfoRepository->findOneBy(['user' => $this->getUser()->getId()]);
-        if ($userInfo->getSubTeam() === 'Central Tech Support') {
+        if ($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
             $endDate = BaseDateCalculator::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount());
         } else {
             $endDate = DateCalculatorWithWeekends::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount(), $holidayService);
@@ -264,6 +264,7 @@ class SdtController extends AbstractController
      * @param HolidayService $holidayService
      * @param LeftSdtCalculator $leftSdtCalculator
      * @param EditSdtMailFromSdtAdapter $editSdtMailFromSdtAdapter
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
@@ -276,7 +277,8 @@ class SdtController extends AbstractController
         Swift_Mailer $mailer,
         HolidayService $holidayService,
         LeftSdtCalculator $leftSdtCalculator,
-        EditSdtMailFromSdtAdapter $editSdtMailFromSdtAdapter
+        EditSdtMailFromSdtAdapter $editSdtMailFromSdtAdapter,
+        UserInfoRepository $userInfoRepository
     ): Response {
         if ($sdt->getUser() !== $this->getUser()) {
             $this->denyAccessUnlessGranted('ROLE_TOM');
@@ -297,7 +299,7 @@ class SdtController extends AbstractController
                 }
             }
             $messageBuilder = new UpdateSDTMessageBuilder(
-                $editSdtMailFromSdtAdapter->getEditSdtMail($sdt, $oldFromDate, $oldCount, $holidayService),
+                $editSdtMailFromSdtAdapter->getEditSdtMail($sdt, $oldFromDate, $oldCount, $holidayService, $userInfoRepository),
                 $this->environment
             );
             $strategy = new BaseUpdateStrategy(
@@ -345,7 +347,8 @@ class SdtController extends AbstractController
         Sdt $sdt,
         Swift_Mailer $mailer,
         HolidayService $holidayService,
-        DeleteSdtMailFromSdtAdapter $deleteSdtMailFromSdtAdapter
+        DeleteSdtMailFromSdtAdapter $deleteSdtMailFromSdtAdapter,
+        UserInfoRepository $userInfoRepository
     ): Response {
         if ($sdt->getUser() !== $this->getUser()) {
             $this->denyAccessUnlessGranted('ROLE_TOM');
@@ -353,7 +356,7 @@ class SdtController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $sdt->getId(), $request->request->get('_token'))) {
             if ($this->sendDeleteSdtEmail(
                     $mailer,
-                    $deleteSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService)
+                    $deleteSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService, $userInfoRepository)
                 ) === 0) {
                 throw new EmailServerNotWorking(EmailServerNotWorking::MESSAGE);
             }
