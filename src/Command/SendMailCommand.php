@@ -11,6 +11,7 @@ namespace App\Command;
 use App\Data\Sdt\Mail\Adapter\NewSdtMailFromSdtAdapter;
 use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Repository\SdtRepository;
+use App\Repository\UserInfoRepository;
 use App\Service\HolidayService;
 use App\Service\Sdt\Create\NewSDTMessageBuilder;
 use Swift_Mailer;
@@ -35,6 +36,10 @@ class SendMailCommand extends Command
      */
     private $holidayService;
     /**
+     * @var UserInfoRepository
+     */
+    private $userInfoRepository;
+    /**
      * @var SdtRepository
      */
     private $sdtRepository;
@@ -51,6 +56,7 @@ class SendMailCommand extends Command
      * TestMailCommand constructor.
      * @param Swift_Mailer $mailer
      * @param HolidayService $holidayService
+     * @param UserInfoRepository $userInfoRepository
      * @param SdtRepository $sdtRepository
      * @param Twig_Environment $environment
      * @param NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter
@@ -59,6 +65,7 @@ class SendMailCommand extends Command
     public function __construct(
         Swift_Mailer $mailer,
         HolidayService $holidayService,
+        UserInfoRepository $userInfoRepository,
         SdtRepository $sdtRepository,
         Twig_Environment $environment,
         NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter,
@@ -67,6 +74,7 @@ class SendMailCommand extends Command
         parent::__construct($name);
         $this->mailer = $mailer;
         $this->holidayService = $holidayService;
+        $this->userInfoRepository = $userInfoRepository;
         $this->sdtRepository = $sdtRepository;
         $this->environment = $environment;
         $this->newSdtMailFromSdtAdapter = $newSdtMailFromSdtAdapter;
@@ -96,7 +104,7 @@ class SendMailCommand extends Command
         if ($sdtId) {
             $sdt = $this->sdtRepository->find($sdtId);
             if ($sdt) {
-                $sendMail = $this->newSdtMailFromSdtAdapter->getNewSdtMail($sdt, $this->holidayService);
+                $sendMail = $this->newSdtMailFromSdtAdapter->getNewSdtMail($sdt, $this->holidayService, $this->userInfoRepository);
                 $messageBuilder = new NewSDTMessageBuilder(
                     $sendMail, $this->environment
                 );
