@@ -49,8 +49,7 @@ class NewSdtMailFromSdtAdapter
         }
         if ($createDate !== null) {
             $userInfo = $userInfoRepository->findOneBy(['user' => $sdt->getUser()->getId()]);
-            /** @noinspection NullPointerExceptionInspection */
-            if ($userInfo->getSubTeam() === 'Central Tech Support') {
+            if ($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
                 $endDate = BaseDateCalculator::getDateWithOffset($createDate, $sdt->getCount());
             } else {
                 $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(),
