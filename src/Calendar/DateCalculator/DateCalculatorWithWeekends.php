@@ -8,22 +8,23 @@
 
 namespace App\Calendar\DateCalculator;
 
+
 use App\Service\HolidayService;
+use DateTime;
+
 
 class DateCalculatorWithWeekends
 {
-    public static function getDateWithOffset(\DateTimeInterface $startDate, int $offset, HolidayService $holidayService)
+    public static function getDateWithOffset(DateTime $startDate, int $offset, HolidayService $holidayService)
     {
-        $calculatedSdtCount = $offset > 0 ? $offset : $offset * -1;
-        --$calculatedSdtCount;
-        if ($calculatedSdtCount === 0) {
-            return $startDate;
-        }
-        /** @noinspection PhpParamsInspection */
-        $endDate = date_modify(clone $startDate, '+' . $calculatedSdtCount . ' weekdays');
-        $holidaysCount = \count($holidayService->getHolidayBetweenDate($startDate, $endDate));
-        if ($holidaysCount > 0) {
-            date_modify($endDate, '+' . $holidaysCount . ' weekdays');
+        $endDate = clone $startDate;
+        if ($offset > 0) {
+            date_modify($endDate, '-1 day');
+            date_modify($endDate, '+' . $offset . ' weekdays');
+            $holidaysCount = count($holidayService->getHolidayBetweenDate($startDate, $endDate));
+            if ($holidaysCount > 0) {
+                date_modify($endDate, '+' . $holidaysCount . ' weekdays');
+            }
         }
         return $endDate;
     }
