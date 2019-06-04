@@ -46,24 +46,24 @@ SdtCalendarEventItemBuilder
         HolidayService $holidayService,
         SdtLinkGeneratorInterface $linkGenerator,
         SdtTitleGeneratorInterface $titleGenerator
-    )
-    {
+    ) {
         $this->holidayService = $holidayService;
         $this->linkGenerator = $linkGenerator;
         $this->titleGenerator = $titleGenerator;
     }
 
-    public function build(Sdt $sdt,
-                          User $user,
-                          UserInfoRepository $userInfoRepository): CalendarItem
-    {
+    public function build(
+        Sdt $sdt,
+        User $user,
+        UserInfoRepository $userInfoRepository
+    ): CalendarItem {
         $calendarItem = new CalendarItem();
         $createDate = $sdt->getCreateDate();
         if ($createDate && $createDate instanceof DateTime) {
             $calendarItem->start = $createDate->format('Y-m-d');
             $userInfo = $userInfoRepository->findOneBy(['user' => $user->getId()]);
-            /** @noinspection NullPointerExceptionInspection */
-            if ($userInfo->getSubTeam() === 'Central Tech Support') {
+
+            if ($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
                 $calendarItem->end = BaseDateCalculator::getDateWithOffset(
                     $createDate,
                     $sdt->getCount()

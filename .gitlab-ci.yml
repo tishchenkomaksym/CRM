@@ -106,7 +106,7 @@ unit-tests:
    - export APP_ENV=test
    # Install DEVELOPMENT dependencies
    - composer install --dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
-   - cp ./phpunit.xml.dist ./phpunit.xml
+   - cp ./phpunit.xml.dist ./phpunit.xmld
    - vendor/bin/phpunit --configuration ./phpunit.xml --log-junit build/index.xml --coverage-xml build/coverage --coverage-clover build/coverage/coverage_index.xml --colors=never
    artifacts:
      paths:
