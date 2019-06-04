@@ -3,6 +3,7 @@
 namespace App\Controller\Sdt;
 
 use App\Calendar\CalendarEventItemCollection;
+use App\Calendar\DateCalculator\BaseDateCalculator;
 use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
 use App\Calendar\HolidayCalendarEventItemBuilder;
 use App\Calendar\Sdt\Tom\TomSdtLinkGenerator;
@@ -20,6 +21,7 @@ use App\Entity\Sdt;
 use App\Entity\SdtArchive;
 use App\Form\SdtType;
 use App\Repository\SalaryReportInfoRepository;
+use App\Repository\UserInfoRepository;
 use App\Service\HolidayService;
 use App\Service\Sdt\Calendar\Tom\TomSdtCollectionBuilder;
 use App\Service\Sdt\Create\BaseCreateContext;
@@ -66,6 +68,7 @@ class SdtController extends AbstractController
      * @param LeftSdtCalculator $leftSdtCalculator
      * @param UserSdtLinkGenerator $userSdtLinkGenerator
      * @param UserSdtTitleGenerator $titleGenerator
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
      */
     public function index(
@@ -73,7 +76,8 @@ class SdtController extends AbstractController
         UserInformationService $userInformationService,
         LeftSdtCalculator $leftSdtCalculator,
         UserSdtLinkGenerator $userSdtLinkGenerator,
-        UserSdtTitleGenerator $titleGenerator
+        UserSdtTitleGenerator $titleGenerator,
+        UserInfoRepository $userInfoRepository
     ): Response {
         $sdtCollection = $userInformationService
             ->getAllUserSdt($this->getUser());
@@ -85,7 +89,7 @@ class SdtController extends AbstractController
                     $holidayService,
                     $userSdtLinkGenerator,
                     $titleGenerator
-                ))->build($sdt, $this->getUser())
+                ))->build($sdt, $this->getUser(), $userInfoRepository)
             );
         }
 
@@ -116,6 +120,7 @@ class SdtController extends AbstractController
      * @param TomSdtLinkGenerator $tomLinkGenerator
      * @param UserSdtLinkGenerator $userSdtLinkGenerator
      * @param TomSdtTitleGenerator $titleGenerator
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
      */
     public function viewAll(
@@ -124,8 +129,8 @@ class SdtController extends AbstractController
         LeftSdtCalculator $leftSdtCalculator,
         TomSdtLinkGenerator $tomLinkGenerator,
         UserSdtLinkGenerator $userSdtLinkGenerator,
-        TomSdtTitleGenerator $titleGenerator
-
+        TomSdtTitleGenerator $titleGenerator,
+        UserInfoRepository $userInfoRepository
     ): Response {
         $sdtCollection = $collectionBuilder->buildCollection();
 
@@ -140,7 +145,7 @@ class SdtController extends AbstractController
                     $holidayService,
                     $linkGenerator,
                     $titleGenerator
-                ))->build($sdt, $this->getUser())
+                ))->build($sdt, $this->getUser(), $userInfoRepository)
             );
         }
 
@@ -171,6 +176,7 @@ class SdtController extends AbstractController
      * @param HolidayService $holidayService
      * @param LeftSdtCalculator $leftSdtCalculator
      * @param NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
@@ -182,7 +188,8 @@ class SdtController extends AbstractController
         Swift_Mailer $mailer,
         HolidayService $holidayService,
         LeftSdtCalculator $leftSdtCalculator,
-        NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter
+        NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter,
+        UserInfoRepository $userInfoRepository
     ): Response {
         $sdt = new Sdt();
         $sdt->setUser($this->getUser());
@@ -199,7 +206,7 @@ class SdtController extends AbstractController
                 }
             }
             $messageBuilder = new NewSDTMessageBuilder(
-                $newSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService), $this->environment
+                $newSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService, $userInfoRepository), $this->environment
             );
             $strategy = new BaseCreateStrategy(
                 $mailer,
@@ -224,18 +231,25 @@ class SdtController extends AbstractController
      * @Route("/{id}", name="sdt_show", methods={"GET"})
      * @param Sdt $sdt
      * @param HolidayService $holidayService
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
+     * @throws Exception
      */
-    public function show(Sdt $sdt, HolidayService $holidayService): Response
+    public function show(Sdt $sdt, HolidayService $holidayService, UserInfoRepository $userInfoRepository): Response
     {
         if ($sdt->getUser() !== $this->getUser()) {
             $this->denyAccessUnlessGranted('ROLE_TOM');
         }
+        $userInfo = $userInfoRepository->findOneBy(['user' => $this->getUser()->getId()]);
+        if ($userInfo->getSubTeam() === 'Central Tech Support') {
+            $endDate = BaseDateCalculator::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount());
+        } else {
+            $endDate = DateCalculatorWithWeekends::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount(), $holidayService);
+        }
         return $this->render(
             'sdt/show.html.twig',
             [
-                'endDate' => DateCalculatorWithWeekends::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount(),
-                    $holidayService),
+                'endDate' => $endDate,
                 'sdt' => $sdt,
             ]
         );

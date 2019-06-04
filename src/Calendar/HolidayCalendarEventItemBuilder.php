@@ -34,7 +34,6 @@ class HolidayCalendarEventItemBuilder
         $createDate = $this->holiday->getDate();
         if ($createDate) {
             $calendarItem->start = $createDate->format('Y-m-d');
-
         }
         $calendarItem->title = $this->holiday->getTitle();
         //TODO: add TOM role check
