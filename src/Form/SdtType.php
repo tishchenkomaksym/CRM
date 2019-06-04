@@ -41,7 +41,11 @@ class SdtType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if ($this->security->isGranted('ROLE_TOM')) {
-            $builder->add('user');
+            $builder->add('user')
+                ->add('count')
+                ->add('createDate')
+                ->add('acting')
+                ->add('atOwnExpense');
         }
         $builder
             ->add(
