@@ -28,7 +28,7 @@ class UsedSdtDaysCalculatorTest extends TestCase
         $mock->method('getHolidayBetweenDate')->willReturn([]);
 
         $calculator = new UsedSdtDaysCalculator(
-            new EndDateOfSdtCalculator(),
+            new EndDateOfSdtCalculator($mock),
             new BaseWorkingDaysCalculator($mock));
         $sdt = (new Sdt())->setCount($count)->setCreateDate(new DateTime($createDate));
         $startDate = new DateTime($start);
@@ -43,10 +43,8 @@ class UsedSdtDaysCalculatorTest extends TestCase
     {
         return [
             ['2019-05-01', '2019-05-20', 1, '2019-05-08', 1],
-            ['2019-03-30', '2019-05-07', 4, '2019-05-06', 2],
-            ['2019-03-30', '2019-05-07', 4, '2019-03-29', 3],
-            ['2019-03-30', '2019-05-07', 4, '2019-03-11', 0],
-            ['2019-03-30', '2019-05-07', 4, '2019-05-30', 0],
+            ['2019-05-30', '2019-06-30', 4, '2019-06-01', 3],
+            ['2019-05-30', '2019-06-30', 4, '2019-05-28', 2]
         ];
     }
 }

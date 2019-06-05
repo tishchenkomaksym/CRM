@@ -10,11 +10,22 @@ namespace App\Service\Sdt\Interval;
 
 
 use App\Entity\Sdt;
+use App\Service\HolidayService;
 use DateTime;
 use Exception;
 
 class EndDateOfSdtCalculator
 {
+    /**
+     * @var HolidayService
+     */
+    private $holidayService;
+
+    public function __construct(HolidayService $holidayService)
+    {
+        $this->holidayService = $holidayService;
+    }
+
     /**
      * @param Sdt $sdt
      * @return DateTime
@@ -24,10 +35,12 @@ class EndDateOfSdtCalculator
     {
         /** @var dateTime $dateTime */
         $dateTime = $sdt->getCreateDate();
-        $count = $sdt->getCount()-1;
+        $count = $sdt->getCount() - 1;
         //Cause we calculate the same date too
         if ($count > 0) {
-            return new DateTime(date('Y-m-j', strtotime("+{$count} weekdays", $dateTime->getTimestamp())));
+            $endDate = new DateTime(date('Y-m-j', strtotime("+{$count} weekdays", $dateTime->getTimestamp())));
+            $holidays = count($this->holidayService->getHolidayBetweenDateNumbers($dateTime, $endDate));
+            return date_modify($endDate, '+' .$holidays. ' days');
         }
         return $dateTime;
     }
