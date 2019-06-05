@@ -1,15 +1,17 @@
 <?php
 
 
-namespace App\Service\Sdt\Create\FormValidators;
+namespace App\Form\SDT\FormValidators;
+
 
 use App\Entity\Sdt;
+use App\Service\Sdt\Create\FormValidators\SdtCount;
 use App\Service\User\Sdt\LeftSdtCalculator;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class SdtCountValidator extends ConstraintValidator
+class UpdateSdtCountValidator extends ConstraintValidator
 {
     public $message = 'You don\'t have enough SDT.';
     /**
@@ -28,15 +30,18 @@ class SdtCountValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint)
     {
-        if (!$constraint instanceof SdtCount) {
+        if (!$constraint instanceof UpdateSdtCount) {
             throw new UnexpectedTypeException($constraint, SdtCount::class);
         }
 
         if (!$value instanceof Sdt) {
             throw new UnexpectedTypeException($constraint, Sdt::class);
         }
-        if (!$value->getAtOwnExpense() && $value->getCount() > $this->leftSdtCalculator->calculate($value->getUser())) {
-            $this->context->buildViolation($this->message)
+
+        $newLeftSdt = $this->leftSdtCalculator->calculate($value->getUser());
+
+        if ($newLeftSdt < 0 && !$value->getAtOwnExpense()){
+            $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }
     }

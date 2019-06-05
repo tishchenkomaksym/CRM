@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Service\Sdt\Create\FormValidators;
+namespace App\Form\SDT\FormValidators;
 
 use App\Entity\Sdt;
+use App\Service\Sdt\Create\FormValidators\SdtCount;
 use App\Service\User\Sdt\LeftSdtCalculator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -10,11 +11,11 @@ use ReflectionException;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 
-class SdtCountValidatorTest extends TestCase
+class UpdateSdtCountValidatorTest extends TestCase
 {
     /**
-     * @var ExecutionContextInterface|MockObject
-     */
+    * @var ExecutionContextInterface|MockObject
+    */
     private $contextMock;
     /**
      * @var ConstraintViolationBuilderInterface|MockObject
@@ -34,19 +35,19 @@ class SdtCountValidatorTest extends TestCase
      * @throws ReflectionException
      */
 
-    public function testValidate(int $value, float $calculated) : void
+    public function testValidate(int $value, float $calculated)
     {
         /** @var Sdt|MockObject $valueMock */
         $valueMock = $this->createMock(Sdt::class);
         $valueMock->method('getAtOwnExpense')->willReturn(false);
         /** @var SdtCount|MockObject $constraintMock */
-        $constraintMock = $this->createMock(SdtCount::class);
+        $constraintMock = $this->createMock(UpdateSdtCount::class);
 
         /** @var LeftSdtCalculator|MockObject $leftSdtCalculatorMock */
         $leftSdtCalculatorMock = $this->createMock(LeftSdtCalculator::class);
-        $object = new SdtCountValidator($leftSdtCalculatorMock);
+        $object = new UpdateSdtCountValidator($leftSdtCalculatorMock);
         $object->initialize($this->contextMock);
-        $constraintMock->method('getLeftSdtCalculator')->willReturn($leftSdtCalculatorMock);
+        $constraintMock->method('getOldSdtEntity')->willReturn($valueMock);
         $leftSdtCalculatorMock->method('calculate')->willReturn($calculated);
         $valueMock->method('getCount')->willReturn($value);
 
@@ -54,34 +55,35 @@ class SdtCountValidatorTest extends TestCase
         $this->contextMock->expects(self::once())->method('buildViolation')->willReturn($this->violationBuilderMock);
         $object->validate($valueMock, $constraintMock);
     }
-
     public function dataProviderTestValidate()
     {
         return [
             [
                 3,
-                2,
+                -1,
             ],
         ];
     }
     /**
-     * @dataProvider dataProviderTestValidatePassed
+     * @dataProvider dataProviderTestPassValidate
      * @param int $value
      * @param float $calculated
+     * @throws ReflectionException
      */
-    public function testValidatePassed(int $value, float $calculated) : void
+
+    public function testPassValidate(int $value, float $calculated)
     {
         /** @var Sdt|MockObject $valueMock */
         $valueMock = $this->createMock(Sdt::class);
         $valueMock->method('getAtOwnExpense')->willReturn(false);
         /** @var SdtCount|MockObject $constraintMock */
-        $constraintMock = $this->createMock(SdtCount::class);
+        $constraintMock = $this->createMock(UpdateSdtCount::class);
 
         /** @var LeftSdtCalculator|MockObject $leftSdtCalculatorMock */
         $leftSdtCalculatorMock = $this->createMock(LeftSdtCalculator::class);
-        $object = new SdtCountValidator($leftSdtCalculatorMock);
+        $object = new UpdateSdtCountValidator($leftSdtCalculatorMock);
         $object->initialize($this->contextMock);
-        $constraintMock->method('getLeftSdtCalculator')->willReturn($leftSdtCalculatorMock);
+        $constraintMock->method('getOldSdtEntity')->willReturn($valueMock);
         $leftSdtCalculatorMock->method('calculate')->willReturn($calculated);
         $valueMock->method('getCount')->willReturn($value);
 
@@ -89,19 +91,13 @@ class SdtCountValidatorTest extends TestCase
         $this->contextMock->expects($this->never())->method('buildViolation')->willReturn($this->violationBuilderMock);
         $object->validate($valueMock, $constraintMock);
     }
-    public function dataProviderTestValidatePassed()
+    public function dataProviderTestPassValidate()
     {
         return [
             [
-                5,
-                5,
-            ],
-            [
-                4,
-                5,
+                3,
+                0,
             ],
         ];
     }
-
-
 }

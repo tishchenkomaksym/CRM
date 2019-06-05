@@ -35,7 +35,7 @@
         </thead>
         <tbody>
         {% for item in salaryReportItems %}
-            {% if item.team is not null %}
+            {% if item.team.name is not null %}
             <tr>
                 <th>{{ item.user.name }}</th>
                 <th>{{ item.team.name }}</th>

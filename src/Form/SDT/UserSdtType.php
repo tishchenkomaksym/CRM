@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Form;
+
+namespace App\Form\SDT;
+
 
 use App\Constants\FormType;
 use App\Entity\Sdt;
@@ -12,30 +14,18 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Security;
 
-/**
- * @deprecated
- * Class SdtType
- * @package App\Form
- */
-class SdtType extends AbstractType
+class UserSdtType extends AbstractType
 {
     private $actingPeople = [];
-    /**
-     * @var Security
-     */
-    private $security;
 
-
-    public function __construct(UserRepository $userRepository, Security $security)
+    public function __construct(UserRepository $userRepository)
     {
         $users = $userRepository->findAll();
         foreach ($users as $user) {
             $name = $user->getName();
             $this->actingPeople[$name] = $name;
         }
-        $this->security = $security;
     }
 
     /**
@@ -45,13 +35,6 @@ class SdtType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-//        if ($this->security->isGranted('ROLE_TOM')) {
-//            $builder->add('user')
-//                ->add('count')
-//                ->add('createDate')
-//                ->add('acting')
-//                ->add('atOwnExpense');
-//        }
         $builder
             ->add(
                 'count',
@@ -67,13 +50,15 @@ class SdtType extends AbstractType
                 [
                     'widget' => 'single_text',
                     FormType::LABEL => 'Starting date of your SDT',
-//                  'attr' => ['value' => (new DateTime())->format('Y-m-d')]
                 ]
             )
             ->add(
                 'acting',
                 ChoiceType::class,
-                [FormType::LABEL => 'Person who will be in charge instead of you for this period', 'choices' => $this->actingPeople]
+                [
+                    FormType::LABEL => 'Person who will be in charge instead of you for this period',
+                    'choices' => $this->actingPeople
+                ]
             )
             ->add(
                 'atOwnExpense'
