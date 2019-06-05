@@ -70,7 +70,7 @@
     <br>
     <div class="d-flex justify-content-between link-recruiter">
         <a class="btn btn-primary" href="{{ path('vacancy_show', {'id': vacancy.id}) }}" >View Request Info &#8594;</a>
-        <a class="btn btn-primary" href="{{ path('vacancy_show_history', {'id': vacancy.id}) }}">View Request history &#8594;</a>
+{#        <a class="btn btn-primary" href="{{ path('vacancy_show_history', {'id': vacancy.id}) }}">View Request history &#8594;</a>#}
     </div>
     <br>
     {% if vacancy.status == 'Search for a candidate(s) have been started' %}
