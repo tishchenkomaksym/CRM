@@ -8,6 +8,7 @@ use App\Service\Sdt\Interval\EndDateOfSdtCalculator;
 use App\Service\WorkingDays\BaseWorkingDaysCalculator;
 use DateTime;
 use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class UsedSdtDaysCalculatorTest extends TestCase
@@ -24,11 +25,11 @@ class UsedSdtDaysCalculatorTest extends TestCase
      */
     public function testCalculate($start, $end, $count, $createDate, $result): void
     {
+        /** @var HolidayService|MockObject $mock */
         $mock = $this->createMock(HolidayService::class);
         $mock->method('getHolidayBetweenDate')->willReturn([]);
-
         $calculator = new UsedSdtDaysCalculator(
-            new EndDateOfSdtCalculator(),
+            new EndDateOfSdtCalculator($mock),
             new BaseWorkingDaysCalculator($mock));
         $sdt = (new Sdt())->setCount($count)->setCreateDate(new DateTime($createDate));
         $startDate = new DateTime($start);

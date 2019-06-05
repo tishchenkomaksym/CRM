@@ -44,17 +44,22 @@ class UsedSdtDaysCalculator
     public function calculate(DateTime $startPeriod, DateTime $endPeriod, array $sdtArray): int
     {
         $usedSdt = 0;
+        $startPeriod->setTime(00, 00, 00);
+        $endPeriod->setTime(00, 00, 00);
         foreach ($sdtArray as $sdt) {
             $startDate = $sdt->getCreateDate();
             if ($startDate === null) {
-                throw new RuntimeException('no date');
+                throw new \InvalidArgumentException('no date');
             }
             $startDate = new DateTime("@{$startDate->getTimeStamp()}");
             $endDate = $this->endDateOfSdtCalculator->calculate($sdt);
+            //Because we need to take in account final day of sdt
             if ($startPeriod < $startDate && $endPeriod > $endDate) {
                 $usedSdt += $this->workingDaysCalculator->getWorkingDaysBetweenDates($startDate, $endDate);
             } elseif ($startPeriod < $startDate && $endPeriod < $endDate && $startDate < $endPeriod) {
                 $usedSdt += $this->workingDaysCalculator->getWorkingDaysBetweenDates($startDate, $endPeriod);
+            } elseif ($startPeriod > $startDate && $endPeriod < $endDate && $startDate < $endPeriod) {
+                $usedSdt += $this->workingDaysCalculator->getWorkingDaysBetweenDates($startPeriod, $endDate);
             } elseif ($startPeriod > $startDate && $endPeriod > $endDate && $endDate > $startPeriod) {
                 $usedSdt += $this->workingDaysCalculator->getWorkingDaysBetweenDates($startPeriod, $endDate);
             }

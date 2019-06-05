@@ -10,6 +10,7 @@ namespace App\Service\SalaryReport\Builder\SDTDays;
 
 use App\Entity\Sdt;
 use App\Entity\User;
+use App\Service\HolidayService;
 use App\Service\Sdt\Interval\EndDateOfSdtCalculator;
 use App\Service\User\Sdt\LeftSdtForPeriodCalculator;
 use DateTime;
@@ -26,15 +27,18 @@ class SdtDaysCalculatorTest extends TestCase
     private $leftSdtCalculator;
     /** @var  EndDateOfSdtCalculator|MockObject leftSdtCalculator */
     private $endDateOfSdtCalculator;
+    /** @var  HolidayService|MockObject HolidayService */
+    private $holidayService;
 
     protected function setUp()
     {
         /** @var  LeftSdtForPeriodCalculator|MockObject leftSdtCalculator */
+        $this->holidayService = $this->createMock(HolidayService::class);
         $this->leftSdtCalculator = $this->createMock(LeftSdtForPeriodCalculator::class);
         $this->leftSdtCalculator->expects($this->once())->method('calculate')->willReturn(10.5);
 
         /** @var  EndDateOfSdtCalculator|MockObject leftSdtCalculator */
-        $this->endDateOfSdtCalculator = new EndDateOfSdtCalculator();
+        $this->endDateOfSdtCalculator = new EndDateOfSdtCalculator($this->holidayService);
         $this->calculator = new SdtDaysCalculator($this->leftSdtCalculator, $this->endDateOfSdtCalculator);
     }
 
@@ -54,7 +58,7 @@ class SdtDaysCalculatorTest extends TestCase
         $sdt->setCount(3);
         $user->addSdt($sdt);
 
-        $return = $this->calculator->calculate($toTime, $user);
+        $return = $this->calculator->calculate($toTime, $user, 2);
         $this->assertEquals(11.5, $return);
 
     }
@@ -74,7 +78,7 @@ class SdtDaysCalculatorTest extends TestCase
         $sdt->setCount(3);
         $user->addSdt($sdt);
 
-        $return = $this->calculator->calculate($toTime, $user);
+        $return = $this->calculator->calculate($toTime, $user, 0);
         $this->assertEquals(10.5, $return);
 
     }
@@ -94,8 +98,8 @@ class SdtDaysCalculatorTest extends TestCase
         $sdt->setCount(3);
         $user->addSdt($sdt);
 
-        $return = $this->calculator->calculate($toTime, $user);
-        $this->assertEquals(12.5, $return);
+        $return = $this->calculator->calculate($toTime, $user, 0);
+        $this->assertEquals(13.5, $return);
 
     }
 
@@ -115,7 +119,7 @@ class SdtDaysCalculatorTest extends TestCase
         $sdt->setCount(3);
         $user->addSdt($sdt);
 
-        $return = $this->calculator->calculate($toTime, $user);
+        $return = $this->calculator->calculate($toTime, $user, 0);
         $this->assertEquals(10.5, $return);
 
     }
