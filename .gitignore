@@ -20,4 +20,3 @@
 ###> phpunit/phpunit ###
 /phpunit.xml
 ###< phpunit/phpunit ###
-/.docker/docker-compose.yml

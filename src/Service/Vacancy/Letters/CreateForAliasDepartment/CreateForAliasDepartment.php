@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Service\Vacancy\CreateForAliasDepartment;
+namespace App\Service\Vacancy\Letters\CreateForAliasDepartment;
 
 
 use App\Data\Sdt\Mail\Adapter\NoDateException;

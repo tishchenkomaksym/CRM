@@ -10,6 +10,7 @@ use App\Service\SalaryReport\Builder\BaseSalaryReportBuilder;
 use App\Service\SalaryReport\SalaryReportDTO;
 use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
+use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -75,6 +76,7 @@ class SalaryReportInfoController extends AbstractController
      * @param UserRepository $userRepository
      * @return Response
      * @throws NonUniqueResultException
+     * @throws Exception
      */
     public function show(
         SalaryReportInfoRepository $salaryReportInfoRepository,

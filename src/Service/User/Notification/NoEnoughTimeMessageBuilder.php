@@ -43,16 +43,16 @@ class NoEnoughTimeMessageBuilder
         string $email
     ): Swift_Message {
         return (new Swift_Message('Logged time check'))
-            ->setFrom('')
-            ->setTo($email)
+            ->setFrom(getenv('LOCAL_EMAIL'))
+            ->setTo($email, $email)
             ->setBody(
                 $this->templating->render(
                     'emails/user/time/noEnoughTime.twig',
                     [
                         'time' => $time,
-                        'toDate' => $toDate,
-                        'fromDate' => $fromDate,
-                        'salaryReportDate' => $salaryReportDate
+                        'toDate' => $toDate->format('Y-m-d'),
+                        'fromDate' => $fromDate->format('Y-m-d'),
+                        'salaryReportDate' => $salaryReportDate->format('Y-m-d')
                     ]
                 ),
                 'text/html'

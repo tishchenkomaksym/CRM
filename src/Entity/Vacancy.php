@@ -96,9 +96,8 @@ class Vacancy
     /**
      * @var string $type
      *
-     * @ORM\Column(name="status", nullable=true, type="string", length=255, columnDefinition="ENUM('Approved', 'Denied','No assignee','Issue have been assigned','Search for a candidate(s) have been started','CV Received','Candidates Interest is checked','CV approved by Department Manager')")
+     * @ORM\Column(name="status", nullable=true, type="string", length=255, columnDefinition="ENUM('Approved', 'Denied','No assignee','Issue have been assigned','Search for a candidate(s) have been started','Closed')")
      */
-
     private $status;
 
     /**

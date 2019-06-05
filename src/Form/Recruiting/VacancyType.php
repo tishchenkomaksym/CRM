@@ -44,7 +44,6 @@ class VacancyType extends AbstractType
                     'attr' => ['class' => 'team'],
                     'class' => Team::class,
                     'choice_label' => 'name',
-                    'disabled' => true,
                     'choice_attr' => static function (Team $choiceValue) {
                         return ['data-DepartmentId' => $choiceValue->getDepartment()->getId()];
                     },
@@ -104,7 +103,6 @@ class VacancyType extends AbstractType
             );
             
     }
-
 
     public function configureOptions(OptionsResolver $resolver)
     {

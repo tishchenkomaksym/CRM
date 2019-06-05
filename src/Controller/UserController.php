@@ -178,8 +178,8 @@ class UserController extends AbstractController
         }
         $sdtUsed = $baseSalaryReportBuilder->build($todaySalaryReport, $nextSalaryReport, $user);
         $manager = $service->getPhpDeveloperManager($user);
-        $leftSdt = $leftSdtCalculator->calculate($this->getUser());
-        $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser(), new DateTime());
+        $leftSdt = $leftSdtCalculator->calculate($user);
+        $workingHoursInformation = $baseWorkHoursInformationBuilder->build($user, new DateTime());
         return $this->render(
             'user/show.html.twig',
             [
@@ -249,6 +249,7 @@ class UserController extends AbstractController
             $user->setTeam($form->get('user')->get('team')->getData());
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($userInfo);
+            $entityManager->persist($user);
             $entityManager->flush();
 
             foreach ($assigneeRepository->findBy(['user' => $userInfo->getId()]) as $SDTEmailAssignee) {

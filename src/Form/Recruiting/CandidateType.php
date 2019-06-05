@@ -22,14 +22,6 @@ class CandidateType extends AbstractType
         $statuses = [
             'Issue have been assigned',
             'Search for a candidate(s) have been started',
-            'CV Received',
-            'Candidates Interest is checked',
-            'CV approved by Department Manager',
-            'Interview Timing approval',
-            'Interview',
-            'Contract Concluding',
-            'Start date of new employee is set',
-            'New employee onboarding'
         ];
 
         $status = [

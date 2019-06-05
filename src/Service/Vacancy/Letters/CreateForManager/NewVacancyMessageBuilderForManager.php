@@ -1,12 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ivan.me
- * Date: 26.02.2019
- * Time: 15:38
- */
 
-namespace App\Service\Vacancy\CreateVacancy;
+
+namespace App\Service\Vacancy\Letters\CreateForManager;
+
 
 use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\Vacancy;
@@ -17,7 +13,8 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class NewVacancyMessageBuilder implements MessageBuilderInterface
+
+class NewVacancyMessageBuilderForManager implements MessageBuilderInterface
 {
     private $templating;
 
@@ -37,31 +34,31 @@ class NewVacancyMessageBuilder implements MessageBuilderInterface
      * @throws RuntimeError
      * @throws SyntaxError
      */
+
+
     public function build(): Swift_Message
     {
-        $office = $this->vacancy->getOffice();
+
         if (
-            $office === null ||
-            $office->getTopManager() === null ||
-            $office->getTopManager()->getEmail() === null
+            $this->vacancy === null ||
+            $this->vacancy->getCreatedBy() === null ||
+            $this->vacancy->getCreatedBy()->getEmail() === null
         ) {
-            throw new NoDateException('Wrong configuration of top manager');
+            throw new NoDateException('Wrong configuration of department manager');
 
         }
-        $email = $office->getTopManager()->getEmail();
-        $object = new Swift_Message('Hiring request approval');
-        $object
+        $email = $this->vacancy->getCreatedBy()->getEmail();
+        return (new Swift_Message('Hiring request'))
             ->setFrom(getenv('LOCAL_EMAIL'))
             ->setTo($email)
             ->setBody(
                 $this->templating->render(
-                    'emails/vacancy/newVacancy.twig',
+                    'emails/vacancy/newVacancyForManager.twig',
                     [
-                        'vacancy' => $this->vacancy
+                        'vacancy' => $this->vacancy,
                     ]
                 ),
                 'text/html'
             );
-        return $object;
     }
 }

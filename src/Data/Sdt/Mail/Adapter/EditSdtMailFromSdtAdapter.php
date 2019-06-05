@@ -8,10 +8,12 @@
 
 namespace App\Data\Sdt\Mail\Adapter;
 
+use App\Calendar\DateCalculator\BaseDateCalculator;
 use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
 use App\Data\Sdt\Mail\EditSdtMailData;
 use App\Entity\Sdt;
 use App\Repository\SDTEmailAssigneeRepository;
+use App\Repository\UserInfoRepository;
 use App\Service\HolidayService;
 use DateTimeInterface;
 
@@ -35,6 +37,7 @@ class EditSdtMailFromSdtAdapter
      * @param DateTimeInterface $oldCreateDate
      * @param int $oldCount
      * @param HolidayService $holidayService
+     * @param UserInfoRepository $userInfoRepository
      * @return EditSdtMailData
      * @throws NoDateException
      */
@@ -42,18 +45,20 @@ class EditSdtMailFromSdtAdapter
         Sdt $sdt,
         DateTimeInterface $oldCreateDate,
         int $oldCount,
-        HolidayService $holidayService
+        HolidayService $holidayService,
+        UserInfoRepository $userInfoRepository
     ): EditSdtMailData
     {
-//        $createDate = $sdt->
         $createDate = $sdt->getCreateDate();
         if ($createDate !== null) {
-            $oldEndDate = DateCalculatorWithWeekends::getDateWithOffset(
-                $oldCreateDate,
-                $oldCount,
-                $holidayService
-            );
-            $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(), $holidayService);
+            $userInfo = $userInfoRepository->findOneBy(['user' => $sdt->getUser()->getId()]);
+            if ($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
+                $oldEndDate = BaseDateCalculator::getDateWithOffset($oldCreateDate, $oldCount);
+                $endDate = BaseDateCalculator::getDateWithOffset($createDate, $sdt->getCount());
+            } else {
+                $oldEndDate = DateCalculatorWithWeekends::getDateWithOffset($oldCreateDate, $oldCount, $holidayService);
+                $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(), $holidayService);
+            }
             $emails = [];
             foreach ($this->SDTEmailAssigneeRepository->findBy(['user' => $sdt->getUser()->getId()]) as $email) {
                 $emails[] = $email->getEmail();

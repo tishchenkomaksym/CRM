@@ -8,11 +8,14 @@
 
 namespace App\Data\Sdt\Mail\Adapter;
 
+use App\Calendar\DateCalculator\BaseDateCalculator;
 use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
 use App\Data\Sdt\Mail\NewSdtMailData;
 use App\Entity\Sdt;
 use App\Repository\SDTEmailAssigneeRepository;
+use App\Repository\UserInfoRepository;
 use App\Service\HolidayService;
+use Facebook\WebDriver\Exception\NullPointerException;
 
 class NewSdtMailFromSdtAdapter
 {
@@ -31,10 +34,12 @@ class NewSdtMailFromSdtAdapter
     /**
      * @param Sdt $sdt
      * @param HolidayService $holidayService
+     * @param UserInfoRepository $userInfoRepository
      * @return NewSdtMailData
      * @throws NoDateException
      */
-    public  function getNewSdtMail(Sdt $sdt, HolidayService $holidayService): NewSdtMailData
+    public  function getNewSdtMail(Sdt $sdt, HolidayService $holidayService, UserInfoRepository $userInfoRepository): NewSdtMailData
+
     {
         $createDate = $sdt->getCreateDate();
         $emails = [];
@@ -43,7 +48,13 @@ class NewSdtMailFromSdtAdapter
             $emails[] = $email->getEmail();
         }
         if ($createDate !== null) {
-            $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(), $holidayService);
+            $userInfo = $userInfoRepository->findOneBy(['user' => $sdt->getUser()->getId()]);
+            if ($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
+                $endDate = BaseDateCalculator::getDateWithOffset($createDate, $sdt->getCount());
+            } else {
+                $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(),
+                    $holidayService);
+            }
             return new NewSdtMailData(
                 $sdt->getUser()->getName(),
                 $createDate->format('Y-m-d'),

@@ -95,8 +95,8 @@ class ElasticSearchClient
     public function getTimeFromDateToDate(DateTime $from, DateTime $to, $userName)
     {
         $params = [
-            self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
-            self::ELASTIC_TYPE_FIELD => self::INDEX_TYPE_WORK_LOG_NAME,
+            self::ELASTIC_INDEX_FIELD => 'user_work_logs',
+            self::ELASTIC_TYPE_FIELD => 'user_work_log',
             'size' => 0,
             'body' => [
                 self::ELASTIC_QUERY_FIELD => [
@@ -104,12 +104,12 @@ class ElasticSearchClient
                         [
                             'must' => [
                                 [
-                                    self::MATCH => [self::FIELD_AUTHOR_USER_NAME => $userName],
+                                    self::MATCH => ['user' => $userName],
                                 ],
                             ],
                             self::ELASTIC_FILTER_FIELD => [
                                 self::ELASTIC_RANGE_FIELD => [
-                                    self::ELASTIC_STARTED_FIELD => [
+                                    'workLogDate' => [
                                         'gte' => $from->format(self::DEFAULT_DATE_FORMAT),
                                         'lte' => $to->format(self::DEFAULT_DATE_FORMAT),
                                         self::ELASTIC_FORMAT_FIELD => self::DEFAULT_ELASTIC_DATE_FORMAT
@@ -122,7 +122,7 @@ class ElasticSearchClient
                 'aggs' => [
                     self::FIELD_TIME => [
                         'sum' => [
-                            self::ELASTIC_FIELD_FIELD => self::FIELD_TIME
+                            self::ELASTIC_FIELD_FIELD => 'time'
                         ]
                     ]
                 ]
@@ -197,7 +197,7 @@ class ElasticSearchClient
      * @return array
      * @throws Exception
      */
-    public function getEffectiveTimePerUserPerProjects(string $userName, DateTime $startDate)
+    public function getEffectiveTimePerUserPerProjects(string $userName, DateTime $startDate): array
     {
         $params = [
             self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
@@ -260,37 +260,107 @@ class ElasticSearchClient
         return $data[self::ELASTIC_AGGREGATIONS_FIELD]['project']['buckets'];
     }
 
-    public function getWorkLogTimePerDateRange($userName)
+//    public function getWorkLogTimePerDateRange($userName)
+//    {
+//        $params = [
+//            self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
+//            self::ELASTIC_TYPE_FIELD => self::INDEX_TYPE_WORK_LOG_NAME,
+//            'size' => 0,
+//            'body' => [
+//                self::ELASTIC_QUERY_FIELD => [
+//                    self::ELASTIC_CONSTANT_FIELD => [
+//                        self::ELASTIC_FILTER_FIELD => [
+//                            'bool' =>
+//                                [
+//                                    'must' => [
+//                                        [
+//                                            self::MATCH => ['author.userName' => $userName],
+//                                        ],
+//                                    ]
+//                                ]
+//                        ]
+//                    ]
+//                ],
+//                'aggs' => [
+//                    'time' => [
+//                        'sum' => [
+//                            self::ELASTIC_FIELD_FIELD => 'time'
+//                        ]
+//                    ]
+//                ]
+//            ]
+//        ];
+//        $data = $this->client->search($params);
+//        return $data[self::ELASTIC_AGGREGATIONS_FIELD]['effectiveTime'][self::ELASTIC_VALUE_FIELD];
+//    }
+
+    public function getAllBonusProject(): array
     {
         $params = [
-            self::ELASTIC_INDEX_FIELD => self::INDEX_WORK_LOGS_NAME,
-            self::ELASTIC_TYPE_FIELD => self::INDEX_TYPE_WORK_LOG_NAME,
+            self::ELASTIC_INDEX_FIELD => 'bonus_projects',
+            self::ELASTIC_TYPE_FIELD => 'bonus_project',
+            'size' => 1000,
+            'body' => [
+//                self::ELASTIC_QUERY_FIELD => [
+//
+//                ],
+            ]
+        ];
+        $data = $this->client->search($params);
+        return $data['hits']['hits'];
+    }
+
+
+    public function getDeveloperProjectEstimate(array $projectKeys, $userName): array
+    {
+        $params = [
+            self::ELASTIC_INDEX_FIELD => 'bonus_project_issues',
+            self::ELASTIC_TYPE_FIELD => 'bonus_project_issue',
             'size' => 0,
             'body' => [
                 self::ELASTIC_QUERY_FIELD => [
                     self::ELASTIC_CONSTANT_FIELD => [
                         self::ELASTIC_FILTER_FIELD => [
-                            'bool' =>
-                                [
-                                    'must' => [
-                                        [
-                                            self::MATCH => ['author.userName' => $userName],
-                                        ],
+                            'bool' => [
+                                self::ELASTIC_FILTER_FIELD => [
+                                    [
+                                        'terms' => [
+                                            'projectKey.keyword' => $projectKeys,
+
+                                        ]
+                                    ],
+                                    [
+                                        'term' => [
+                                            'developers.keyword' => $userName
+                                        ]
                                     ]
                                 ]
+                            ]
                         ]
                     ]
                 ],
                 'aggs' => [
-                    'time' => [
-                        'sum' => [
-                            self::ELASTIC_FIELD_FIELD => 'time'
+                    'project' => [
+                        'terms' => [self::ELASTIC_FIELD_FIELD => 'projectKey.keyword', 'size' => 10000],
+                        'aggs' => [
+                            'developerEstimate' => [
+                                'sum' => [
+                                    self::ELASTIC_FIELD_FIELD => 'developerEstimate'
+                                ]
+                            ]
                         ]
                     ]
                 ]
             ]
         ];
         $data = $this->client->search($params);
-        return $data[self::ELASTIC_AGGREGATIONS_FIELD]['effectiveTime'][self::ELASTIC_VALUE_FIELD];
+        if (!empty($data['aggregations']['project']['buckets'])) {
+            $result = [];
+            foreach ($data['aggregations']['project']['buckets'] as $bucket) {
+                $result['key'] = $bucket['developerEstimate']['value'];
+            }
+            return $result;
+        }
+        return null;
     }
 }

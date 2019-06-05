@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Edit PhpDeveloperLevelTestPassed</h1>
 
-    {{ include('php_developer_level_test_passed/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('php_developer_level_test_passed/candidatesForm.html.twig', {'button_label': 'Update'}) }}
 
     <a href="{{ path('php_developer_level_test_passed_index',{'id':user.id}) }}">back to list</a>
 

@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Approval</li>
+        </ol>
+    </nav>
+{% endblock %}
+{% block menu %}
+{% endblock %}
+{% block body %}
+    <div>
+        <p class="pt-3">
+            Кликнув на кандидата вы сможете просмотреть по нему всю имеющуюся информацию.
+            После проверки кандидата отметьте хотите ли вы позвать его на интервью
+        </p>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Position</th>
+            <th>Location</th>
+            <th>Phone</th>
+            <th>Request Status</th>
+            <th>Candidate Status</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% if builder.candidate.photo != null %}
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                            <img width="200px" height="200px" class="img-fluid " src="/uploads/{{ candidate.photo }}" alt="Photo">
+                        </a>
+                    </td>
+                {% else %}
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                            <img width="200px" height="200px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                        </a>
+                    </td>
+                {% endif %}
+
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.name }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.surname }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.position }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.location }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.phone }}</a></td>
+                {% if builder.vacancy != null %}
+                    <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.vacancy.status }}</a></td>
+                {% endif %}
+                <td>
+                    <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                        {% if builder.candidateVacancy != null %}
+                            {{ builder.candidateVacancy.candidateStatus }}
+                        {% else %}
+                            {{ builder.candidateLink.candidateStatus }}
+                        {% endif %}
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-between">
+        {{ include('recruiting/vacancy/showRecruiter/departmentManagerApproveCandidate/formApprove.html.twig') }}
+        <a class="btn btn-danger" href="{{ path('vacancy_show_approved_interview_department_manager_deny', {'id': builder.vacancy.id, 'candidate': builder.candidate.id}) }}">
+            Deny candidate for interview
+        </a>
+    </div>
+    <div>
+        {% if builder.candidateLink != null %}
+            {% for commentViewer in builder.candidateLink.commentViewers %}
+                <p>Commented by {{ commentViewer.vacancyViewerUser.user.name }}</p>
+                <p class="border border-warning rounded px-2 py-1">
+                    {{ commentViewer.comment }}
+                </p>
+            {% endfor %}
+        {% endif %}
+        {% if builder.candidateVacancy != null %}
+            {% for commentViewer in builder.candidateVacancy.commentViewers %}
+                <p>Commented by {{ commentViewer.vacancyViewerUser.user.email }}</p>
+                <p class="border border-warning rounded px-2 py-1">
+                    {{ commentViewer.comment }}
+                </p>
+        {% endfor %}
+        {% endif %}
+    </div>
+    <div>
+        {% if is_granted('ROLE_VACANCY_WATCHER_USER') and builder.vacancy.vacancyViewerUser != null %}
+            {% if builder.checkCandidateLink != null and builder.checkCandidateVacancy != null%}
+                {{ include('recruiting/vacancy/showRecruiter/departmentManagerApproveCandidate/formCommentViewer.html.twig') }}
+            {% else %}
+                <p>Вы уже добавили комментарий</p>
+                {% if builder.checkCandidateLink!= null %}
+                    <a href="{{ path('vacancy_show_approved_interview_department_manager_comment_edit', {'id': builder.checkCandidateLink.id, 'vacancy': builder.vacancy.id}) }}">Назад к комментарию</a>
+                {% else %}
+                    <a href="{{ path('vacancy_show_approved_interview_department_manager_comment_edit', {'id': builder.checkCandidateVacancy.id, 'vacancy': builder.vacancy.id}) }}">Назад к комментарию</a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

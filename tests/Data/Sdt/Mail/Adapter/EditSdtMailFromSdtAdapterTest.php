@@ -6,6 +6,7 @@ use App\Data\Sdt\Mail\EditSdtMailData;
 use App\Entity\Sdt;
 use App\Entity\User;
 use App\Repository\SDTEmailAssigneeRepository;
+use App\Repository\UserInfoRepository;
 use App\Service\HolidayService;
 use DateTime;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -22,11 +23,16 @@ class EditSdtMailFromSdtAdapterTest extends TestCase
      * @var HolidayService|MockObject
      */
     private $holidayMock;
+    /**
+     * @var UserInfoRepository|MockObject
+     */
+    private $userInfoMock;
 
     public function setUp()
     {
         $this->mock=$this->createMock(SDTEmailAssigneeRepository::class);
         $this->holidayMock = $this->createMock(HolidayService::class);
+        $this->userInfoMock = $this->createMock(UserInfoRepository::class);
 
     }
 
@@ -38,7 +44,7 @@ class EditSdtMailFromSdtAdapterTest extends TestCase
         $object = new EditSdtMailFromSdtAdapter($this->mock);
         $sdt=new Sdt();
         $this->expectException(NoDateException::class);
-        $object->getEditSdtMail($sdt,new DateTime(), 0, $this->holidayMock);
+        $object->getEditSdtMail($sdt,new DateTime(), 0, $this->holidayMock, $this->userInfoMock);
     }
 
     /**
@@ -90,7 +96,7 @@ class EditSdtMailFromSdtAdapterTest extends TestCase
             false,
             []
         );
-        $result = $object->getEditSdtMail($sdt, $oldDate, $oldCount, $this->holidayMock);
+        $result = $object->getEditSdtMail($sdt, $oldDate, $oldCount, $this->holidayMock, $this->userInfoMock);
         $this->assertEquals($assertObject, $result);
     }
 

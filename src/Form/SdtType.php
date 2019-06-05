@@ -14,6 +14,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Security;
 
+/**
+ * @deprecated
+ * Class SdtType
+ * @package App\Form
+ */
 class SdtType extends AbstractType
 {
     private $actingPeople = [];
@@ -40,9 +45,13 @@ class SdtType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        if ($this->security->isGranted('ROLE_TOM')) {
-            $builder->add('user');
-        }
+//        if ($this->security->isGranted('ROLE_TOM')) {
+//            $builder->add('user')
+//                ->add('count')
+//                ->add('createDate')
+//                ->add('acting')
+//                ->add('atOwnExpense');
+//        }
         $builder
             ->add(
                 'count',

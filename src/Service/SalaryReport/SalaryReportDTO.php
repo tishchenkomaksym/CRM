@@ -31,7 +31,10 @@ class SalaryReportDTO
     public $timeUnlogged;
     /** @var User */
     public $user;
-
+    /**
+     * @var string
+     */
+    public $team;
     /**
      * @return WorkHoursInformation
      */

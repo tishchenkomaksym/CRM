@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraint;
 
 class CandidateVacancyCheckExistence extends Constraint
 {
-    public $message = 'This vacancy was already added';
+    public $message = 'This candidate was already added';
     /**
      * @var Vacancy
      */

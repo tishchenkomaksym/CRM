@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Create new SDTEmailAssignee</h1>
 
-    {{ include('sdt_email_assignee/_form.html.twig') }}
+    {{ include('sdt_email_assignee/candidatesForm.html.twig') }}
 
     <a href="{{ path('sdt_email_assignee_index',{'id':user.id}) }}">back to list</a>
 {% endblock %}

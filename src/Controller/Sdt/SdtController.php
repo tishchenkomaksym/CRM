@@ -3,6 +3,7 @@
 namespace App\Controller\Sdt;
 
 use App\Calendar\CalendarEventItemCollection;
+use App\Calendar\DateCalculator\BaseDateCalculator;
 use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
 use App\Calendar\HolidayCalendarEventItemBuilder;
 use App\Calendar\Sdt\Tom\TomSdtLinkGenerator;
@@ -11,6 +12,7 @@ use App\Calendar\Sdt\UserSdtLinkGenerator;
 use App\Calendar\Sdt\UserSdtTitleGenerator;
 use App\Calendar\SdtCalendarEventItemBuilder;
 use App\Constants\Services;
+use App\Constants\UserRoles;
 use App\Data\Sdt\Mail\Adapter\DeleteSdtMailFromSdtAdapter;
 use App\Data\Sdt\Mail\Adapter\EditSdtMailFromSdtAdapter;
 use App\Data\Sdt\Mail\Adapter\NewSdtMailFromSdtAdapter;
@@ -18,8 +20,12 @@ use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Data\Sdt\Mail\DeleteSdtMailData;
 use App\Entity\Sdt;
 use App\Entity\SdtArchive;
-use App\Form\SdtType;
+use App\Form\SDT\FormValidators\UpdateDate;
+use App\Form\SDT\FormValidators\UpdateSdtCount;
+use App\Form\SDT\TomSdtType;
+use App\Form\SDT\UserSdtType;
 use App\Repository\SalaryReportInfoRepository;
+use App\Repository\UserInfoRepository;
 use App\Service\HolidayService;
 use App\Service\Sdt\Calendar\Tom\TomSdtCollectionBuilder;
 use App\Service\Sdt\Create\BaseCreateContext;
@@ -41,6 +47,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 use Twig_Environment;
 
 /**
@@ -49,14 +56,20 @@ use Twig_Environment;
 class SdtController extends AbstractController
 {
     public const SDT_INDEX_ROUTE = 'sdt_index';
+
     /**
      * @var Twig_Environment
      */
     private $environment;
+    /**
+     * @var Security
+     */
+    private $security;
 
-    public function __construct(Twig_Environment $environment)
+    public function __construct(Twig_Environment $environment, Security $security)
     {
         $this->environment = $environment;
+        $this->security = $security;
     }
 
     /**
@@ -66,6 +79,7 @@ class SdtController extends AbstractController
      * @param LeftSdtCalculator $leftSdtCalculator
      * @param UserSdtLinkGenerator $userSdtLinkGenerator
      * @param UserSdtTitleGenerator $titleGenerator
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
      */
     public function index(
@@ -73,7 +87,8 @@ class SdtController extends AbstractController
         UserInformationService $userInformationService,
         LeftSdtCalculator $leftSdtCalculator,
         UserSdtLinkGenerator $userSdtLinkGenerator,
-        UserSdtTitleGenerator $titleGenerator
+        UserSdtTitleGenerator $titleGenerator,
+        UserInfoRepository $userInfoRepository
     ): Response {
         $sdtCollection = $userInformationService
             ->getAllUserSdt($this->getUser());
@@ -85,7 +100,7 @@ class SdtController extends AbstractController
                     $holidayService,
                     $userSdtLinkGenerator,
                     $titleGenerator
-                ))->build($sdt, $this->getUser())
+                ))->build($sdt, $this->getUser(), $userInfoRepository)
             );
         }
 
@@ -116,6 +131,7 @@ class SdtController extends AbstractController
      * @param TomSdtLinkGenerator $tomLinkGenerator
      * @param UserSdtLinkGenerator $userSdtLinkGenerator
      * @param TomSdtTitleGenerator $titleGenerator
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
      */
     public function viewAll(
@@ -124,13 +140,13 @@ class SdtController extends AbstractController
         LeftSdtCalculator $leftSdtCalculator,
         TomSdtLinkGenerator $tomLinkGenerator,
         UserSdtLinkGenerator $userSdtLinkGenerator,
-        TomSdtTitleGenerator $titleGenerator
-
+        TomSdtTitleGenerator $titleGenerator,
+        UserInfoRepository $userInfoRepository
     ): Response {
         $sdtCollection = $collectionBuilder->buildCollection();
 
         $linkGenerator = $userSdtLinkGenerator;
-        if ($this->isGranted(['ROLE_TOM'])) {
+        if ($this->security->isGranted(UserRoles::ROLE_TOM)) {
             $linkGenerator = $tomLinkGenerator;
         }
         $calendarEventItemCollection = new CalendarEventItemCollection();
@@ -140,7 +156,7 @@ class SdtController extends AbstractController
                     $holidayService,
                     $linkGenerator,
                     $titleGenerator
-                ))->build($sdt, $this->getUser())
+                ))->build($sdt, $this->getUser(), $userInfoRepository)
             );
         }
 
@@ -171,6 +187,7 @@ class SdtController extends AbstractController
      * @param HolidayService $holidayService
      * @param LeftSdtCalculator $leftSdtCalculator
      * @param NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
@@ -181,25 +198,32 @@ class SdtController extends AbstractController
         Request $request,
         Swift_Mailer $mailer,
         HolidayService $holidayService,
-        LeftSdtCalculator $leftSdtCalculator,
-        NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter
+        NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter,
+        UserInfoRepository $userInfoRepository,
+        LeftSdtCalculator $leftSdtCalculator
     ): Response {
         $sdt = new Sdt();
         $sdt->setUser($this->getUser());
+        $formType = null;
+        if ($sdt->getUser() !== $this->getUser()) {
+            $formType = TomSdtType::class;
+        } else {
+            $formType = UserSdtType::class;
+        }
         $form = $this->createForm(
-            SdtType::class,
+            $formType,
             $sdt,
             ['constraints' => [new SdtCount($leftSdtCalculator)]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             if ($todaySalaryReport = $salaryReportInfoRepository->getTodaySalaryReport()) {
                 $todaySalaryReport = $todaySalaryReport->getCreateDate();
-                if ($form->get('createDate')->getData() <= $todaySalaryReport) {
+                if ($this->security->isGranted(UserRoles::ROLE_TOM) === false && $form->get('createDate')->getData() <= $todaySalaryReport) {
                     return $this->redirectToRoute(self::SDT_INDEX_ROUTE);
                 }
             }
             $messageBuilder = new NewSDTMessageBuilder(
-                $newSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService), $this->environment
+                $newSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService, $userInfoRepository), $this->environment
             );
             $strategy = new BaseCreateStrategy(
                 $mailer,
@@ -224,18 +248,26 @@ class SdtController extends AbstractController
      * @Route("/{id}", name="sdt_show", methods={"GET"})
      * @param Sdt $sdt
      * @param HolidayService $holidayService
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
+     * @throws Exception
      */
-    public function show(Sdt $sdt, HolidayService $holidayService): Response
+    public function show(Sdt $sdt, HolidayService $holidayService, UserInfoRepository $userInfoRepository): Response
     {
         if ($sdt->getUser() !== $this->getUser()) {
-            $this->denyAccessUnlessGranted('ROLE_TOM');
+            $this->denyAccessUnlessGranted(UserRoles::ROLE_TOM);
+        }
+        $userInfo = $userInfoRepository->findOneBy(['user' => $this->getUser()->getId()]);
+        if ($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
+            $endDate = BaseDateCalculator::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount());
+        } else {
+            $endDate = DateCalculatorWithWeekends::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount(),
+                $holidayService);
         }
         return $this->render(
             'sdt/show.html.twig',
             [
-                'endDate' => DateCalculatorWithWeekends::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount(),
-                    $holidayService),
+                'endDate' => $endDate,
                 'sdt' => $sdt,
             ]
         );
@@ -243,47 +275,45 @@ class SdtController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="sdt_edit", methods={"GET","POST"})
-     * @param SalaryReportInfoRepository $salaryReportInfoRepository
      * @param Request $request
      * @param Sdt $sdt
      * @param Swift_Mailer $mailer
      * @param HolidayService $holidayService
-     * @param LeftSdtCalculator $leftSdtCalculator
      * @param EditSdtMailFromSdtAdapter $editSdtMailFromSdtAdapter
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
-     * @throws NonUniqueResultException
      */
     public function edit(
-        SalaryReportInfoRepository $salaryReportInfoRepository,
+
         Request $request,
         Sdt $sdt,
         Swift_Mailer $mailer,
         HolidayService $holidayService,
-        LeftSdtCalculator $leftSdtCalculator,
-        EditSdtMailFromSdtAdapter $editSdtMailFromSdtAdapter
+        EditSdtMailFromSdtAdapter $editSdtMailFromSdtAdapter,
+        UserInfoRepository $userInfoRepository
     ): Response {
         if ($sdt->getUser() !== $this->getUser()) {
-            $this->denyAccessUnlessGranted('ROLE_TOM');
+            $this->denyAccessUnlessGranted(UserRoles::ROLE_TOM);
         }
-        $form = $this->createForm(SdtType::class, $sdt,
-            ['constraints' => [new SdtCount($leftSdtCalculator)]]
-        );
+        $formType = null;
+        if ($sdt->getUser() !== $this->getUser()) {
+            $formType = TomSdtType::class;
+        } else {
+            $formType = UserSdtType::class;
+        }
         $oldEntity = clone $sdt;
+        $form = $this->createForm($formType, $sdt,
+            ['constraints' => [new UpdateDate(), new UpdateSdtCount($sdt)]]);
         $oldFromDate = $sdt->getCreateDate();
         $oldCount = $sdt->getCount();
         $form->handleRequest($request);
 
         if ($oldFromDate !== null && $form->isSubmitted() && $form->isValid()) {
-            if ($todaySalaryReport = $salaryReportInfoRepository->getTodaySalaryReport()) {
-                $todaySalaryReport = $todaySalaryReport->getCreateDate();
-                if ($form->get('createDate')->getData() <= $todaySalaryReport) {
-                    return $this->redirectToRoute(self::SDT_INDEX_ROUTE);
-                }
-            }
             $messageBuilder = new UpdateSDTMessageBuilder(
-                $editSdtMailFromSdtAdapter->getEditSdtMail($sdt, $oldFromDate, $oldCount, $holidayService),
+                $editSdtMailFromSdtAdapter->getEditSdtMail($sdt, $oldFromDate, $oldCount, $holidayService,
+                    $userInfoRepository),
                 $this->environment
             );
             $strategy = new BaseUpdateStrategy(
@@ -304,7 +334,6 @@ class SdtController extends AbstractController
                 ]
             );
         }
-
         return $this->render(
             'sdt/edit.html.twig',
             [
@@ -321,6 +350,7 @@ class SdtController extends AbstractController
      * @param Swift_Mailer $mailer
      * @param HolidayService $holidayService
      * @param DeleteSdtMailFromSdtAdapter $deleteSdtMailFromSdtAdapter
+     * @param UserInfoRepository $userInfoRepository
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
@@ -331,15 +361,16 @@ class SdtController extends AbstractController
         Sdt $sdt,
         Swift_Mailer $mailer,
         HolidayService $holidayService,
-        DeleteSdtMailFromSdtAdapter $deleteSdtMailFromSdtAdapter
+        DeleteSdtMailFromSdtAdapter $deleteSdtMailFromSdtAdapter,
+        UserInfoRepository $userInfoRepository
     ): Response {
         if ($sdt->getUser() !== $this->getUser()) {
-            $this->denyAccessUnlessGranted('ROLE_TOM');
+            $this->denyAccessUnlessGranted(UserRoles::ROLE_TOM);
         }
         if ($this->isCsrfTokenValid('delete' . $sdt->getId(), $request->request->get('_token'))) {
             if ($this->sendDeleteSdtEmail(
                     $mailer,
-                    $deleteSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService)
+                    $deleteSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService, $userInfoRepository)
                 ) === 0) {
                 throw new EmailServerNotWorking(EmailServerNotWorking::MESSAGE);
             }

@@ -8,16 +8,19 @@
 
 namespace App\Calendar;
 
+use App\Calendar\DateCalculator\BaseDateCalculator;
 use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
 use App\Calendar\Sdt\SdtLinkGeneratorInterface;
 use App\Calendar\Sdt\SdtTitleGeneratorInterface;
 use App\Entity\Sdt;
 use App\Entity\User;
+use App\Repository\UserInfoRepository;
 use App\Service\HolidayService;
 use DateTime;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
-class SdtCalendarEventItemBuilder
+class
+SdtCalendarEventItemBuilder
 {
     /**
      * @var HolidayService
@@ -51,17 +54,26 @@ class SdtCalendarEventItemBuilder
     }
 
     public function build(Sdt $sdt,
-                          User $user): CalendarItem
+                          User $user,
+                          UserInfoRepository $userInfoRepository): CalendarItem
     {
         $calendarItem = new CalendarItem();
         $createDate = $sdt->getCreateDate();
         if ($createDate && $createDate instanceof DateTime) {
             $calendarItem->start = $createDate->format('Y-m-d');
-            $calendarItem->end = DateCalculatorWithWeekends::getDateWithOffset(
-                $createDate,
-                $sdt->getCount(),
-                $this->holidayService
-            );
+            $userInfo = $userInfoRepository->findOneBy(['user' => $user->getId()]);
+            if ($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
+                $calendarItem->end = BaseDateCalculator::getDateWithOffset(
+                    $createDate,
+                    $sdt->getCount()
+                );
+            } else {
+                $calendarItem->end = DateCalculatorWithWeekends::getDateWithOffset(
+                    $createDate,
+                    $sdt->getCount(),
+                    $this->holidayService
+                );
+            }
             $calendarItem->end = $calendarItem->end->setTime(23, 59, 59)->format('Y-m-d H:i:s');
         }
         $calendarItem->title = $this->titleGenerator->getTitle($sdt);
