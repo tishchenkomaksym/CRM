@@ -92,7 +92,7 @@ class BaseSalaryReportBuilder
 
         $returnObject->reportWorkingDays = $this->getReportWorkingDays($previousDateTime, $user->getCreateDate(), $dateWorkingHours,
             $returnObject->sdtCountUsed + $returnObject->sdtCountAtOwnExpenseUsed);
-        $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateForSdt, $user) - $returnObject->sdtCountAtOwnExpenseUsed;
+        $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateForSdt, $user, $returnObject->sdtCountUsed);
         if($userTeam = $user->getTeam()) {
             $returnObject->team = $userTeam;
         }
