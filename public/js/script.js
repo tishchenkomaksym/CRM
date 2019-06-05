@@ -38,4 +38,10 @@ $(document).ready(function () {
 
     });
 
+
+    // $('.approveCandidate').on('click', function(e) {
+    //     e.preventDefault();
+    //     $(this).off("click").attr('href', "javascript: void(0);");
+    // });
+
 });

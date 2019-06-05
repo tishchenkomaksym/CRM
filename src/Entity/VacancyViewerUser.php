@@ -25,7 +25,7 @@ class VacancyViewerUser
     private $user;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="vacancyViewerUsers")
      * @ORM\JoinColumn(nullable=false)
      */
     private $permissionUser;
@@ -35,9 +35,16 @@ class VacancyViewerUser
      */
     private $vacancies;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CommentViewer", mappedBy="vacancyViewerUser")
+     */
+    private $commentViewers;
+
+
     public function __construct()
     {
         $this->vacancies = new ArrayCollection();
+        $this->commentViewers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -94,6 +101,37 @@ class VacancyViewerUser
             // set the owning side to null (unless already changed)
             if ($vacancy->getVacancyViewerUser() === $this) {
                 $vacancy->setVacancyViewerUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CommentViewer[]
+     */
+    public function getCommentViewers(): Collection
+    {
+        return $this->commentViewers;
+    }
+
+    public function addCommentViewer(CommentViewer $commentViewer): self
+    {
+        if (!$this->commentViewers->contains($commentViewer)) {
+            $this->commentViewers[] = $commentViewer;
+            $commentViewer->setVacancyViewerUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentViewer(CommentViewer $commentViewer): self
+    {
+        if ($this->commentViewers->contains($commentViewer)) {
+            $this->commentViewers->removeElement($commentViewer);
+            // set the owning side to null (unless already changed)
+            if ($commentViewer->getVacancyViewerUser() === $this) {
+                $commentViewer->setVacancyViewerUser(null);
             }
         }
 

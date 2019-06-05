@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Service\Vacancy\CreateForHrManager;
+namespace App\Service\Vacancy\Letters\CreateForHrManager;
 
 
 use App\Data\Sdt\Mail\Adapter\NoDateException;

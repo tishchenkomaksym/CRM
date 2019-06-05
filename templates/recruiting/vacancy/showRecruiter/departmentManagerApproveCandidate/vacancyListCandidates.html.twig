@@ -1,0 +1,241 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">All Candidates</li>
+        </ol>
+    </nav>
+{% endblock %}
+{% block menu %}
+{% endblock %}
+{% block body %}
+    <table class="table" id="menu">
+        <thead>
+        <tr>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Position</th>
+            <th>Location</th>
+            <th>Phone</th>
+            <th>Request Status</th>
+            <th>Candidate Status</th>
+            <th>Updated</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for candidateVacancy in vacancy.candidateVacancies %}
+            {% if candidateVacancy.candidate.name != null and candidateVacancy.candidateStatus == 'Approved for the interview'
+            or candidateVacancy.candidateStatus == 'Closed by department manager' or candidateVacancy.candidateStatus == 'Candidate is interested in vacancy' %}
+                <tr>
+                    <td>
+                        {% if candidateVacancy.candidate.photo == null %}
+                        <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                            <img width="50px" height="50px" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                        </a>
+                        {% else %}
+                        <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                            <img class="rounded-circle" width="100px" height="100px" src="/uploads/{{ candidateVacancy.candidate.photo }}" alt="photo">
+                        </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                            {{ candidateVacancy.candidate.name }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                            {{ candidateVacancy.candidate.surname }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                            {{ candidateVacancy.candidate.position }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                            {{ candidateVacancy.candidate.location }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                            {{ candidateVacancy.candidate.phone }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                            {{ vacancy.status }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                            {{ candidateVacancy.candidateStatus }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                        {{ candidateVacancy.candidate.updatedDate|date('Y-m-d') }}</td>
+                    {% if  app.request.get('edit') is not null%}
+                        <td>
+                            <a class="btn btn-primary" href="{{ path('check_interest_edit', {'id': candidateVacancy.id, 'vacancy': vacancy.id } ) }}">Edit</a>
+                        </td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        {% if candidateVacancy.candidateStatus == 'Approved for the interview' or candidateVacancy.candidateStatus == 'Closed by department manager'%}
+                            {% if candidateVacancy.candidateStatus == 'Approved for the interview' %}
+                                <div class="btn btn-dark">
+                                    Approved
+                                </div>
+                            {% else %}
+                                <div class="btn btn-secondary">
+                                    Approved
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <a class="btn btn-success" href="{{ path('vacancy_show_approved_interview_department_manager_approve', {'id': vacancy.id}) }}">
+                                Approved
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td colspan="2">
+                        {% if candidateVacancy.candidateStatus == 'Closed by department manager' or candidateVacancy.candidateStatus == 'Approved for the interview'%}
+                            {% if candidateVacancy.candidateStatus == 'Closed by department manager' %}
+                                <div class="btn btn-dark">
+                                    Denied
+                                </div>
+                            {% else %}
+                                <div class="btn btn-secondary">
+                                    Denied
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <a class="btn btn-danger" href="{{ path('vacancy_show_approved_interview_department_manager_deny', {'id': vacancy.id, 'candidate': candidateVacancy.candidate.id}) }}">
+                                Denied
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        {% for vacancyLink in vacancy.vacancyLinks %}
+            {% for candidateLink in vacancyLink.candidateLinks %}
+                {% if candidateLink.candidate.name != null and candidateLink.candidateStatus == 'Approved for the interview'
+                or candidateLink.candidateStatus == 'Closed by department manager' or candidateLink.candidateStatus == 'Candidate is interested in vacancy' %}
+                    <tr>
+                        <td>
+                            {% if candidateLink.candidate.photo == null %}
+                                <a href="{{ path('approved_interview_candidate_show', {'id': candidateLink.candidate.id}) }}">
+                                    <img width="50px" height="50px" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                                </a>
+                            {% else %}
+                                <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id}) }}">
+                                     <img class="rounded-circle" width="100px" height="100px" src="/uploads/{{ candidateLink.candidate.photo }}" alt="Photo">
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('approved_interview_candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                 {{ candidateLink.candidate.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('approved_interview_candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ candidateLink.candidate.surname }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('approved_interview_candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ candidateLink.candidate.position }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('approved_interview_candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ candidateLink.candidate.location }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('approved_interview_candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ candidateLink.candidate.phone }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('approved_interview_candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ vacancy.status }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('approved_interview_candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ candidateLink.candidateStatus }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('approved_interview_candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                            {{ candidateLink.candidate.updatedDate|date('Y-m-d') }}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            {% if candidateLink.candidateStatus == 'Approved for the interview' or candidateLink.candidateStatus == 'Closed by department manager'%}
+                                {% if candidateLink.candidateStatus == 'Approved for the interview' %}
+                                    <div class="btn btn-dark">
+                                        Approved
+                                    </div>
+                                {% else %}
+                                    <div class="btn btn-secondary">
+                                        Approved
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <a class="btn btn-success" href="{{ path('vacancy_show_approved_interview_department_manager_approve', {'id': vacancy.id}) }}">Approved</a>
+                            {% endif %}
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td colspan="2">
+                            {% if candidateLink.candidateStatus == 'Closed by department manager' or candidateLink.candidateStatus == 'Approved for the interview'%}
+                                {% if candidateLink.candidateStatus == 'Closed by department manager' %}
+                                    <div class="btn btn-dark">
+                                        Denied
+                                    </div>
+                                {% else %}
+                                    <div class="btn btn-secondary">
+                                        Denied
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <a class="btn btn-danger" href="{{ path('vacancy_show_approved_interview_department_manager_deny', {'id': vacancy.id, 'candidate': candidateLink.candidate.id}) }}">
+                                    Denied
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <div class="navbar bg-light d-flex justify-content-between">
+        <div class="badge badge-success">
+            assigned to you by:{{ vacancy.assignedBy }}
+        </div>
+        <div>
+            <span class="badge badge-success">Date of assigning</span>
+            {{ vacancy.assigneeDate|date('Y-m-d') }}
+        </div>
+    </div>
+{% endblock %}

@@ -140,7 +140,7 @@ class CandidateVacancyController extends AbstractController
                     ]);
                 }
 
-                $candidateVacancy->setCandidateStatus('Closed');
+                $candidateVacancy->setCandidateStatus('Closed by recrutier');
                 $entityManager->persist($candidateVacancy);
                 $entityManager->flush();
                 return $this->redirectToRoute('checked_interest', [
@@ -181,7 +181,7 @@ class CandidateVacancyController extends AbstractController
                         'id' => $vacancyId
                     ]);
                 }
-                $candidateVacancy->setCandidateStatus('Closed');
+                $candidateVacancy->setCandidateStatus('Closed by recrutier');
                 $entityManager->persist($candidateVacancy);
                 $entityManager->flush();
                 return $this->redirectToRoute('checked_interest_denial_edit', [

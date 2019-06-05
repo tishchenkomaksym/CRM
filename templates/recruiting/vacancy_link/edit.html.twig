@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Edit VacancyLink</h1>
 
-    {{ include('recruiting/vacancy_link/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('recruiting/vacancy_link/candidatesForm.html.twig', {'button_label': 'Update'}) }}
 
     <a href="{{ path('vacancy_link_index', {'id': vacancy_link.id}) }}">back to list</a>
 

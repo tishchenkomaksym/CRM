@@ -191,7 +191,7 @@ class CandidateLinkController extends AbstractController
                         'id' => $vacancy->getId()]);
                 }
 
-                $candidateLink->setCandidateStatus('Closed');
+                $candidateLink->setCandidateStatus('Closed by recrutier');
                 $entityManager->persist($candidateLink);
                 $entityManager->flush();
                 return $this->redirectToRoute('checked_interest_link', [
@@ -231,7 +231,7 @@ class CandidateLinkController extends AbstractController
                         'id' => $vacancyId,
                     ]);
                 }
-                $candidateLink->setCandidateStatus('Closed');
+                $candidateLink->setCandidateStatus('Closed by recrutier');
                 $entityManager->persist($candidateLink);
                 $entityManager->flush();
                 return $this->redirectToRoute('checked_interest_link_denial_edit', [

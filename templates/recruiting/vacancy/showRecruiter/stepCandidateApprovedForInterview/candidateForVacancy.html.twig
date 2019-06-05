@@ -1,0 +1,160 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Requests</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Vacancy History Request #{{ vacancy.id }}</li>
+        </ol>
+    </nav>
+{% endblock %}
+{% block body %}
+    <table class="table" style="table-layout: fixed">
+        <tbody>
+        <tr>
+            <th>Request#</th>
+            <td>{{ vacancy.id }}</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+        </tr>
+        <tr>
+            <th>By</th>
+            <td>{{ vacancy.createdBy }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div>
+        <p class="alert alert-danger">
+            Status: {{ vacancy.status }}
+        </p>
+        <p class="pt-3">
+            Кликнув на кандидата вы сможете просмотреть по нему всю имеющуюся информацию.
+            После проверки кандидата отметьте хотите ли вы позвать его на интервью
+        </p>
+    </div>
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ candidate.id }}</td>
+        </tr>
+        <tr>
+            <th>Photo</th>
+            <td><img class="img-fluid img-thumbnail" src="/uploads/{{ candidate.photo }}" alt="Photo">
+            </td>
+            <td>
+                <a class="btn btn-secondary" href="{{ path('candidate_edit', {'id': candidate.id}) }}">edit</a>
+            </td>
+            <td>Created
+                {{ candidate.createdAt|date('Y-m-d') }}
+            </td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>{{ candidate.name }}</td>
+        </tr>
+        <tr>
+            <th>Surname</th>
+            <td>{{ candidate.surname }}</td>
+        </tr>
+        <tr>
+            <th>Position</th>
+            <td>{{ candidate.position }}</td>
+        </tr>
+        <tr>
+            <th>Location</th>
+            <td>{{ candidate.location }}</td>
+        </tr>
+        <tr class="border border-dark">
+            <th>Contact Information</th>
+        </tr>
+        <tr>
+            <th>Phone number</th>
+            <td>{{ candidate.phone }}</td>
+        </tr>
+        <tr>
+            <th>
+                {{ include('recruiting/candidate/showVacancyIdForm.html.twig') }}
+            </th>
+        </tr>
+        <tr>
+            <th>Personal email</th>
+            <td>{{ candidate.email }}</td>
+        </tr>
+        <tr>
+            <th>LinkedIn</th>
+            <td>{{ candidate.linkedIn }}</td>
+        </tr>
+        <tr>
+            <th>Facebook</th>
+            <td>{{ candidate.facebook }}</td>
+        </tr>
+        <tr class="border border-dark">
+            <th>Additional Information</th>
+        </tr>
+        <tr>
+            <th>Expected salary</th>
+            <td>{{ candidate.salary }}</td>
+        </tr>
+        <tr>
+            <th>Work experience(years)</th>
+            <td>{{ candidate.experience }}</td>
+        </tr>
+        <tr>
+            <th>Education</th>
+            <td>{{ candidate.education }}</td>
+        </tr>
+        <tr>
+            <th>Current employment</th>
+            <td>{{ candidate.employment }}</td>
+        </tr>
+        <tr>
+            <th>Comment</th>
+            <td style="word-break: break-all">{{ candidate.comment }}</td>
+        </tr>
+        </tbody>
+    </table>
+        {% for vacancy in vacancies %}
+            <div class="d-flex justify-content-between">
+                <div class="d-flex">
+                    <div class="alert alert-dark">Request#{{ vacancy.vacancy.id }}</div>
+                    <div class="alert alert-dark">assigned to: {{ vacancy.vacancy.assignee }}</div>
+                </div>
+                <div class="d-flex">
+                    <div class="alert alert-dark">Created{{ vacancy.vacancy.createdAt|date('Y-m-d') }}</div>
+                    <div class="alert alert-dark">by {{ vacancy.vacancy.createdBy }}</div>
+                </div>
+            </div>
+            <div class="alert alert-dark">
+                Candidate Status:
+            </div>
+        {% endfor %}
+        <div>
+            <a class="btn btn-info" href="{{ path('candidate_index') }}">back to list</a>
+        </div>
+
+    <div class="text-right">
+        {{ include('recruiting/vacancy/showRecruiter/stepCandidateApprovedForInterview/candidatesForm.html.twig') }}
+    </div>
+    <br>
+    <div class="text-center">
+        <a class="btn btn-secondary" href="#">
+            Not Available
+        </a>
+    </div>
+    <div class="navbar bg-light d-flex justify-content-between">
+        <div class="badge badge-success">
+            assigned to you by:{{ vacancy.assignedBy }}
+        </div>
+        <div>
+            <span class="badge badge-success">Date of assigning</span>
+            {{ vacancy.assigneeDate|date('Y-m-d') }}
+        </div>
+    </div>
+{% endblock %}
