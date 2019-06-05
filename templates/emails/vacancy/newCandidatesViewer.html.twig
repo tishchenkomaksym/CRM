@@ -5,6 +5,7 @@
     <p>
         По вакансии на которую Вы подписаны появился кандидат. Кликните на кнопку ниже чтобы проверить их:
     </p>
-{#    <a href="{{ url('vacancy_show_approved_interview_top_manager',{'id': vacancy.id}) }}">Check candidates</a>#}
+    <a href="{{ url('vacancy_show_approved_interview_department_manager',{'id': candidate.id, 'vacancy': vacancy.id}) }}">Check candidates</a>
+
 
 {% endblock %}

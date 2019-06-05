@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -54,9 +56,25 @@ class CandidateLink
     /**
      * @var string $type
      *
-     * @ORM\Column(name="candidateStatus", nullable=true, type="string", length=255, columnDefinition="ENUM('CV Received','Candidate is interested in vacancy','Candidate is waiting for approval','Approved for the interview','Interview timing specification','Waiting for interview','Waiting for our final response','Closed')")
+     * @ORM\Column(name="candidateStatus", nullable=true, type="string", length=255, columnDefinition="ENUM('CV Received','Candidate is interested in vacancy','Candidate is waiting for approval','Approved for the interview','Interview timing specification','Waiting for interview','Waiting for our final response','Closed by recrutier','Closed by department manager','Candidate declined proposition')")
      */
     private $candidateStatus;
+
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $denialInterview;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CommentViewer", mappedBy="candidateLink")
+     */
+    private $commentViewers;
+
+    public function __construct()
+    {
+        $this->commentViewers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -151,6 +169,50 @@ class CandidateLink
     public function setCandidateStatus(?string $candidateStatus): self
     {
         $this->candidateStatus = $candidateStatus;
+
+        return $this;
+    }
+
+
+    public function getDenialInterview(): ?string
+    {
+        return $this->denialInterview;
+    }
+
+    public function setDenialInterview(?string $denialInterview): self
+    {
+        $this->denialInterview = $denialInterview;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CommentViewer[]
+     */
+    public function getCommentViewers(): Collection
+    {
+        return $this->commentViewers;
+    }
+
+    public function addCommentViewer(CommentViewer $commentViewer): self
+    {
+        if (!$this->commentViewers->contains($commentViewer)) {
+            $this->commentViewers[] = $commentViewer;
+            $commentViewer->setCandidateLink($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentViewer(CommentViewer $commentViewer): self
+    {
+        if ($this->commentViewers->contains($commentViewer)) {
+            $this->commentViewers->removeElement($commentViewer);
+            // set the owning side to null (unless already changed)
+            if ($commentViewer->getCandidateLink() === $this) {
+                $commentViewer->setCandidateLink(null);
+            }
+        }
 
         return $this;
     }

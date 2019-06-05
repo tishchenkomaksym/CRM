@@ -60,7 +60,8 @@ class NewMessageBuilderForDepartmentManagerCandidateApprove
                 $this->templating->render(
                     'emails/vacancy/newCandidates.html.twig',
                     [
-                        'vacancy' => $this->vacancy
+                        'vacancy' => $this->vacancy,
+                        'candidate' => $this->candidate
                     ]
                 ),
                 'text/html'

@@ -1,8 +1,12 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: ivan.me
+ * Date: 26.02.2019
+ * Time: 15:38
+ */
 
-
-namespace App\Service\Vacancy\CreateForManager;
-
+namespace App\Service\Vacancy\Letters\CreateVacancy;
 
 use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\Vacancy;
@@ -13,8 +17,7 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-
-class NewVacancyMessageBuilderForManager implements MessageBuilderInterface
+class NewVacancyMessageBuilder implements MessageBuilderInterface
 {
     private $templating;
 
@@ -34,31 +37,31 @@ class NewVacancyMessageBuilderForManager implements MessageBuilderInterface
      * @throws RuntimeError
      * @throws SyntaxError
      */
-
-
     public function build(): Swift_Message
     {
-
+        $office = $this->vacancy->getOffice();
         if (
-            $this->vacancy === null ||
-            $this->vacancy->getCreatedBy() === null ||
-            $this->vacancy->getCreatedBy()->getEmail() === null
+            $office === null ||
+            $office->getTopManager() === null ||
+            $office->getTopManager()->getEmail() === null
         ) {
             throw new NoDateException('Wrong configuration of top manager');
 
         }
-        $email = $this->vacancy->getCreatedBy()->getEmail();
-        return (new Swift_Message('Hiring request'))
+        $email = $office->getTopManager()->getEmail();
+        $object = new Swift_Message('Hiring request approval');
+        $object
             ->setFrom(getenv('LOCAL_EMAIL'))
             ->setTo($email)
             ->setBody(
                 $this->templating->render(
-                    'emails/vacancy/newVacancyForManager.twig',
+                    'emails/vacancy/newVacancy.twig',
                     [
-                        'vacancy' => $this->vacancy,
+                        'vacancy' => $this->vacancy
                     ]
                 ),
                 'text/html'
             );
+        return $object;
     }
 }

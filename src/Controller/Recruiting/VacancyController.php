@@ -17,7 +17,6 @@ use App\Form\Recruiting\ViewerType;
 use App\Repository\CandidateRepository;
 use App\Repository\UserRepository;
 use App\Repository\VacancyRepository;
-use App\Service\CandidateForms\CandidateForms;
 use App\Service\Vacancy\CandidateLinkRelationsToCandidate\ContextForRelationStrategyLinks;
 use App\Service\Vacancy\CandidateLinkRelationsToCandidate\FormValidators\CandidateLinkCheckExistence;
 use App\Service\Vacancy\CandidateLinkRelationsToCandidate\StrategyExistenceLinks;
@@ -28,11 +27,11 @@ use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\FormValidators\Cand
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\StrategyExistence;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\StrategyNonExistence;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\VacancyCandidateBuilder\ExistsCandidateBuilder;
-use App\Service\Vacancy\CreateForHrManager\NewVacancyMessageBuilderForHrManager;
-use App\Service\Vacancy\CreateForManager\NewVacancyMessageBuilderForManager;
-use App\Service\Vacancy\CreateVacancy\NewVacancyMessageBuilder;
 use App\Service\Vacancy\Display\ListEntry\ExpiredTimeCalculator;
 use App\Service\Vacancy\Display\ListEntry\VacancyListEntryDTOBuilder;
+use App\Service\Vacancy\Letters\CreateForHrManager\NewVacancyMessageBuilderForHrManager;
+use App\Service\Vacancy\Letters\CreateForManager\NewVacancyMessageBuilderForManager;
+use App\Service\Vacancy\Letters\CreateVacancy\NewVacancyMessageBuilder;
 use App\Service\Vacancy\VacancyTimeDecorator\VacancyTimeDecorator;
 use DateTime;
 use DateTimeImmutable;
@@ -527,16 +526,15 @@ class VacancyController extends AbstractController
      * @IsGranted("ROLE_RECRUITER")
      * @Route("/recruiter/history/{id}", name="vacancy_show_history", methods={"GET","POST"})
      * @param Vacancy $vacancy
-     * @param CandidateForms $candidateForms
      * @return Response
      */
-    public function history(Vacancy $vacancy,CandidateForms $candidateForms): Response
+    public function history(Vacancy $vacancy): Response
     {
         return  $this->render('recruiting/vacancy/showRecruiter/history.html.twig', [
-            self::VACANCY_ENTITY_IN_VIEW => $vacancy,
-            'links' => $candidateForms->vacancyLink($vacancy)
+            self::VACANCY_ENTITY_IN_VIEW => $vacancy
         ]);
     }
+
 
     /**
      * @Route("/{id}/edit", name="vacancy_edit", methods={"GET","POST"})
