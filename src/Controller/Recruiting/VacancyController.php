@@ -522,18 +522,18 @@ class VacancyController extends AbstractController
     }
 
 
-    /**
-     * @IsGranted("ROLE_RECRUITER")
-     * @Route("/recruiter/history/{id}", name="vacancy_show_history", methods={"GET","POST"})
-     * @param Vacancy $vacancy
-     * @return Response
-     */
-    public function history(Vacancy $vacancy): Response
-    {
-        return  $this->render('recruiting/vacancy/showRecruiter/history.html.twig', [
-            self::VACANCY_ENTITY_IN_VIEW => $vacancy
-        ]);
-    }
+//    /**
+//     * @IsGranted("ROLE_RECRUITER")
+//     * @Route("/recruiter/history/{id}", name="vacancy_show_history", methods={"GET","POST"})
+//     * @param Vacancy $vacancy
+//     * @return Response
+//     */
+//    public function history(Vacancy $vacancy): Response
+//    {
+//        return  $this->render('recruiting/vacancy/showRecruiter/history.html.twig', [
+//            self::VACANCY_ENTITY_IN_VIEW => $vacancy
+//        ]);
+//    }
 
 
     /**
