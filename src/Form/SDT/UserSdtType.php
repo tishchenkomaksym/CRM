@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UserSdtType extends AbstractType
 {
@@ -57,7 +58,8 @@ class UserSdtType extends AbstractType
                 ChoiceType::class,
                 [
                     FormType::LABEL => 'Person who will be in charge instead of you for this period',
-                    'choices' => $this->actingPeople
+                    'choices' => $this->actingPeople,
+                    'constraints' => [new NotBlank(),]
                 ]
             )
             ->add(
@@ -70,6 +72,7 @@ class UserSdtType extends AbstractType
         $resolver->setDefaults(
             [
                 'data_class' => Sdt::class,
+                'required' => true
             ]
         );
     }
