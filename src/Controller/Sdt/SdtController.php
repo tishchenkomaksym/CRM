@@ -31,6 +31,7 @@ use App\Service\Sdt\Calendar\Tom\TomSdtCollectionBuilder;
 use App\Service\Sdt\Create\BaseCreateContext;
 use App\Service\Sdt\Create\BaseCreateStrategy;
 use App\Service\Sdt\Create\FormValidators\SdtCount;
+use App\Service\Sdt\Create\FormValidators\SdtPeriod;
 use App\Service\Sdt\Create\NewSDTMessageBuilder;
 use App\Service\Sdt\Exception\EmailServerNotWorking;
 use App\Service\Sdt\Update\BaseUpdateContext;
@@ -213,7 +214,7 @@ class SdtController extends AbstractController
         $form = $this->createForm(
             $formType,
             $sdt,
-            ['constraints' => [new SdtCount($leftSdtCalculator)]]);
+            ['constraints' => [new SdtCount($leftSdtCalculator), new SdtPeriod($sdt)]]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             if ($todaySalaryReport = $salaryReportInfoRepository->getTodaySalaryReport()) {
@@ -305,7 +306,7 @@ class SdtController extends AbstractController
         }
         $oldEntity = clone $sdt;
         $form = $this->createForm($formType, $sdt,
-            ['constraints' => [new UpdateDate(), new UpdateSdtCount($sdt)]]);
+            ['constraints' => [new UpdateDate(), new UpdateSdtCount($sdt), new SdtPeriod($sdt)]]);
         $oldFromDate = $sdt->getCreateDate();
         $oldCount = $sdt->getCount();
         $form->handleRequest($request);
