@@ -3,7 +3,6 @@
 
 namespace App\Form\SDT;
 
-
 use Exception;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -33,9 +32,8 @@ class TomSdtType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+
+        $builder->add('user');
         $this->userSdtType->buildForm($builder, $options);
-        if ($this->security->isGranted('ROLE_TOM')) {
-            $builder->add('user');
-        }
     }
 }
