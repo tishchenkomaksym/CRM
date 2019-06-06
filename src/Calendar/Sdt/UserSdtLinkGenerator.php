@@ -10,7 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class UserSdtLinkGenerator implements SdtLinkGeneratorInterface
+class
+UserSdtLinkGenerator implements SdtLinkGeneratorInterface
 {
     /**
      * @var Router
