@@ -49,7 +49,6 @@ class SdtPeriodValidator extends ConstraintValidator
      * @param mixed $value
      * @param Constraint $constraint
      * @throws \Exception
-     * @return Constraint
      */
     public function validate($value, Constraint $constraint)
     {
@@ -73,14 +72,13 @@ class SdtPeriodValidator extends ConstraintValidator
                 $endPeriod = DateCalculatorWithWeekends::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount(),
                     $this->holidayService);
             }
-            if (($newStartDate <= $startPeriod && $startPeriod <= $newEndDate) ||
+            if (($newStartDate <= $startPeriod && $startPeriod <= $newEndDate && $newEndDate >= $startPeriod) ||
                 ($newStartDate >= $startPeriod && $newEndDate <= $endPeriod) ||
                 ($newStartDate >= $startPeriod && $newStartDate <= $endPeriod) ||
                 $newStartDate === $startPeriod || $newStartDate === $endPeriod ||
                 $newEndDate === $startPeriod || $newEndDate === $endPeriod) {
                 $this->context->buildViolation($constraint->message)
                     ->addViolation();
-                return $constraint;
             }
         }
     }
