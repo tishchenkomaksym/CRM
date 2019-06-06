@@ -24,8 +24,10 @@ use App\Form\SDT\FormValidators\UpdateDate;
 use App\Form\SDT\FormValidators\UpdateSdtCount;
 use App\Form\SDT\TomSdtType;
 use App\Form\SDT\UserSdtType;
+use App\Repository\DepartmentRepository;
 use App\Repository\SalaryReportInfoRepository;
 use App\Repository\UserInfoRepository;
+use App\Repository\TeamRepository;
 use App\Service\HolidayService;
 use App\Service\Sdt\Calendar\Tom\TomSdtCollectionBuilder;
 use App\Service\Sdt\Create\BaseCreateContext;
@@ -133,6 +135,8 @@ class SdtController extends AbstractController
      * @param UserSdtLinkGenerator $userSdtLinkGenerator
      * @param TomSdtTitleGenerator $titleGenerator
      * @param UserInfoRepository $userInfoRepository
+     * @param TeamRepository $teamRepository
+     * @param DepartmentRepository $departmentRepository
      * @return Response
      */
     public function viewAll(
@@ -142,7 +146,9 @@ class SdtController extends AbstractController
         TomSdtLinkGenerator $tomLinkGenerator,
         UserSdtLinkGenerator $userSdtLinkGenerator,
         TomSdtTitleGenerator $titleGenerator,
-        UserInfoRepository $userInfoRepository
+        UserInfoRepository $userInfoRepository,
+        TeamRepository $teamRepository,
+        DepartmentRepository $departmentRepository
     ): Response {
         $sdtCollection = $collectionBuilder->buildCollection();
 
@@ -150,17 +156,35 @@ class SdtController extends AbstractController
         if ($this->security->isGranted(UserRoles::ROLE_TOM)) {
             $linkGenerator = $tomLinkGenerator;
         }
+
+        $department = $departmentRepository->findOneBy(['id' => $this->getUser()->getTeam()->getDepartment()->getId()]);
+        $devTeams = ['display team', 'create team', 'sell team', 'sell team', 'data mining team', 'noc team', 'web ui team'];
+        $maintenanceTeams = ['admins', 'hr', 'security', 'accountaning team'];
+        $productDevTeams = ['ppc team'];
+
         $calendarEventItemCollection = new CalendarEventItemCollection();
         foreach ($sdtCollection->getItems() as $sdt) {
-            $calendarEventItemCollection->add(
-                (new SdtCalendarEventItemBuilder(
-                    $holidayService,
-                    $linkGenerator,
-                    $titleGenerator
-                ))->build($sdt, $this->getUser(), $userInfoRepository)
-            );
-        }
+            $sdtUsersTeam = $teamRepository->findOneBy(['id' => $sdt->getUser()->getTeam()]);
+            if ($sdtUsersTeam !== null && $department !== null) {
 
+                $sdtUsersTeam = strtolower($sdtUsersTeam->getName());
+
+                if(($department->getName() === 'Development team' &&
+                        in_array($sdtUsersTeam, $devTeams, true))||
+                    ($department->getName() === 'Maintenance Team' &&
+                        in_array($sdtUsersTeam, $maintenanceTeams, true)) ||
+                    ($department->getName() === 'Product development' &&
+                        in_array($sdtUsersTeam, $productDevTeams, true))) {
+                    $calendarEventItemCollection->add(
+                        (new SdtCalendarEventItemBuilder(
+                            $holidayService,
+                            $linkGenerator,
+                            $titleGenerator
+                        ))->build($sdt, $this->getUser(), $userInfoRepository)
+                    );
+                }
+            }
+        }
         foreach ($holidayService->getHolidays() as $holiday) {
             $calendarEventItemCollection->add(
                 (new HolidayCalendarEventItemBuilder(
@@ -206,7 +230,7 @@ class SdtController extends AbstractController
         $sdt = new Sdt();
         $sdt->setUser($this->getUser());
         $formType = null;
-        if ($sdt->getUser() !== $this->getUser()) {
+        if ($this->security->isGranted(UserRoles::ROLE_TOM)) {
             $formType = TomSdtType::class;
         } else {
             $formType = UserSdtType::class;
