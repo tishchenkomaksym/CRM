@@ -38,7 +38,7 @@ class RegistrationUserBuilder
     private function getEmailByTeam(string $team): array
     {
         $returnArray = [];
-        if ($team === 'Display Team') {
+        if (strtolower($team) === 'display team') {
             $returnArray = [
                 'timerecords@onyx.com',
                 'team.programmers@onyx.com',
@@ -49,7 +49,7 @@ class RegistrationUserBuilder
             ];
         }
 
-        if ($team === 'SELL Team') {
+        if (strtolower($team) === 'sell team') {
             $returnArray = [
                 'timerecords@onyx.com',
                 'team.programmers@onyx.com',
@@ -59,7 +59,7 @@ class RegistrationUserBuilder
             ];
         }
 
-        if ($team === 'Create Team') {
+        if (strtolower($team) === 'create team') {
             $returnArray = [
                 'timerecords@onyx.com',
                 'team.programmers@onyx.com',
@@ -68,7 +68,7 @@ class RegistrationUserBuilder
             ];
         }
 
-        if ($team === 'NOC Team') {
+        if (strtolower($team) === 'noc team') {
             $returnArray = [
                 'timerecords@onyx.com',
                 'team.admins@onyx.com',

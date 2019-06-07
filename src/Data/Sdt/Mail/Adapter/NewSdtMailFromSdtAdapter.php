@@ -15,7 +15,6 @@ use App\Entity\Sdt;
 use App\Repository\SDTEmailAssigneeRepository;
 use App\Repository\UserInfoRepository;
 use App\Service\HolidayService;
-use Facebook\WebDriver\Exception\NullPointerException;
 
 class NewSdtMailFromSdtAdapter
 {
@@ -63,7 +62,6 @@ class NewSdtMailFromSdtAdapter
                 $sdt->getCount(),
                 $sdt->getAtOwnExpense(),
                 $emails
-
             );
         }
         throw new NoDateException('Entity has no create date');
