@@ -93,14 +93,14 @@
                                 <div class="btn btn-dark">
                                     Approved
                                 </div>
-                            {% else %}
-                                <div class="btn btn-secondary">
-                                    Approved
-                                </div>
+{#                            {% else %}#}
+{#                                <div class="btn btn-secondary">#}
+{#                                    Approved#}
+{#                                </div>#}
                             {% endif %}
                         {% else %}
-                            <a class="btn btn-success" href="{{ path('vacancy_show_approved_interview_department_manager_approve', {'id': vacancy.id}) }}">
-                                Approved
+                            <a class="btn btn-success" href="{{ path('vacancy_show_approved_interview_department_manager', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                Approve or deny
                             </a>
                         {% endif %}
                     </td>
@@ -114,15 +114,7 @@
                                 <div class="btn btn-dark">
                                     Denied
                                 </div>
-                            {% else %}
-                                <div class="btn btn-secondary">
-                                    Denied
-                                </div>
                             {% endif %}
-                        {% else %}
-                            <a class="btn btn-danger" href="{{ path('vacancy_show_approved_interview_department_manager_deny', {'id': vacancy.id, 'candidate': candidateVacancy.candidate.id}) }}">
-                                Denied
-                            </a>
                         {% endif %}
                     </td>
                 </tr>
@@ -192,13 +184,11 @@
                                     <div class="btn btn-dark">
                                         Approved
                                     </div>
-                                {% else %}
-                                    <div class="btn btn-secondary">
-                                        Approved
-                                    </div>
                                 {% endif %}
                             {% else %}
-                                <a class="btn btn-success" href="{{ path('vacancy_show_approved_interview_department_manager_approve', {'id': vacancy.id}) }}">Approved</a>
+                                <a class="btn btn-success" href="{{ path('vacancy_show_approved_interview_department_manager', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    Approve or deny
+                                </a>
                             {% endif %}
                         </td>
                         <td></td>
@@ -211,15 +201,7 @@
                                     <div class="btn btn-dark">
                                         Denied
                                     </div>
-                                {% else %}
-                                    <div class="btn btn-secondary">
-                                        Denied
-                                    </div>
                                 {% endif %}
-                            {% else %}
-                                <a class="btn btn-danger" href="{{ path('vacancy_show_approved_interview_department_manager_deny', {'id': vacancy.id, 'candidate': candidateLink.candidate.id}) }}">
-                                    Denied
-                                </a>
                             {% endif %}
                         </td>
                     </tr>

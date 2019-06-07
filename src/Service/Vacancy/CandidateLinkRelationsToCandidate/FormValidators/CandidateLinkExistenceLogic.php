@@ -3,6 +3,7 @@
 
 namespace App\Service\Vacancy\CandidateLinkRelationsToCandidate\FormValidators;
 
+use App\Entity\VacancyLink;
 use App\Repository\CandidateLinkRepository;
 use App\Repository\CandidateVacancyRepository;
 use App\Repository\VacancyLinkRepository;
@@ -69,7 +70,7 @@ class CandidateLinkExistenceLogic
 
     }
 
-    public function vacancyLinkObject($vacancyIds)
+    public function vacancyLinkObject($vacancyIds): ?VacancyLink
     {
         return  $this->vacancyLinkRepository->findOneBy(
             [

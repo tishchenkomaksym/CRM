@@ -5,7 +5,7 @@
 {% block breadcrumbs %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ path('vacancy_show_approved_interview_department_manager', {'id': candidate.id, 'vacancy': vacancy.id}) }}">Approve for Request#</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('vacancy_show_approved_interview_department_manager_candidates', {'id': vacancy.id}) }}">Approve for Request#</a></li>
             <li class="breadcrumb-item">Candidate Profile</li>
         </ol>
     </nav>
@@ -25,12 +25,6 @@
         <tr>
             <th>Photo</th>
             <td><img class="img-fluid img-thumbnail" src="/uploads/{{ candidate.photo }}" alt="Photo">
-            </td>
-            <td>
-                <a class="btn btn-secondary" href="{{ path('candidate_edit', {'id': candidate.id}) }}">edit</a>
-            </td>
-            <td>Created
-                {{ candidate.createdAt|date('Y-m-d') }}
             </td>
         </tr>
         <tr>

@@ -139,12 +139,13 @@ class DepartmentManagerApproveViewDTOBuilder
      */
     private function getCandidateVacancyComment(CandidateVacancy $candidateVacancy): ?CommentViewer
     {
-        if ($this->getVacancyViewerUser() === null) {
-            throw new NoDataException('Watcher not found');
+        if ($this->getVacancyViewerUser() !== null) {
+            return $this->commentViewerRepository->findOneBy([
+                'vacancyViewerUser' => $this->getVacancyViewerUser()->getId(),
+                'candidateVacancy' => $candidateVacancy->getId()
+            ]);
         }
-        return $this->commentViewerRepository->findOneBy([
-            'vacancyViewerUser' => $this->getVacancyViewerUser()->getId(),
-            'candidateVacancy' => $candidateVacancy->getId()
-        ]);
+
+        return null;
     }
 }

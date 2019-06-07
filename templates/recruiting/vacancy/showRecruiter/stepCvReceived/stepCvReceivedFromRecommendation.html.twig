@@ -72,7 +72,7 @@
     <div class="border border-warning rounded px-2 py-1">
         {% for vacancyLink in vacancy.vacancyLinks %}
             {% if app.request.get('id') == vacancyLink.id %}
-                {{ vacancyLink.link }}
+                {{ vacancyLink.letterText }}
             {% endif %}
         {% endfor %}
     </div>

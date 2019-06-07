@@ -36,7 +36,6 @@ class CandidateController extends AbstractController
 
     public const VACANCY_ENTITY_IN_VIEW = 'vacancy';
 
-    public const CV_RECEIVED = 'CV Received';
 
     /**
      * @Route("/", name="candidate_index", methods={"GET"})

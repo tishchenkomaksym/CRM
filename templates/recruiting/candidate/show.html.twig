@@ -102,6 +102,11 @@
             Candidate Status:
         </div>
     {% endfor %}
+    {% if app.request.get('vacancy') != null %}
+        <div class="pb-2">
+            <a class="btn btn-info" href="{{ path('vacancy_show_candidates', {'id': app.request.get('vacancy')}) }}">back to candidates</a>
+        </div>
+    {% endif %}
     <div>
         <a class="btn btn-info" href="{{ path('candidate_index') }}">back to list</a>
     </div>
