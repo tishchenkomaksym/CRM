@@ -41,7 +41,7 @@ class CandidatePhotoDecorator
         return $this->targetDirectory;
     }
 
-    public function photoNotNull(Candidate $candidate)
+    public function photoNotNull($candidate)
     {
         $photoNotNull = $candidate->getPhoto() !== null;
         if ($photoNotNull) {
