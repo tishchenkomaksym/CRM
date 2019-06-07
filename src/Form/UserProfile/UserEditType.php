@@ -55,7 +55,7 @@ class UserEditType extends AbstractType
                     'placeholder' => 'Select Team',
                     'class' => Team::class,
                     'choice_label' => 'name',
-                    'disabled' => true,
+                    'disabled' => false,
                     'choice_attr' => static function (Team $choiceValue) {
                         return ['data-DepartmentId' => $choiceValue->getDepartment()->getId()];
                     },
