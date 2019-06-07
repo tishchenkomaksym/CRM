@@ -252,9 +252,9 @@ class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            foreach ($assigneeRepository->findBy(['user' => $userInfo->getId()]) as $SDTEmailAssignee) {
-                $entityManager->remove($SDTEmailAssignee);
-            }
+//            foreach ($assigneeRepository->findBy(['user' => $userInfo->getId()]) as $SDTEmailAssignee) {
+//                $entityManager->remove($SDTEmailAssignee);
+//            }
             foreach ($userBuilder->buildUserEmails($userInfo->getUser()) as $email) {
                 $entityManager->persist($email);
             }
