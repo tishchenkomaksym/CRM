@@ -4,6 +4,7 @@
 namespace App\Service\Vacancy\CandidateLinkRelationsToCandidate\VacancyCandidateBuilder;
 
 
+use App\Entity\VacancyLink;
 use App\Repository\CandidateRepository;
 use App\Repository\CandidateVacancyRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,6 +24,7 @@ class ExistsCandidateBuilderLinks extends AbstractController
 
     public function build(string $name, string $surname)
     {
+
         return $this->candidateRepository->findOneBy(
             [
                 'name' => $name,

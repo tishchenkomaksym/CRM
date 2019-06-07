@@ -12,6 +12,7 @@ use App\Repository\CandidateLinkRepository;
 use App\Repository\CandidateRepository;
 use App\Repository\CandidateVacancyRepository;
 use App\Service\Candidate\CandidatePhotoDecorator;
+use App\Service\CandidateVacancyHistory\CandidateVacancyHistoryDataProvider;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\FormValidators\CandidateVacancySearch;
 use App\Service\Vacancy\Letters\CreateForDepartmentManagerCandidateApprove\NewMessageBuilderForDepartmentManagerCandidateApprove;
 use App\Service\Vacancy\Letters\CreateForViewerCandidateApprove\NewMessageBuilderForViewer;
@@ -38,6 +39,8 @@ class CandidateVacancyController extends AbstractController
     public const VACANCY_ENTITY_IN_VIEW = 'vacancy';
 
     public const VACANCY_SHOW_RECEIVED = 'vacancy_show_cv_received';
+
+    public const CANDIDATE_INTERESTED_IN_VACANCY = 'Candidate is interested in vacancy';
     /**
      * @var Environment
      */
@@ -91,9 +94,10 @@ class CandidateVacancyController extends AbstractController
      * @param CandidatePhotoDecorator $candidatePhotoDecorator
      * @param Swift_Mailer $mailer
      * @param CandidateRepository $candidateRepository
+     * @param CandidateVacancyHistoryDataProvider $candidateVacancyHistoryData
      * @return NoDateException|Response
-     * @throws NoDateException
      * @throws LoaderError
+     * @throws NoDateException
      * @throws RuntimeError
      * @throws SyntaxError
      */
@@ -103,28 +107,29 @@ class CandidateVacancyController extends AbstractController
         CandidateVacancySearch $candidateVacancySearch,
         CandidatePhotoDecorator $candidatePhotoDecorator,
         Swift_Mailer $mailer,
-        CandidateRepository $candidateRepository
+        CandidateRepository $candidateRepository,
+        CandidateVacancyHistoryDataProvider $candidateVacancyHistoryData
     ) {
         $candidateId = $request->get(self::CANDIDATE_ID);
         $candidateVacancy = $candidateVacancySearch->searchCandidateVacancy($candidateId, $vacancy->getId());
         if ($candidateVacancy === null) {
             throw new NoDateException('CandidateVacancy not Found');
         }
+        $receivedCv = $candidateVacancy->getReceivedCv();
         $candidatePhotoDecorator->receivedCvNotNull($candidateVacancy);
         $form = $this->createForm(CandidateVacancyCommentInterestType::class, $candidateVacancy);
         $form->handleRequest($request);
 
         $entityManager = $this->getDoctrine()->getManager();
         if ($form->isSubmitted() && $form->isValid()) {
-
+                $candidateVacancy->setReceivedCv($receivedCv);
             if ($candidateVacancy->getCandidate() === null) {
                 throw new NoDateException('Candidate not Found');
             }
             if ($form instanceof Form) {
                 if ($form->getClickedButton() && 'save' === $form->getClickedButton()->getName()) {
-                    $candidateVacancy->setCandidateStatus('Candidate is interested in vacancy');
-                    $entityManager->persist($candidateVacancy);
-                    $entityManager->flush();
+                    $candidateVacancy->setCandidateStatus(self::CANDIDATE_INTERESTED_IN_VACANCY);
+                    $candidateVacancyHistoryData->candidateVacancyCreate($candidateVacancy, self::CANDIDATE_INTERESTED_IN_VACANCY);
                     $messageBuilder = new NewMessageBuilderForDepartmentManagerCandidateApprove(
                         $vacancy, $candidateId, $candidateRepository,  $this->environment
                     );
@@ -141,6 +146,7 @@ class CandidateVacancyController extends AbstractController
                 }
 
                 $candidateVacancy->setCandidateStatus('Closed by recrutier');
+                $candidateVacancyHistoryData->candidateVacancyCreate($candidateVacancy, self::CANDIDATE_INTERESTED_IN_VACANCY);
                 $entityManager->persist($candidateVacancy);
                 $entityManager->flush();
                 return $this->redirectToRoute('checked_interest', [

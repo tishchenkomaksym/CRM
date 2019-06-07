@@ -1,0 +1,343 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Requests</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Vacancy History Request #{{ vacancy.id }}</li>
+        </ol>
+    </nav>
+{% endblock %}
+{% block body %}
+    <table class="table" style="table-layout: fixed">
+        <tbody>
+        <tr>
+            <th>Request#</th>
+            <td>{{ vacancy.id }}</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+        </tr>
+        <tr>
+            <th>By</th>
+            <td>{{ vacancy.createdBy }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div>
+        <p class="alert alert-danger">
+            Status: {{ vacancy.status }}
+        </p>
+    </div>
+    {% if candidateLink != null %}
+        {% if candidateLink.candidateStatus != null %}
+            <section class="border border-warning rounded px-3 py-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <div>
+                        <p>
+                            Candidate Created By {{ candidateLink.createdBy.email }}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            Created  {{ candidateLink.createdAt|date('Y-m-d') }}
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <p>Candidate Status is changed to:</p>
+                    <div class="d-flex border border-danger rounded mt-2 px-2 py-1 justify-content-between align-items-center">
+                        <p>Candidate Status: CV Received</p>
+                        <p>
+                            Updated:
+                            {% for candidateVacancyHistory in candidateLink.candidateVacancyHistories %}
+                                {% if candidateVacancyHistory.candidateStatus == 'CV Received' %}
+                                    {{ candidateVacancyHistory.updatedAt|date('Y-m-d H:i:s') }}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+                <div class="px-2 py-2">
+                    <p>Way of finding candidate</p>
+                    <p class="border border-warning rounded px-2 py-2">
+                        CVs received from
+                        {{ candidateLink.candidateFrom }}
+                    </p>
+                </div>
+                <div class="px-2">
+                    <p>Link to vacancy</p>
+                    {% for vacancyLink in vacancy.vacancyLinks %}
+                        {% if app.request.get('id') == vacancyLink.id %}
+                            <p class="border border-warning rounded px-2 py-2">
+                                {{ vacancyLink.letterText }}
+                            </p>
+                        {% endif %}
+                    {% endfor %}
+                    <p class="border border-warning rounded px-2 py-2">
+                        {{ candidateLink.vacancyLink.link }}
+                    </p>
+                </div>
+                <div class="px-2">
+                    <p>Candidate CV Added</p>
+                    {% if candidateLink.receivedCv != null %}
+                        <div class="border border-warning rounded px-2 py-2">
+                            <a href="/uploads/{{ candidateLink.receivedCv }}">
+                                {{ candidateLink.candidate.name }} {{ candidateLink.candidate.surname }}
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="border border-warning rounded px-2 py-2">
+                            Резюме не добавлено
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+        {% endif %}
+    {% endif %}
+    {% if candidateVacancy != null %}
+        {% if candidateVacancy.candidateStatus != null %}
+            <section class="border border-warning rounded px-3 py-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <div>
+                        <p>
+                            Candidate Created By {{ candidateVacancy.createdBy.email }}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            Created {{ candidateVacancy.createdAt|date('Y-m-d ') }}
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <p>Candidate Status is changed to:</p>
+                    <div class="d-flex border border-danger rounded mt-2 px-2 py-1 justify-content-between align-items-center">
+                        <p>Candidate Status: CV Received</p>
+                        <p>
+                            Updated:
+                            {% for candidateVacancyHistory in candidateVacancy.candidateVacancyHistories %}
+                                {% if candidateVacancyHistory.candidateStatus == 'CV Received' %}
+                                    {{ candidateVacancyHistory.updatedAt|date('Y-m-d H:i:s') }}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+                <div class="px-2 py-2">
+                    <p>Way of finding candidate</p>
+                    <p class="border border-warning rounded px-2 py-2">
+                        CVs received from {{ candidateVacancy.candidateFrom }}
+                    </p>
+                </div>
+                <div class="px-2">
+                    {% if candidateVacancy.candidateFrom == 'hunting' %}
+                        <p>Link(s) to profile</p>
+                    {% else %}
+                        <p>Recommendation email text</p>
+                    {% endif %}
+                    {% if candidateVacancy.candidateFrom == 'hunting' %}
+                        {% if candidateVacancy.linkToProfile1 != null %}
+                            <p class="border border-warning rounded px-2 py-2">
+                                <a href="{{ candidateVacancy.linkToProfile1 }}">linkToProfile</a>
+                            </p>
+                        {% endif %}
+                        {% if candidateVacancy.linkToProfile2 != null %}
+                            <p class="border border-warning rounded px-2 py-2">
+                                <a href="{{ candidateVacancy.linkToProfile2 }}">linkToProfile</a>
+                            </p>
+                        {% endif %}
+                        {% if candidateVacancy.linkToProfile3 != null %}
+                            <p class="border border-warning rounded px-2 py-2">
+                                <a href="{{ candidateVacancy.linkToProfile3 }}">linkToProfile</a>
+                            </p>
+                        {% endif %}
+                        {% if candidateVacancy.linkToProfile4 != null %}
+                            <p class="border border-warning rounded px-2 py-2">
+                                <a href="{{ candidateVacancy.linkToProfile4 }}">linkToProfile</a>
+                            </p>
+                        {% endif %}
+                    {% else %}
+                        {% for vacancyLink in vacancy.vacancyLinks %}
+                            {% if app.request.get('id') == vacancyLink.id %}
+                                <p style="word-break: break-all" class="border border-warning rounded px-2 py-2">
+                                    {{ vacancyLink.letterText }}
+                                </p>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="px-2">
+                    <p>Candidate CV Added</p>
+                    {% if candidateVacancy.receivedCv != null %}
+                        <div class="border border-warning rounded px-2 py-2">
+                            <a href="/uploads/{{ candidateVacancy.receivedCv }}">
+                                {{ candidateVacancy.candidate.name }} {{ candidateVacancy.candidate.surname }}
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="border border-warning rounded px-2 py-2">
+                            Резюме не добавлено
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+        {% endif %}
+    {% endif %}
+    {% if candidateLink != null %}
+        {% if candidateLink.candidateStatus != null and candidateLink.candidateStatus != 'CV Received' %}
+            <section class="border border-warning rounded mt-3 px-3 py-3">
+                <div>
+                    <p>Candidate Status is changed to:</p>
+                    <div class="d-flex border border-danger rounded mt-2 px-2 py-1 justify-content-between align-items-center">
+                        <p>Candidate Status: Candidate is interested</p>
+                        <p>
+                            Updated:
+                            {% for candidateVacancyHistory in candidateLink.candidateVacancyHistories %}
+                                {% if candidateVacancyHistory.candidateStatus == 'Candidate is interested in vacancy' %}
+                                    {{ candidateVacancyHistory.updatedAt|date('Y-m-d H:i:s') }}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+                <div class="px-2 py-2">
+                    <p>Comment from Recruiter</p>
+                    <p style="word-break: break-all" class="border border-warning rounded px-2 py-2">
+                        {{ candidateLink.commentInterest }}
+                    </p>
+                </div>
+                {% if candidateLink.candidateStatus == 'Closed by recrutier' %}
+                    <div class="px-2 py-2">
+                        <p>Denial Reason</p>
+                        <p style="word-break: break-all" class="border border-warning rounded px-2 py-2">
+                            {{ candidateLink.denialReason }}
+                        </p>
+                    </div>
+                {% endif %}
+            </section>
+        {% endif %}
+    {% endif %}
+    {% if candidateVacancy != null %}
+        {% if candidateVacancy.candidateStatus != null and candidateVacancy.candidateStatus != 'CV Received' %}
+            <section class="border border-warning rounded mt-3 px-3 py-3">
+                <div>
+                    <p>Candidate Status is changed to:</p>
+                    <div class="d-flex border border-danger rounded mt-2 px-2 py-1 justify-content-between align-items-center">
+                        <p>Candidate Status: Candidate is interested</p>
+                        <p>
+                            Updated:
+                            {% for candidateVacancyHistory in candidateVacancy.candidateVacancyHistories %}
+                                {% if candidateVacancyHistory.candidateStatus == 'Candidate is interested in vacancy' %}
+                                    {{ candidateVacancyHistory.updatedAt|date('Y-m-d H:i:s') }}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+                <div class="px-2 py-2">
+                    <p>Comment from Recruiter</p>
+                    <p style="word-break: break-all" class="border border-warning rounded px-2 py-2">
+                        {{ candidateVacancy.commentInterest }}
+                    </p>
+                </div>
+                {% if candidateVacancy.candidateStatus == 'Closed by recrutier' %}
+                    <div class="px-2 py-2">
+                        <p>Denial Reason</p>
+                        <p style="word-break: break-all" class="border border-warning rounded px-2 py-2">
+                            {{ candidateVacancy.denialReason }}
+                        </p>
+                    </div>
+                {% endif %}
+            </section>
+        {% endif %}
+    {% endif %}
+    {% if candidateVacancy != null %}
+        {% if candidateVacancy.candidateStatus == 'Approved for the interview' or candidateVacancy.candidateStatus == 'Closed by department manager' %}
+            <section class="border border-warning rounded mt-3 px-3 py-3">
+                <div>
+                    <p>Candidate Status is changed to:</p>
+                    <div class="d-flex border border-danger rounded mt-2 px-2 py-1 justify-content-between align-items-center">
+                        <p>Candidate Status: Approved for the interview</p>
+                        <p>
+                            Updated:
+                            {% for candidateVacancyHistory in candidateVacancy.candidateVacancyHistories %}
+                                {% if candidateVacancyHistory.candidateStatus == 'Approved for the interview' %}
+                                    {{ candidateVacancyHistory.updatedAt|date('Y-m-d H:i:s') }}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="d-flex border border-warning rounded mt-2 px-2 py-1">
+                        <p>Candidate was approved for the interview by {{ candidateVacancy.createdBy.email }}</p>
+                    </div>
+                    {% if candidateVacancy.candidateStatus == 'Closed by department manager' %}
+                        <div class="px-2 py-2">
+                            <p>Denial Reason</p>
+                            <p style="word-break: break-all" class="border border-warning rounded px-2 py-2">
+                                {{ candidateVacancy.denialInterview }}
+                            </p>
+                        </div>
+                    {% endif %}
+                    {% if candidateVacancy.commentViewers != null %}
+                        {% for commentViewer in candidateVacancy.commentViewers %}
+                            {% if commentViewer != null %}
+                                <p style="word-break: break-all" class="border border-warning rounded px-2 py-2">
+                                    {{ commentViewer.comment }}
+                                </p>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </section>
+        {% endif %}
+    {% endif %}
+    {% if candidateLink != null %}
+        {% if candidateLink.candidateStatus == 'Approved for the interview' or candidateLink.candidateStatus == 'Closed by department manager' %}
+            <section class="border border-warning rounded mt-3 px-3 py-3">
+                <div>
+                    <p>Candidate Status is changed to:</p>
+                    <div class="d-flex border border-danger rounded mt-2 px-2 py-1 justify-content-between align-items-center">
+                        <p>Candidate Status: Approved for the interview</p>
+                        <p>
+                            Updated:
+                            {% for candidateVacancyHistory in candidateLink.candidateVacancyHistories %}
+                                {% if candidateVacancyHistory.candidateStatus == 'Approved for the interview' %}
+                                    {{ candidateVacancyHistory.updatedAt|date('Y-m-d H:i:s') }}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="d-flex border border-warning rounded mt-2 px-2 py-1">
+                        <p>Candidate was approved for the interview by {{ candidateLink.createdBy.email }}</p>
+                    </div>
+                    {% if candidateLink.candidateStatus == 'Closed by department manager' %}
+                        <div class="px-2 py-2">
+                            <p>Denial Reason</p>
+                            <p style="word-break: break-all" class="border border-warning rounded px-2 py-2">
+                                {{ candidateLink.denialInterview}}
+                            </p>
+                        </div>
+                    {% endif %}
+                    {% if candidateLink.commentViewers != null %}
+                        {% for commentViewer in candidateLink.commentViewers %}
+                            {% if commentViewer != null %}
+                                <p style="word-break: break-all" class="border border-warning rounded px-2 py-2">
+                                    {{ commentViewer.comment }}
+                                </p>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </section>
+        {% endif %}
+    {% endif %}
+    <div class="btn btn-warning mt-2 mb-4">
+        <a href="{{ path('vacancy_show_candidates', {'id':vacancy.id}) }}">Back to candidates list</a>
+    </div>
+{% endblock %}

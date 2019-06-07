@@ -29,6 +29,7 @@
         <table class="table mb-5" id="menu">
             <thead>
             <tr>
+                <th>Photo</th>
                 <th>Name</th>
                 <th>Surname</th>
                 <th>Position</th>
@@ -43,14 +44,76 @@
             {% for candidateVacancy in vacancy.candidateVacancies %}
                 {% if candidateVacancy.candidate.name != null %}
                     <tr>
-                        <td>{{ candidateVacancy.candidate.name }}</td>
-                        <td>{{ candidateVacancy.candidate.surname }}</td>
-                        <td>{{ candidateVacancy.candidate.position }}</td>
-                        <td>{{ candidateVacancy.candidate.location }}</td>
-                        <td>{{ candidateVacancy.candidate.phone }}</td>
-                        <td>{{ vacancy.status }}</td>
-                        <td>{{ candidateVacancy.candidateStatus }}</td>
-                        <td>{{ candidateVacancy.candidate.updatedDate|date('Y-m-d') }}
+                        {% if candidateVacancy.candidate.photo != null %}
+                            <td>
+                                <a href="{{ path('candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    <img width="200px" height="200px" class="img-fluid " src="/uploads/{{ candidateVacancy.candidate.photo }}" alt="Photo">
+                                </a>
+                            </td>
+                        {% else %}
+                            <td>
+                                <a href="{{ path('candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    <img width="200px" height="200px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                                </a>
+                            </td>
+                        {% endif %}
+                        <td>
+                            <a href="{{ path('candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                 {{ candidateVacancy.candidate.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ candidateVacancy.candidate.surname }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ candidateVacancy.candidate.position }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ candidateVacancy.candidate.location }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ candidateVacancy.candidate.phone }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ vacancy.status }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ candidateVacancy.candidateStatus }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                {{ candidateVacancy.candidate.updatedDate|date('Y-m-d') }}
+                            </a>
+                        </td>
+                        {% if  app.request.get('edit') is not null%}
+                            <td>
+                                <a class="btn btn-primary" href="{{ path('check_interest_edit', {'id': candidateVacancy.id, 'vacancy': vacancy.id } ) }}">Edit</a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            <a class="btn btn-primary" href="{{ path('vacancy_show_history_in_vacancy', {'id': vacancy.id, 'candidateVacancy': candidateVacancy.id}) }}">
+                                View candidate History
+                            </a>
+                        </th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th colspan="2">
                             {% if candidateVacancy.candidateStatus == 'CV Received'  %}
                                 <a class="btn btn-primary" href="{{ path('check_interest',
                                     {'id': vacancy.id, 'candidateId': candidateVacancy.candidate.id}) }}">
@@ -65,33 +128,90 @@
                                      Check Candidate Interest
                                 </span>
                             {% endif %}
-                        </td>
-                        {% if  app.request.get('edit') is not null%}
-                            <td>
-                                <a class="btn btn-primary" href="{{ path('check_interest_edit', {'id': candidateVacancy.id, 'vacancy': vacancy.id } ) }}">Edit</a>
-                            </td>
-                        {% endif %}
+                        </th>
                     </tr>
                 {% endif %}
             {% endfor %}
             {% for vacancyLink in vacancy.vacancyLinks %}
-                {% for candidate in vacancyLink.candidateLinks %}
-                    {% if candidate.candidate.name != null %}
+                {% for candidateLink in vacancyLink.candidateLinks %}
+                    {% if candidateLink.candidate.name != null %}
                         <tr>
-                            <td>{{ candidate.candidate.name }}</td>
-                            <td>{{ candidate.candidate.surname }}</td>
-                            <td>{{ candidate.candidate.position }}</td>
-                            <td>{{ candidate.candidate.location }}</td>
-                            <td>{{ candidate.candidate.phone }}</td>
-                            <td>{{ vacancy.status }}</td>
-                            <td>{{ candidate.candidateStatus }}</td>
-                            <td>{{ candidate.candidate.updatedDate|date('Y-m-d') }}
-                                {% if candidate.candidateStatus == 'CV Received' %}
+                            {% if candidateLink.candidate.photo != null %}
+                                <td>
+                                    <a href="{{ path('candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                        <img width="200px" height="200px" class="img-fluid " src="/uploads/{{ candidateLink.candidate.photo }}" alt="Photo">
+                                    </a>
+                                </td>
+                            {% else %}
+                                <td>
+                                    <a href="{{ path('candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                        <img width="200px" height="200px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                                    </a>
+                                </td>
+                            {% endif %}
+                            <td>
+                                <a href="{{ path('candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    {{ candidateLink.candidate.name }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ path('candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    {{ candidateLink.candidate.surname }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ path('candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    {{ candidateLink.candidate.position }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ path('candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    {{ candidateLink.candidate.location }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ path('candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    {{ candidateLink.candidate.phone }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ path('candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    {{ vacancy.status }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ path('candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    {{ candidateLink.candidateStatus }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ path('candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    {{ candidateLink.candidate.updatedDate|date('Y-m-d') }}
+                                </a>
+                            </td>
+{#                            {% if  app.request.get('edit') is not null%}#}
+{#                                <td>#}
+{#                                    <a class="btn btn-primary" href="{{ path('check_interest_link_edit', {'id': candidate.id, 'vacancy': vacancy.id }) }}">Edit</a>#}
+{#                                </td>#}
+{#                            {% endif %}#}
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <a class="btn btn-primary" href="{{ path('vacancy_show_history_in_vacancy', {'id': vacancy.id, 'candidateLink': candidateLink.id}) }}">
+                                    View candidate History
+                                </a>
+                            </th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th colspan="2">
+                                {% if candidateLink.candidateStatus == 'CV Received' %}
                                     <a class="btn btn-primary" href="{{ path('check_interest_link',
-                                        {'id': vacancy.id, 'candidateId': candidate.candidate.id}) }}">
+                                        {'id': vacancy.id, 'candidateId': candidateLink.candidate.id}) }}">
                                         Check Candidate Interest
                                     </a>
-                                {% elseif candidate.candidateStatus == 'Candidate is interested in vacancy' %}
+                                {% elseif candidateLink.candidateStatus == 'Candidate is interested in vacancy' %}
                                     <span class="btn btn-secondary">
                                         Candidate is waiting for approval
                                     </span>
@@ -100,12 +220,7 @@
                                         Set interview time
                                     </span>
                                 {% endif %}
-                            </td>
-                            {% if  app.request.get('edit') is not null%}
-                                <td>
-                                    <a class="btn btn-primary" href="{{ path('check_interest_link_edit', {'id': candidate.id, 'vacancy': vacancy.id }) }}">Edit</a>
-                                </td>
-                            {% endif %}
+                            </th>
                         </tr>
                     {% endif %}
                 {% endfor %}

@@ -7,6 +7,7 @@ use App\Entity\CandidateLink;
 use App\Entity\VacancyLink;
 use App\Service\Vacancy\CandidateLinkRelationsToCandidate\VacancyCandidateBuilder\FormVacancyCandidateBuilderLinks;
 use App\Service\Vacancy\CandidateLinkRelationsToCandidate\VacancyCandidateBuilder\NonExistsCandidateBuilderLinks;
+use Exception;
 
 
 /**
@@ -27,16 +28,23 @@ class StrategyNonExistenceLinks implements StrategyForCandidateRelationLinksInte
     }
 
 
+    /**
+     * @param VacancyLink $vacancyLink
+     * @param Candidate $candidate
+     * @param CandidateLink $candidateLink
+     * @param string $from
+     * @throws Exception
+     */
     public function addCandidateVacancy(VacancyLink $vacancyLink,
                                         Candidate $candidate,
                                         CandidateLink $candidateLink, string $from): void
     {
-        $this->builder->build($candidateLink, $candidate, $vacancyLink, $from);
+
     }
 
-    public function getCandidate(string $name, string $surname): Candidate
+    public function getCandidate(string $name, string $surname, VacancyLink $vacancyLink, string $from, $receivedCv): Candidate
     {
-        return $this->nonExistsCandidateBuilder->build($name, $surname);
+        return $this->nonExistsCandidateBuilder->build($name, $surname, $vacancyLink, $from, $receivedCv);
     }
 
     public function checkCandidateVacancyRelation(VacancyLink $vacancyLink, Candidate $candidate): bool

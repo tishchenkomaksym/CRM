@@ -14,7 +14,7 @@ interface StrategyForCandidateRelationInterface
                                         Candidate $candidate,
                                         CandidateVacancy $candidateVacancy, string $from);
 
-    public function getCandidate(string $name, string $surname);
+    public function getCandidate(string $name, string $surname, Vacancy $vacancy, string $from, $receivedCv);
 
     public function checkCandidateVacancyRelation(Vacancy $vacancy, Candidate $candidate): bool;
 }

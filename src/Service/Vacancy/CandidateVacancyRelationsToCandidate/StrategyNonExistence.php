@@ -31,12 +31,12 @@ class StrategyNonExistence implements StrategyForCandidateRelationInterface
                                         Candidate $candidate,
                                         CandidateVacancy $candidateVacancy, string $from): void
     {
-        $this->builder->build($candidateVacancy, $candidate, $vacancy, $from);
+
     }
 
-    public function getCandidate(string $name, string $surname): Candidate
+    public function getCandidate(string $name, string $surname,Vacancy $vacancy, string $from, $receivedCv): Candidate
     {
-        return $this->nonExistsCandidateBuilder->build($name, $surname);
+        return $this->nonExistsCandidateBuilder->build($name, $surname, $vacancy, $from, $receivedCv);
     }
 
     public function checkCandidateVacancyRelation(Vacancy $vacancy, Candidate $candidate): bool
