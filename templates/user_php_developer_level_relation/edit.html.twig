@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Edit PhpDeveloperManagerRelation</h1>
 
-    {{ include('user_php_developer_level_relation/candidatesForm.html.twig', {'button_label': 'Update'}) }}
+    {{ include('user_php_developer_level_relation/_form.html.twig', {'button_label': 'Update'}) }}
 
     <a href="{{ path('user_show',{'id':contextUser.id}) }}">back to list</a>
 
