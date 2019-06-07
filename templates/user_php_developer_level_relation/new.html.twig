@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Create new UserPhpDeveloperLevelRelation</h1>
 
-    {{ include('user_php_developer_level_relation/candidatesForm.html.twig') }}
+    {{ include('user_php_developer_level_relation/_form.html.twig') }}
 
     <a href="{{ path('user_show',{'id':contextUser.id}) }}">back to list</a>
 {% endblock %}
