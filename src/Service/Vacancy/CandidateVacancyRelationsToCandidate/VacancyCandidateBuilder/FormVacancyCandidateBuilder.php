@@ -5,12 +5,12 @@ namespace App\Service\Vacancy\CandidateVacancyRelationsToCandidate\VacancyCandid
 
 
 use App\Entity\Candidate;
-use App\Entity\CandidateLink;
 use App\Entity\CandidateVacancy;
 use App\Entity\Vacancy;
-use App\Entity\VacancyLink;
+use DateTimeImmutable;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class FormVacancyCandidateBuilder
 {
@@ -20,9 +20,14 @@ class FormVacancyCandidateBuilder
      */
     private $parameterBag;
 
-    public  function __construct(ParameterBagInterface $parameterBag)
+    private $user;
+
+    public  function __construct(ParameterBagInterface $parameterBag, TokenStorageInterface $tokenStorage)
     {
         $this->parameterBag = $parameterBag;
+        if ($tokenStorage->getToken() !== null ){
+            $this->user = $tokenStorage->getToken()->getUser();
+        }
     }
 
     public function build(CandidateVacancy $candidateVacancy, Candidate $candidate, Vacancy $vacancy,string $from): CandidateVacancy
@@ -39,7 +44,10 @@ class FormVacancyCandidateBuilder
             $candidateVacancy
                 ->setCandidate($candidate)
                 ->setVacancy($vacancy)
-                ->setCandidateFrom($from);
+                ->setCandidateFrom($from)
+                ->setCreatedAt(new DateTimeImmutable('now'))
+                ->setCreatedBy($this->user);
+
         }else{
             $candidateVacancy
                 ->setCandidate($candidate)
@@ -48,7 +56,9 @@ class FormVacancyCandidateBuilder
                 ->setLinkToProfile1($candidateVacancy->getLinkToProfile1())
                 ->setLinkToProfile2($candidateVacancy->getLinkToProfile2())
                 ->setLinkToProfile3($candidateVacancy->getLinkToProfile3())
-                ->setLinkToProfile4($candidateVacancy->getLinkToProfile4());
+                ->setLinkToProfile4($candidateVacancy->getLinkToProfile4())
+                ->setCreatedAt(new DateTimeImmutable('now'))
+                ->setCreatedBy($this->user);
         }
         return $candidateVacancy;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -79,6 +80,23 @@ class CandidateVacancy
      */
     private $candidateStatus;
 
+
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $createdBy;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CandidateVacancyHistory", mappedBy="candidateVacancy")
+     */
+    private $candidateVacancyHistories;
+
     /**
      * @ORM\Column(type="text", nullable=true)
      */
@@ -91,6 +109,7 @@ class CandidateVacancy
 
     public function __construct()
     {
+        $this->candidateVacancyHistories = new ArrayCollection();
         $this->commentViewers = new ArrayCollection();
     }
 
@@ -227,6 +246,63 @@ class CandidateVacancy
     public function setCandidateStatus(?string $candidateStatus): self
     {
         $this->candidateStatus = $candidateStatus;
+
+        return $this;
+    }
+
+
+
+    public function getCreatedAt(): ?DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): self
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CandidateVacancyHistory[]
+     */
+    public function getCandidateVacancyHistories(): Collection
+    {
+        return $this->candidateVacancyHistories;
+    }
+
+    public function addCandidateVacancyHistory(CandidateVacancyHistory $candidateVacancyHistory): self
+    {
+        if (!$this->candidateVacancyHistories->contains($candidateVacancyHistory)) {
+            $this->candidateVacancyHistories[] = $candidateVacancyHistory;
+            $candidateVacancyHistory->setCandidateVacancy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCandidateVacancyHistory(CandidateVacancyHistory $candidateVacancyHistory): self
+    {
+        if ($this->candidateVacancyHistories->contains($candidateVacancyHistory)) {
+            $this->candidateVacancyHistories->removeElement($candidateVacancyHistory);
+            // set the owning side to null (unless already changed)
+            if ($candidateVacancyHistory->getCandidateVacancy() === $this) {
+                $candidateVacancyHistory->setCandidateVacancy(null);
+            }
+        }
 
         return $this;
     }

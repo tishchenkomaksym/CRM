@@ -5,8 +5,8 @@ namespace App\Service\CandidateForms;
 
 
 use App\Entity\CandidateLink;
+use App\Entity\CandidateVacancy;
 use App\Entity\Vacancy;
-use App\Entity\VacancyLink;
 use App\Repository\CandidateLinkRepository;
 use App\Repository\CandidateVacancyRepository;
 use App\Repository\VacancyLinkRepository;
@@ -25,12 +25,18 @@ class CandidateForms
     public const VACANCY_ENTITY_IN_VIEW = 'vacancy';
 
     public const CANDIDATE = 'candidate';
+    /**
+     * @var VacancyLinkRepository
+     */
+    private $vacancyLinkRepository;
 
     public function __construct(CandidateVacancyRepository $candidateVacancyRepository,
-                                CandidateLinkRepository $candidateLinkRepository)
+                                CandidateLinkRepository $candidateLinkRepository,
+                                VacancyLinkRepository $vacancyLinkRepository)
     {
         $this->candidateVacancyRepository = $candidateVacancyRepository;
         $this->candidateLinkRepository = $candidateLinkRepository;
+        $this->vacancyLinkRepository = $vacancyLinkRepository;
     }
 
     public function candidateVacancySearch(Vacancy $vacancy, $candidateId)
@@ -61,11 +67,20 @@ class CandidateForms
         ]);
     }
 
-    public function candidateLinkCheckSelection(Vacancy $vacancy): array
+    public function vacancyLink(Vacancy $vacancy):array
     {
-        return $this->candidateVacancyRepository->findBy([
-            'candidateStatus' => ['Approved for the interview','Closed'],
-            self::VACANCY_ENTITY_IN_VIEW => $vacancy->getId()
+        return $this->vacancyLinkRepository->findBy([
+           'vacancy' => $vacancy->getId()
         ]);
+    }
+
+    public function candidateVacancyByIdSearch($candidateVacancyId): ?CandidateVacancy
+    {
+        return $this->candidateVacancyRepository->findOneBy(['id' => $candidateVacancyId]);
+    }
+
+    public function candidateLinkByIdSearch($candidateLinkId): ?CandidateLink
+    {
+        return $this->candidateLinkRepository->findOneBy(['id' => $candidateLinkId]);
     }
 }

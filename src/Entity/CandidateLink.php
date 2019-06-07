@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -74,7 +75,25 @@ class CandidateLink
     public function __construct()
     {
         $this->commentViewers = new ArrayCollection();
+        $this->candidateVacancyHistories = new ArrayCollection();
     }
+
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $createdBy;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CandidateVacancyHistory", mappedBy="candidateLink")
+     */
+    private $candidateVacancyHistories;
+
 
     public function getId(): ?int
     {
@@ -130,13 +149,6 @@ class CandidateLink
     }
 
 
-    public function setLinkToProfile4(?string $linkToProfile4): self
-    {
-        $this->linkToProfile4 = $linkToProfile4;
-
-        return $this;
-    }
-
     public function getCommentInterest(): ?string
     {
         return $this->commentInterest;
@@ -169,6 +181,61 @@ class CandidateLink
     public function setCandidateStatus(?string $candidateStatus): self
     {
         $this->candidateStatus = $candidateStatus;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): self
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CandidateVacancyHistory[]
+     */
+    public function getCandidateVacancyHistories(): Collection
+    {
+        return $this->candidateVacancyHistories;
+    }
+
+    public function addCandidateVacancyHistory(CandidateVacancyHistory $candidateVacancyHistory): self
+    {
+        if (!$this->candidateVacancyHistories->contains($candidateVacancyHistory)) {
+            $this->candidateVacancyHistories[] = $candidateVacancyHistory;
+            $candidateVacancyHistory->setCandidateLink($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCandidateVacancyHistory(CandidateVacancyHistory $candidateVacancyHistory): self
+    {
+        if ($this->candidateVacancyHistories->contains($candidateVacancyHistory)) {
+            $this->candidateVacancyHistories->removeElement($candidateVacancyHistory);
+            // set the owning side to null (unless already changed)
+            if ($candidateVacancyHistory->getCandidateLink() === $this) {
+                $candidateVacancyHistory->setCandidateLink(null);
+            }
+        }
 
         return $this;
     }

@@ -16,6 +16,7 @@ use App\Repository\VacancyLinkRepository;
 use App\Repository\VacancyRepository;
 
 use App\Service\Candidate\CandidatePhotoDecorator;
+use App\Service\CandidateVacancyHistory\CandidateVacancyHistoryDataProvider;
 use App\Service\Vacancy\CandidateLinkRelationsToCandidate\FormValidators\CandidateLinkSearch;
 use App\Service\Vacancy\Letters\CreateForDepartmentManagerCandidateApprove\NewMessageBuilderForDepartmentManagerCandidateApprove;
 use App\Service\Vacancy\Letters\CreateForViewerCandidateApprove\NewMessageBuilderForViewer;
@@ -40,6 +41,8 @@ class CandidateLinkController extends AbstractController
     public const LINKS = 'links';
 
     public const VACANCY_SHOW_RECEIVED = 'vacancy_show_cv_received';
+
+    public const CANDIDATE_INTERESTED_IN_VACANCY = 'Candidate is interested in vacancy';
     /**
      * @var Environment
      */
@@ -144,6 +147,7 @@ class CandidateLinkController extends AbstractController
      * @param CandidatePhotoDecorator $candidatePhotoDecorator
      * @param Swift_Mailer $mailer
      * @param CandidateRepository $candidateRepository
+     * @param CandidateVacancyHistoryDataProvider $candidateVacancyHistoryData
      * @return NoDateException|Response
      * @throws LoaderError
      * @throws NoDateException
@@ -154,27 +158,31 @@ class CandidateLinkController extends AbstractController
         CandidateLinkSearch $candidateLinkSearch,
         CandidatePhotoDecorator $candidatePhotoDecorator,
         Swift_Mailer $mailer,
-        CandidateRepository $candidateRepository)
+        CandidateRepository $candidateRepository,
+        CandidateVacancyHistoryDataProvider $candidateVacancyHistoryData
+)
     {
         $candidateId = $request->get(self::CANDIDATE_ID);
         $candidateLink = $candidateLinkSearch->searchCandidateLink($candidateId, $vacancy);
         if($candidateLink === null){
             throw new NoDateException('CandidateLink not Found');
         }
+        $receivedCv = $candidateLink->getReceivedCv();
         $candidatePhotoDecorator->receivedCvNotNullCandidateLink($candidateLink);
         $form = $this->createForm(CandidateLinkCommentInterestType::class, $candidateLink);
         $form->handleRequest($request);
 
         $entityManager = $this->getDoctrine()->getManager();
         if ($form->isSubmitted() && $form->isValid()) {
-
+            $candidateLink->setReceivedCv($receivedCv);
             if ($candidateLink->getCandidate() === null){
                 throw new NoDateException('Candidate not Found');
             }
             if($form instanceof Form)
             {
                 if ($form->getClickedButton() && 'save' === $form->getClickedButton()->getName()) {
-                    $candidateLink->setCandidateStatus('Candidate is interested in vacancy');
+                    $candidateLink->setCandidateStatus(self::CANDIDATE_INTERESTED_IN_VACANCY);
+                    $candidateVacancyHistoryData->candidateLinkCreate($candidateLink, self::CANDIDATE_INTERESTED_IN_VACANCY);
                     $entityManager->persist($candidateLink);
                     $entityManager->flush();
                     $messageBuilder = new NewMessageBuilderForDepartmentManagerCandidateApprove(
@@ -193,6 +201,7 @@ class CandidateLinkController extends AbstractController
 
                 $candidateLink->setCandidateStatus('Closed by recrutier');
                 $entityManager->persist($candidateLink);
+                $candidateVacancyHistoryData->candidateLinkCreate($candidateLink, self::CANDIDATE_INTERESTED_IN_VACANCY);
                 $entityManager->flush();
                 return $this->redirectToRoute('checked_interest_link', [
                         'id' => $vacancy->getId(),
@@ -224,7 +233,7 @@ class CandidateLinkController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             if($form instanceof Form){
                 if ($form->getClickedButton() && 'save' === $form->getClickedButton()->getName()) {
-                    $candidateLink->setCandidateStatus('Candidate is interested in vacancy');
+                    $candidateLink->setCandidateStatus(self::CANDIDATE_INTERESTED_IN_VACANCY);
                     $entityManager->persist($candidateLink);
                     $entityManager->flush();
                     return $this->redirectToRoute(self::VACANCY_SHOW_RECEIVED, [
