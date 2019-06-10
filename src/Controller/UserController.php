@@ -259,6 +259,7 @@ class UserController extends AbstractController
                 $entityManager->persist($email);
             }
             $entityManager->flush();
+
             return $this->redirectToRoute(
                 self::ROUTE_USER_INDEX,
                 [
