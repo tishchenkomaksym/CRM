@@ -79,20 +79,20 @@ class CandidateLink
     }
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\CandidateVacancyHistory", mappedBy="candidateLink")
-     */
-    private $candidateVacancyHistories;
-
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @ORM\Column(type="datetime_immutable")
      */
     private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="candidateLinks")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $createdBy;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CandidateVacancyHistory", mappedBy="candidateLink")
+     */
+    private $candidateVacancyHistories;
 
 
     public function getId(): ?int
