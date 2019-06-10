@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sdt view rules for departments{% endblock %}
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ path('default') }}">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Sdt view rules</li>
+    </ol>
+    </nav>{% endblock %}
+{% block body %}
+    <h3>Information:</h3>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Department</th>
+            <th>Team which sdts department's member can view</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for rule in rules %}
+            <tr>
+                <td>{{ rule.department }}</td>
+                <td>{{ rule.team }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{#    <a href="{{ path('department_team_sdt_view_rules_new') }}">Create new rule</a>#}
+
+{% endblock %}
