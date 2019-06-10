@@ -34,9 +34,15 @@ class Department
      */
     private $teams;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\DepartmentTeamSdtViewRules", mappedBy="department", orphanRemoval=true)
+     */
+    private $departmentTeamSdtViewRules;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
+        $this->departmentTeamSdtViewRules = new ArrayCollection();
     }
 
 
@@ -94,6 +100,37 @@ class Department
             // set the owning side to null (unless already changed)
             if ($team->getDepartment() === $this) {
                 $team->setDepartment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|DepartmentTeamSdtViewRules[]
+     */
+    public function getDepartmentTeamSdtViewRules(): Collection
+    {
+        return $this->departmentTeamSdtViewRules;
+    }
+
+    public function addDepartmentTeamSdtViewRule(DepartmentTeamSdtViewRules $departmentTeamSdtViewRule): self
+    {
+        if (!$this->departmentTeamSdtViewRules->contains($departmentTeamSdtViewRule)) {
+            $this->departmentTeamSdtViewRules[] = $departmentTeamSdtViewRule;
+            $departmentTeamSdtViewRule->setDepartment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDepartmentTeamSdtViewRule(DepartmentTeamSdtViewRules $departmentTeamSdtViewRule): self
+    {
+        if ($this->departmentTeamSdtViewRules->contains($departmentTeamSdtViewRule)) {
+            $this->departmentTeamSdtViewRules->removeElement($departmentTeamSdtViewRule);
+            // set the owning side to null (unless already changed)
+            if ($departmentTeamSdtViewRule->getDepartment() === $this) {
+                $departmentTeamSdtViewRule->setDepartment(null);
             }
         }
 

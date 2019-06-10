@@ -223,10 +223,10 @@ class User implements UserInterface
     {
         if ($this->sdt->contains($sdt)) {
             $this->sdt->removeElement($sdt);
-            // set the owning side to null (unless already changed)
-            if ($sdt->getUser() === $this) {
-                $sdt->setUser(null);
-            }
+//            // set the owning side to null (unless already changed)
+//            if ($sdt->getUser() === $this) {
+//                $sdt->setUser(null);
+//            }
         }
 
         return $this;

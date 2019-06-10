@@ -4,6 +4,7 @@ namespace App\Service\Sdt\Create\FormValidators;
 
 use App\Data\Sdt\SdtCollection;
 use App\Entity\Sdt;
+use App\Entity\User;
 use App\Entity\UserInfo;
 use App\Repository\UserInfoRepository;
 use App\Service\HolidayService;
@@ -48,6 +49,8 @@ class SdtPeriodValidatorTest extends TestCase
         /** @var Sdt|MockObject $valueMock */
         $valueMock = $this->createMock(Sdt::class);
         $valueMock->method('getAtOwnExpense')->willReturn(false);
+        /** @var User|MockObject $userMock */
+        $userMock = $this->createMock(User::class);
         /** @var SdtPeriod|MockObject $constraintMock */
         $constraintMock = $this->createMock(SdtPeriod::class);
         /** @var HolidayService|MockObject $holidayService */
@@ -58,12 +61,15 @@ class SdtPeriodValidatorTest extends TestCase
         $endDateCalculator = $this->createMock(EndDateOfSdtCalculator::class);
         /** @var UserInformationService|MockObject $userInfoService */
         $userInfoService = $this->createMock(UserInformationService::class);
+        /** @var UserInfo|MockObject $userInfo */
+        $userInfo = $this->createMock(UserInfo::class);
+        $userInfo->method('getUser')->willReturn($userMock);
         /** @var Sdt|MockObject $sdt */
         $sdt = $this->createMock(Sdt::class);
         /** @var SdtCollection|MockObject $sdtCollection */
         $sdtCollection = $this->createMock(SdtCollection::class);
-        /** @var UserInfo|MockObject $userInfo */
-        $userInfo = $this->createMock(UserInfo::class);
+
+
 
         $sdt->method('getCreateDate')->willReturn($startPeriod);
         $sdt->method('getCount')->willReturn($count);
