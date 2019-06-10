@@ -10,6 +10,7 @@ use App\Repository\UserInfoRepository;
 use App\Service\HolidayService;
 use App\Service\Sdt\Interval\EndDateOfSdtCalculator;
 use App\Service\UserInformationService;
+use Facebook\WebDriver\Exception\NullPointerException;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -72,10 +73,12 @@ class SdtPeriodValidator extends ConstraintValidator
                 $endPeriod = DateCalculatorWithWeekends::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount(),
                     $this->holidayService);
             }
-            if (($newStartDate <= $startPeriod && $startPeriod <= $newEndDate && $newEndDate >= $startPeriod) ||
+            if ($newStartDate === $startPeriod) {
+                /** @noinspection NullPointerExceptionInspection */
+                $userInfo->getUser()->removeSdt($sdt);
+            } elseif (($newStartDate <= $startPeriod && $startPeriod <= $newEndDate && $newEndDate >= $startPeriod) ||
                 ($newStartDate >= $startPeriod && $newEndDate <= $endPeriod) ||
-                ($newStartDate >= $startPeriod && $newStartDate <= $endPeriod) ||
-                $newStartDate === $startPeriod || $newStartDate === $endPeriod ||
+                ($newStartDate >= $startPeriod && $newStartDate <= $endPeriod)|| $newStartDate === $endPeriod ||
                 $newEndDate === $startPeriod || $newEndDate === $endPeriod) {
                 $this->context->buildViolation($constraint->message)
                     ->addViolation();

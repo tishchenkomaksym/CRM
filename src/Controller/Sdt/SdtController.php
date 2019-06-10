@@ -25,6 +25,7 @@ use App\Form\SDT\FormValidators\UpdateSdtCount;
 use App\Form\SDT\TomSdtType;
 use App\Form\SDT\UserSdtType;
 use App\Repository\DepartmentRepository;
+use App\Repository\DepartmentTeamSdtViewRulesRepository;
 use App\Repository\SalaryReportInfoRepository;
 use App\Repository\UserInfoRepository;
 use App\Repository\TeamRepository;
@@ -129,6 +130,7 @@ class SdtController extends AbstractController
     /**
      * @Route("/view-all", name="sdt_view_all", methods={"GET"})
      * @param HolidayService $holidayService
+     * @param DepartmentTeamSdtViewRulesRepository $departmentViewRules
      * @param TomSdtCollectionBuilder $collectionBuilder
      * @param LeftSdtCalculator $leftSdtCalculator
      * @param TomSdtLinkGenerator $tomLinkGenerator
@@ -141,6 +143,7 @@ class SdtController extends AbstractController
      */
     public function viewAll(
         HolidayService $holidayService,
+        DepartmentTeamSdtViewRulesRepository $departmentViewRules,
         TomSdtCollectionBuilder $collectionBuilder,
         LeftSdtCalculator $leftSdtCalculator,
         TomSdtLinkGenerator $tomLinkGenerator,
@@ -157,24 +160,16 @@ class SdtController extends AbstractController
             $linkGenerator = $tomLinkGenerator;
         }
 
-        $department = $departmentRepository->findOneBy(['id' => $this->getUser()->getTeam()->getDepartment()->getId()]);
-        $devTeams = ['display team', 'create team', 'sell team', 'sell team', 'data mining team', 'noc team', 'web ui team'];
-        $maintenanceTeams = ['admins', 'hr', 'security', 'accountaning team'];
-        $productDevTeams = ['ppc team'];
-
+        $department = $departmentRepository->findOneBy(['id' => $this->getUser()->getTeam()->getDepartment()]);
+        if ($department !== null) {
+            $department = strtolower($department->getName());
+        }
         $calendarEventItemCollection = new CalendarEventItemCollection();
         foreach ($sdtCollection->getItems() as $sdt) {
             $sdtUsersTeam = $teamRepository->findOneBy(['id' => $sdt->getUser()->getTeam()]);
             if ($sdtUsersTeam !== null && $department !== null) {
-
                 $sdtUsersTeam = strtolower($sdtUsersTeam->getName());
-
-                if(($department->getName() === 'Development team' &&
-                        in_array($sdtUsersTeam, $devTeams, true))||
-                    ($department->getName() === 'Maintenance Team' &&
-                        in_array($sdtUsersTeam, $maintenanceTeams, true)) ||
-                    ($department->getName() === 'Product development' &&
-                        in_array($sdtUsersTeam, $productDevTeams, true))) {
+                if($departmentViewRules->findOneBy(array('department' => $department, 'team' => $sdtUsersTeam))) {
                     $calendarEventItemCollection->add(
                         (new SdtCalendarEventItemBuilder(
                             $holidayService,
@@ -319,11 +314,11 @@ class SdtController extends AbstractController
         EditSdtMailFromSdtAdapter $editSdtMailFromSdtAdapter,
         UserInfoRepository $userInfoRepository
     ): Response {
-        if ($sdt->getUser() !== $this->getUser()) {
+        if ($sdt->getUser()->getId() !== $this->getUser()->getId()) {
             $this->denyAccessUnlessGranted(UserRoles::ROLE_TOM);
         }
         $formType = null;
-        if ($sdt->getUser() !== $this->getUser()) {
+        if ($sdt->getUser()->getId() !== $this->getUser()->getId()) {
             $formType = TomSdtType::class;
         } else {
             $formType = UserSdtType::class;

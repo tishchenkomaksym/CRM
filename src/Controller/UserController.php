@@ -209,8 +209,6 @@ class UserController extends AbstractController
     public function edit(
         UserInfo $userInfo,
         Request $request,
-        RegistrationUserBuilder $userBuilder,
-        SDTEmailAssigneeRepository $assigneeRepository,
         CandidatePhotoDecorator $candidatePhotoDecorator
     ): Response {
         $photo = $userInfo->getPhoto();
@@ -252,12 +250,6 @@ class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-//            foreach ($assigneeRepository->findBy(['user' => $userInfo->getId()]) as $SDTEmailAssignee) {
-//                $entityManager->remove($SDTEmailAssignee);
-//            }
-            foreach ($userBuilder->buildUserEmails($userInfo->getUser()) as $email) {
-                $entityManager->persist($email);
-            }
             $entityManager->flush();
 
             return $this->redirectToRoute(
