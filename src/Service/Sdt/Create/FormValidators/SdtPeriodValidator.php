@@ -5,6 +5,7 @@ namespace App\Service\Sdt\Create\FormValidators;
 
 use App\Calendar\DateCalculator\UserSubTeamDateCalculator;
 use App\Entity\Sdt;
+use App\Entity\UserInfo;
 use App\Repository\UserInfoRepository;
 use App\Repository\UserRepository;
 use App\Service\HolidayService;
@@ -72,6 +73,7 @@ class SdtPeriodValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, Sdt::class);
         }
         $user = $this->userRepository->findOneBy(['id' => $value->getUser()->getId()]);
+        $userInfo = new UserInfo();
         if (isset($user)) {
             $userInfo = $this->userInfoRepository->findOneBy(['user' => $user->getId()]);
         }
@@ -81,17 +83,16 @@ class SdtPeriodValidator extends ConstraintValidator
             ->getAllUserSdt($value->getUser());
         foreach ($sdtCollection->getItems() as $sdt) {
             $startPeriod = $sdt->getCreateDate();
-            $endPeriod = 0;
-            if ($userInfo !== null) {
-                $endPeriod = $this->userSubTeamDateCalculator->getDateWithOffset($userInfo, $sdt, $this->holidayService);
-            }
+            $endPeriod = $this->userSubTeamDateCalculator->getDateWithOffset($userInfo, $sdt, $this->holidayService);
             if ($newStartDate === $startPeriod) {
                 /** @noinspection NullPointerExceptionInspection */
                 $user->removeSdt($sdt);
             } elseif (($newStartDate <= $startPeriod && $startPeriod <= $newEndDate && $newEndDate >= $startPeriod) ||
                 ($newStartDate >= $startPeriod && $newEndDate <= $endPeriod) ||
-                ($newStartDate >= $startPeriod && $newStartDate <= $endPeriod)|| $newStartDate === $endPeriod ||
-                $newEndDate === $startPeriod || $newEndDate === $endPeriod) {
+                ($newStartDate >= $startPeriod && $newStartDate <= $endPeriod)||
+                $newStartDate === $endPeriod ||
+                $newEndDate === $startPeriod ||
+                $newEndDate === $endPeriod) {
                 $this->context->buildViolation($constraint->message)
                     ->addViolation();
             }
