@@ -8,8 +8,7 @@
 
 namespace App\Data\Sdt\Mail\Adapter;
 
-use App\Calendar\DateCalculator\BaseDateCalculator;
-use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
+use App\Calendar\DateCalculator\UserSubTeamDateCalculator;
 use App\Data\Sdt\Mail\DeleteSdtMailData;
 use App\Entity\Sdt;
 use App\Repository\SDTEmailAssigneeRepository;
@@ -33,10 +32,16 @@ class DeleteSdtMailFromSdtAdapter
      * @param Sdt $sdt
      * @param HolidayService $holidayService
      * @param UserInfoRepository $userInfoRepository
+     * @param UserSubTeamDateCalculator $userSubTeamDateCalculator
      * @return DeleteSdtMailData
+     * @throws \Exception
      * @throws NoDateException
      */
-    public function getNewSdtMail(Sdt $sdt, HolidayService $holidayService, UserInfoRepository $userInfoRepository): DeleteSdtMailData
+    public function getNewSdtMail(Sdt $sdt,
+        HolidayService $holidayService,
+        UserInfoRepository $userInfoRepository,
+        UserSubTeamDateCalculator $userSubTeamDateCalculator
+    ): DeleteSdtMailData
     {
         $createDate = $sdt->getCreateDate();
         if ($createDate !== null) {
@@ -45,10 +50,9 @@ class DeleteSdtMailFromSdtAdapter
                 $emails[] = $email->getEmail();
             }
             $userInfo = $userInfoRepository->findOneBy(['user' => $sdt->getUser()->getId()]);
-            if ($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
-                $endDate = BaseDateCalculator::getDateWithOffset($createDate, $sdt->getCount());
-            } else {
-                $endDate = DateCalculatorWithWeekends::getDateWithOffset($createDate, $sdt->getCount(), $holidayService);
+            $endDate = 0;
+            if ($userInfo !== null) {
+                $endDate = $userSubTeamDateCalculator->getDateWithOffset($userInfo, $sdt, $holidayService);
             }
             return new DeleteSdtMailData(
                 $sdt->getUser()->getName(),

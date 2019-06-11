@@ -8,8 +8,7 @@
 
 namespace App\Calendar;
 
-use App\Calendar\DateCalculator\BaseDateCalculator;
-use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
+use App\Calendar\DateCalculator\UserSubTeamDateCalculator;
 use App\Calendar\Sdt\SdtLinkGeneratorInterface;
 use App\Calendar\Sdt\SdtTitleGeneratorInterface;
 use App\Entity\Sdt;
@@ -34,6 +33,10 @@ SdtCalendarEventItemBuilder
      * @var SdtTitleGeneratorInterface
      */
     private $titleGenerator;
+    /**
+     * @var UserSubTeamDateCalculator
+     */
+    private $userSubTeamDateCalculator;
 
     /**
      * SdtCalendarEventItemBuilder constructor.
@@ -41,18 +44,26 @@ SdtCalendarEventItemBuilder
      * @param SdtLinkGeneratorInterface $linkGenerator
      * @param SdtTitleGeneratorInterface $titleGenerator
      * @param AuthorizationChecker $checker
+     * @param UserSubTeamDateCalculator $userSubTeamDateCalculator
+     * @throws \Exception
      */
     public function __construct(
         HolidayService $holidayService,
         SdtLinkGeneratorInterface $linkGenerator,
-        SdtTitleGeneratorInterface $titleGenerator
+        SdtTitleGeneratorInterface $titleGenerator,
+        UserSubTeamDateCalculator $userSubTeamDateCalculator
     )
     {
         $this->holidayService = $holidayService;
         $this->linkGenerator = $linkGenerator;
         $this->titleGenerator = $titleGenerator;
+        $this->userSubTeamDateCalculator = $userSubTeamDateCalculator;
     }
 
+
+    /**
+     * @throws \Exception
+    */
     public function build(Sdt $sdt,
                           User $user,
                           UserInfoRepository $userInfoRepository): CalendarItem
@@ -62,17 +73,8 @@ SdtCalendarEventItemBuilder
         if ($createDate && $createDate instanceof DateTime) {
             $calendarItem->start = $createDate->format('Y-m-d');
             $userInfo = $userInfoRepository->findOneBy(['user' => $user->getId()]);
-            if ($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
-                $calendarItem->end = BaseDateCalculator::getDateWithOffset(
-                    $createDate,
-                    $sdt->getCount()
-                );
-            } else {
-                $calendarItem->end = DateCalculatorWithWeekends::getDateWithOffset(
-                    $createDate,
-                    $sdt->getCount(),
-                    $this->holidayService
-                );
+            if ($userInfo !== null) {
+                $calendarItem->end = $this->userSubTeamDateCalculator->getDateWithOffset($userInfo, $sdt, $this->holidayService);
             }
             $calendarItem->end = $calendarItem->end->setTime(23, 59, 59)->format('Y-m-d H:i:s');
         }
