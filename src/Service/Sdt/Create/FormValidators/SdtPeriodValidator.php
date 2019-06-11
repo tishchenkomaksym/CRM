@@ -61,6 +61,7 @@ class SdtPeriodValidator extends ConstraintValidator
     /**
      * @param mixed $value
      * @param Constraint $constraint
+     * @return Constraint $constraint
      * @throws \Exception
      */
     public function validate($value, Constraint $constraint)
@@ -93,7 +94,7 @@ class SdtPeriodValidator extends ConstraintValidator
                 $newStartDate === $endPeriod ||
                 $newEndDate === $startPeriod ||
                 $newEndDate === $endPeriod) {
-                $this->context->buildViolation($constraint->message)
+                return $this->context->buildViolation($constraint->message)
                     ->addViolation();
             }
         }
