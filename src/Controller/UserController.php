@@ -162,24 +162,40 @@ class UserController extends AbstractController
         ReportWorkHoursBuilderDecorator $baseWorkHoursInformationBuilder,
         SalaryReportInfoRepository $reportInfoRepository
     ): Response {
-        $userInfo = $userInfoRepository->findOneBy(['user' => $user->getId()]);
-        if ($userInfo === null) {
-            $userInfo = new UserInfo();
-            $userInfo->setUser($user);
-            $userInfo->setBirthDay(new DateTime());
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($userInfo);
-            $entityManager->flush();
+
+        if ($this->isGranted('ROLE_ACCOUNT_MANAGER')){
+            $userInfo = $userInfoRepository->findOneBy(['user' => $user->getId()]);
+            if ($userInfo === null) {
+                $userInfo = new UserInfo();
+                $userInfo->setUser($user);
+                $userInfo->setBirthDay(new DateTime());
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($userInfo);
+                $entityManager->flush();
+            }
+            $todaySalaryReport = $reportInfoRepository->getTodaySalaryReport();
+            $nextSalaryReport = $reportInfoRepository->getNextSalaryReport(new DateTime());
+            if ($nextSalaryReport === null){
+                throw new NoDataException('Next salary report not found');
+            }
+            $sdtUsed = $baseSalaryReportBuilder->build($todaySalaryReport, $nextSalaryReport, $user);
+            $manager = $service->getPhpDeveloperManager($user);
+            $leftSdt = $leftSdtCalculator->calculate($user);
+            $workingHoursInformation = $baseWorkHoursInformationBuilder->build($user, new DateTime());
+        }else{
+            $userInfo = $userInfoRepository->findOneBy(['user' => $this->getUser()->getId()]);
+            $todaySalaryReport = $reportInfoRepository->getTodaySalaryReport();
+            $nextSalaryReport = $reportInfoRepository->getNextSalaryReport(new DateTime());
+            if ($nextSalaryReport === null){
+                throw new NoDataException('Next salary report not found');
+            }
+            $sdtUsed = $baseSalaryReportBuilder->build($todaySalaryReport, $nextSalaryReport, $this->getUser());
+            $manager = $service->getPhpDeveloperManager($this->getUser());
+            $leftSdt = $leftSdtCalculator->calculate($this->getUser());
+            $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser(), new DateTime());
         }
-        $todaySalaryReport = $reportInfoRepository->getTodaySalaryReport();
-        $nextSalaryReport = $reportInfoRepository->getNextSalaryReport(new DateTime());
-        if ($nextSalaryReport === null){
-            throw new NoDataException('Next salary report not found');
-        }
-        $sdtUsed = $baseSalaryReportBuilder->build($todaySalaryReport, $nextSalaryReport, $user);
-        $manager = $service->getPhpDeveloperManager($user);
-        $leftSdt = $leftSdtCalculator->calculate($user);
-        $workingHoursInformation = $baseWorkHoursInformationBuilder->build($user, new DateTime());
+
+
         return $this->render(
             'user/show.html.twig',
             [

@@ -115,8 +115,8 @@
             {% endif %}
             </div>
         <div>
-            {% if vacancy.status == 'Denied' %}
-                {{ include('vacancy/_delete_form.html.twig') }}
+            {% if vacancy.status == 'Denied' or is_granted('ROLE_ACCOUNT_MANAGER') %}
+                {{ include('recruiting/vacancy/_delete_form.html.twig') }}
                 Denied
             {% elseif vacancy.status is not null %}
                 <span class="border border-success">Approved {{ vacancy.approveDate|date('Y-m-d') }}
