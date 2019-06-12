@@ -3,8 +3,7 @@
 namespace App\Controller\Sdt;
 
 use App\Calendar\CalendarEventItemCollection;
-use App\Calendar\DateCalculator\BaseDateCalculator;
-use App\Calendar\DateCalculator\DateCalculatorWithWeekends;
+use App\Calendar\DateCalculator\UserSubTeamDateCalculator;
 use App\Calendar\HolidayCalendarEventItemBuilder;
 use App\Calendar\Sdt\Tom\TomSdtLinkGenerator;
 use App\Calendar\Sdt\Tom\TomSdtTitleGenerator;
@@ -84,6 +83,8 @@ class SdtController extends AbstractController
      * @param UserSdtLinkGenerator $userSdtLinkGenerator
      * @param UserSdtTitleGenerator $titleGenerator
      * @param UserInfoRepository $userInfoRepository
+     * @param UserSubTeamDateCalculator $userSubTeamDateCalculator
+     * @throws \Exception
      * @return Response
      */
     public function index(
@@ -92,7 +93,8 @@ class SdtController extends AbstractController
         LeftSdtCalculator $leftSdtCalculator,
         UserSdtLinkGenerator $userSdtLinkGenerator,
         UserSdtTitleGenerator $titleGenerator,
-        UserInfoRepository $userInfoRepository
+        UserInfoRepository $userInfoRepository,
+        UserSubTeamDateCalculator $userSubTeamDateCalculator
     ): Response {
         $sdtCollection = $userInformationService
             ->getAllUserSdt($this->getUser());
@@ -103,7 +105,8 @@ class SdtController extends AbstractController
                 (new SdtCalendarEventItemBuilder(
                     $holidayService,
                     $userSdtLinkGenerator,
-                    $titleGenerator
+                    $titleGenerator,
+                    $userSubTeamDateCalculator
                 ))->build($sdt, $this->getUser(), $userInfoRepository)
             );
         }
@@ -139,6 +142,8 @@ class SdtController extends AbstractController
      * @param UserInfoRepository $userInfoRepository
      * @param TeamRepository $teamRepository
      * @param DepartmentRepository $departmentRepository
+     * @param UserSubTeamDateCalculator $userSubTeamDateCalculator
+     * @throws \Exception
      * @return Response
      */
     public function viewAll(
@@ -151,7 +156,8 @@ class SdtController extends AbstractController
         TomSdtTitleGenerator $titleGenerator,
         UserInfoRepository $userInfoRepository,
         TeamRepository $teamRepository,
-        DepartmentRepository $departmentRepository
+        DepartmentRepository $departmentRepository,
+        UserSubTeamDateCalculator $userSubTeamDateCalculator
     ): Response {
         $sdtCollection = $collectionBuilder->buildCollection();
 
@@ -174,7 +180,8 @@ class SdtController extends AbstractController
                         (new SdtCalendarEventItemBuilder(
                             $holidayService,
                             $linkGenerator,
-                            $titleGenerator
+                            $titleGenerator,
+                            $userSubTeamDateCalculator
                         ))->build($sdt, $this->getUser(), $userInfoRepository)
                     );
                 }
@@ -208,6 +215,7 @@ class SdtController extends AbstractController
      * @param LeftSdtCalculator $leftSdtCalculator
      * @param NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter
      * @param UserInfoRepository $userInfoRepository
+     * @param UserSubTeamDateCalculator $userSubTeamDateCalculator
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
@@ -220,7 +228,8 @@ class SdtController extends AbstractController
         HolidayService $holidayService,
         NewSdtMailFromSdtAdapter $newSdtMailFromSdtAdapter,
         UserInfoRepository $userInfoRepository,
-        LeftSdtCalculator $leftSdtCalculator
+        LeftSdtCalculator $leftSdtCalculator,
+        UserSubTeamDateCalculator $userSubTeamDateCalculator
     ): Response {
         $sdt = new Sdt();
         $sdt->setUser($this->getUser());
@@ -243,7 +252,7 @@ class SdtController extends AbstractController
                 }
             }
             $messageBuilder = new NewSDTMessageBuilder(
-                $newSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService, $userInfoRepository), $this->environment
+                $newSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService, $userInfoRepository, $userSubTeamDateCalculator), $this->environment
             );
             $strategy = new BaseCreateStrategy(
                 $mailer,
@@ -269,20 +278,22 @@ class SdtController extends AbstractController
      * @param Sdt $sdt
      * @param HolidayService $holidayService
      * @param UserInfoRepository $userInfoRepository
+     * @param UserSubTeamDateCalculator $userSubTeamDateCalculator
      * @return Response
      * @throws Exception
      */
-    public function show(Sdt $sdt, HolidayService $holidayService, UserInfoRepository $userInfoRepository): Response
+    public function show(Sdt $sdt,
+        HolidayService $holidayService,
+        UserInfoRepository $userInfoRepository,
+        UserSubTeamDateCalculator $userSubTeamDateCalculator): Response
     {
         if ($sdt->getUser() !== $this->getUser()) {
             $this->denyAccessUnlessGranted(UserRoles::ROLE_TOM);
         }
         $userInfo = $userInfoRepository->findOneBy(['user' => $this->getUser()->getId()]);
-        if ($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
-            $endDate = BaseDateCalculator::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount());
-        } else {
-            $endDate = DateCalculatorWithWeekends::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount(),
-                $holidayService);
+        $endDate = 0;
+        if ($userInfo !== null) {
+            $endDate = $userSubTeamDateCalculator->getDateWithOffset($userInfo, $sdt, $holidayService);
         }
         return $this->render(
             'sdt/show.html.twig',
@@ -371,6 +382,7 @@ class SdtController extends AbstractController
      * @param HolidayService $holidayService
      * @param DeleteSdtMailFromSdtAdapter $deleteSdtMailFromSdtAdapter
      * @param UserInfoRepository $userInfoRepository
+     * @param UserSubTeamDateCalculator $userSubTeamDateCalculator
      * @return Response
      * @throws EmailServerNotWorking
      * @throws NoDateException
@@ -382,7 +394,8 @@ class SdtController extends AbstractController
         Swift_Mailer $mailer,
         HolidayService $holidayService,
         DeleteSdtMailFromSdtAdapter $deleteSdtMailFromSdtAdapter,
-        UserInfoRepository $userInfoRepository
+        UserInfoRepository $userInfoRepository,
+        UserSubTeamDateCalculator $userSubTeamDateCalculator
     ): Response {
         if ($sdt->getUser() !== $this->getUser()) {
             $this->denyAccessUnlessGranted(UserRoles::ROLE_TOM);
@@ -390,7 +403,7 @@ class SdtController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $sdt->getId(), $request->request->get('_token'))) {
             if ($this->sendDeleteSdtEmail(
                     $mailer,
-                    $deleteSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService, $userInfoRepository)
+                    $deleteSdtMailFromSdtAdapter->getNewSdtMail($sdt, $holidayService, $userInfoRepository, $userSubTeamDateCalculator)
                 ) === 0) {
                 throw new EmailServerNotWorking(EmailServerNotWorking::MESSAGE);
             }
