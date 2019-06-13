@@ -62,8 +62,12 @@ SdtCalendarEventItemBuilder
 
 
     /**
+     * @param Sdt $sdt
+     * @param User $user
+     * @param UserInfoRepository $userInfoRepository
+     * @return CalendarItem
      * @throws \Exception
-    */
+     */
     public function build(Sdt $sdt,
                           User $user,
                           UserInfoRepository $userInfoRepository): CalendarItem
@@ -74,9 +78,12 @@ SdtCalendarEventItemBuilder
             $calendarItem->start = $createDate->format('Y-m-d');
             $userInfo = $userInfoRepository->findOneBy(['user' => $user->getId()]);
             if ($userInfo !== null) {
-                $calendarItem->end = $this->userSubTeamDateCalculator->getDateWithOffset($userInfo, $sdt, $this->holidayService);
+                    $calendarItem->end = $this->userSubTeamDateCalculator->getDateWithOffset($userInfo, $sdt,
+                        $this->holidayService);
             }
-            $calendarItem->end = $calendarItem->end->setTime(23, 59, 59)->format('Y-m-d H:i:s');
+            if ($calendarItem->end !== null) {
+                $calendarItem->end = $calendarItem->end->setTime(23, 59, 59)->format('Y-m-d H:i:s');
+            }
         }
         $calendarItem->title = $this->titleGenerator->getTitle($sdt);
         $calendarItem->url = $this->linkGenerator->getLink($user, $sdt);
