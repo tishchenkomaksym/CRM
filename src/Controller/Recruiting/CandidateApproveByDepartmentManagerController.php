@@ -8,7 +8,9 @@ use App\Entity\Candidate;
 use App\Entity\CommentViewer;
 use App\Entity\Vacancy;
 use App\Form\Recruiting\CandidateApproveByDepartmentManType;
+use App\Form\Recruiting\CandidateLink\AssignDateInterviewLinkType;
 use App\Form\Recruiting\CandidateLink\CandidateLinkDenialInterviewType;
+use App\Form\Recruiting\CandidateVacancy\AssignDateInterviewType;
 use App\Form\Recruiting\CandidateVacancy\CandidateVacancyDenialInterviewType;
 use App\Form\Recruiting\CommentViewerType;
 use App\Repository\CommentViewerRepository;
@@ -18,10 +20,23 @@ use App\Service\CandidateForms\CandidateForms;
 use App\Service\CandidateVacancyHistory\CandidateVacancyHistoryDataProvider;
 use App\Service\Vacancy\CandidateApprove\DepartmentManagerApproveViewDTOBuilder;
 use App\Service\Vacancy\CandidateEditRelationToCandidateLinkToCandidateVacancy\NoDataException;
+use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateLinkProvider;
+use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateVacancyProvider;
+use App\Service\Vacancy\Letters\CreateForDepartmentManagerSetTime\CreateForDepartmentManagerSetTime;
+use App\Service\Vacancy\Letters\CreateForDepartmentManagerSetTime\CreateForDepartmentManagerSetTimeEdit;
+use App\Service\Vacancy\Letters\CreateForRecruiterSetTime\CreateForRecruiterSetTime;
+use App\Service\Vacancy\Letters\CreateForRecruiterSetTime\CreateForRecruiterSetTimeEdit;
+use App\Service\Vacancy\Letters\CreateForViewerSetTime\CreateForViewerSetTime;
+use App\Service\Vacancy\Letters\CreateForViewerSetTime\CreateForViewerSetTimeEdit;
+use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 
 class CandidateApproveByDepartmentManagerController extends AbstractController
@@ -35,6 +50,25 @@ class CandidateApproveByDepartmentManagerController extends AbstractController
 
     public const APPROVED_FOR_INTERVIEW = 'Approved for the interview';
 
+    public const DATE_INTERVIEW = 'dateInterview';
+
+    public const CONF_ROOM = 'confRoom';
+
+    public const CANDIDATE_VACANCY = 'candidateVacancy';
+
+    public const CANDIDATE_LINK = 'candidateLink';
+
+    public const CANDIDATE_LINK_VACANCY_NOT_FOUND = 'CandidateLink or CandidateVacancy not found';
+
+    /**
+     * @var Environment
+     */
+    private $environment;
+
+    public function __construct(Environment $environment)
+    {
+        $this->environment = $environment;
+    }
 
     /**
      * @Route("/vacancy/recruiter/approved/interview/department-manager/{id}", name="vacancy_show_approved_interview_department_manager", methods={"GET","POST"})
@@ -266,4 +300,176 @@ class CandidateApproveByDepartmentManagerController extends AbstractController
                 'form' => $form->createView(),
             ]);
     }
+
+    /**
+     * @Route("/recruiter/approved/interview/assign/date/{id}", name="interview_assign_data", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param Request $request
+     * @param CandidateForms $candidateForms
+     * @return Response
+     */
+    public function assignDateCalendar(Vacancy $vacancy, Request $request, CandidateForms $candidateForms): Response
+    {
+        $candidateLink = null;
+        $candidateVacancy = null;
+        if ($request->get(self::CANDIDATE_LINK) !== null){
+            $candidateLink = $candidateForms->candidateLinkByIdSearch($request->get(self::CANDIDATE_LINK));
+        }else{
+            $candidateVacancy = $candidateForms->candidateVacancyByIdSearch($request->get(self::CANDIDATE_VACANCY));
+        }
+
+        return $this->render('recruiting/vacancy/showRecruiter/assignDataInterview.html.twig',
+            [
+                'vacancy' => $vacancy,
+                self::CANDIDATE_LINK => $candidateLink,
+                self::CANDIDATE_VACANCY => $candidateVacancy
+            ]);
+    }
+
+
+    /**
+     * @Route("/recruiter/approved/interview/assign/date/new/{id}", name="interview_assign_data_new", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param Request $request
+     * @param CandidateForms $candidateForms
+     * @param Swift_Mailer $mailer
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws NoDataException
+     */
+    public function assignDateNew(Vacancy $vacancy,
+        Request $request,
+        CandidateForms $candidateForms,
+        Swift_Mailer $mailer): Response
+    {
+        $candidateVacancy = $candidateForms->candidateVacancyByIdSearch($request->get(self::CANDIDATE_VACANCY));
+        $candidateLink = $candidateForms->candidateLinkByIdSearch($request->get(self::CANDIDATE_LINK));
+        if ($candidateVacancy !== null){
+            $form = $this->createForm(AssignDateInterviewType::class);
+        }else{
+            $form = $this->createForm(AssignDateInterviewLinkType::class);
+        }
+        $form->handleRequest($request);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($candidateVacancy !== null){
+                $candidateVacancy->setDateInterview($form->get(self::DATE_INTERVIEW)->getData());
+                $candidateVacancy->setConfRoom($form->get(self::CONF_ROOM)->getData());
+                $entityManager->persist($candidateVacancy);
+                $candidateVacancyProvider = new CandidateVacancyProvider($candidateVacancy);
+                if ($vacancy->getVacancyViewerUser() !== null){
+                    $messageBuilderViewer = new CreateForViewerSetTime($this->environment);
+                    $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
+                }
+                $messageBuilder = new CreateForDepartmentManagerSetTime($this->environment);
+                $messageBuilderRecruiter = new CreateForRecruiterSetTime( $this->environment);
+            }elseif($candidateLink !== null){
+                $candidateLink->setDateInterview($form->get(self::DATE_INTERVIEW)->getData());
+                $candidateLink->setConfRoom($form->get(self::CONF_ROOM)->getData());
+                $entityManager->persist($candidateLink);
+                $candidateVacancyProvider = new CandidateLinkProvider($candidateLink);
+                if ($vacancy->getVacancyViewerUser() !== null){
+                    $messageBuilderViewer = new CreateForViewerSetTime($this->environment);
+                    $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
+                }
+                $messageBuilder = new CreateForDepartmentManagerSetTime( $this->environment);
+                $messageBuilderRecruiter = new CreateForRecruiterSetTime($this->environment);
+            }else{
+                throw new NoDataException(self::CANDIDATE_LINK_VACANCY_NOT_FOUND);
+            }
+            $mailer->send($messageBuilder->build($candidateVacancyProvider));
+            $mailer->send($messageBuilderRecruiter->build($candidateVacancyProvider));
+
+           $entityManager->flush();
+
+            return $this->redirectToRoute('vacancy_show_candidates', [
+                'id' => $vacancy->getId()
+            ]);
+        }
+
+        return $this->render('recruiting/vacancy/showRecruiter/assignDateInterviewNew.html.twig',
+            [
+                'form' => $form->createView(),
+            ]);
+    }
+
+    /**
+     * @Route("/recruiter/approved/interview/assign/date/edit/{id}", name="interview_assign_data_edit", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param Request $request
+     * @param CandidateForms $candidateForms
+     * @param Swift_Mailer $mailer
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws NoDataException
+     */
+    public function assignDateEdit(Vacancy $vacancy,
+        Request $request,
+        CandidateForms $candidateForms,
+        Swift_Mailer $mailer): Response
+    {
+        $candidateVacancy = $candidateForms->candidateVacancyByIdSearch($request->get(self::CANDIDATE_VACANCY));
+        $candidateLink = $candidateForms->candidateLinkByIdSearch($request->get(self::CANDIDATE_LINK));
+        if ($candidateVacancy !== null){
+            $form = $this->createForm(AssignDateInterviewType::class);
+            $form->get(self::DATE_INTERVIEW)->setData($candidateVacancy->getDateInterview());
+            $form->get(self::CONF_ROOM)->setData($candidateVacancy->getConfRoom());
+        }elseif($candidateLink !== null){
+            $form = $this->createForm(AssignDateInterviewLinkType::class);
+            $form->get(self::DATE_INTERVIEW)->setData($candidateLink->getDateInterview());
+            $form->get(self::CONF_ROOM)->setData($candidateLink->getConfRoom());
+        }else{
+            throw new NoDataException(self::CANDIDATE_LINK_VACANCY_NOT_FOUND);
+        }
+
+        $form->handleRequest($request);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($candidateVacancy !== null){
+                $candidateVacancy->setDateInterview($form->get(self::DATE_INTERVIEW)->getData());
+                $candidateVacancy->setConfRoom($form->get(self::CONF_ROOM)->getData());
+                $entityManager->persist($candidateVacancy);
+                $candidateVacancyProvider = new CandidateVacancyProvider($candidateVacancy);
+                if ($vacancy->getVacancyViewerUser() !== null){
+                    $messageBuilderViewer = new CreateForViewerSetTime($this->environment);
+                    $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
+                }
+                $messageBuilder = new CreateForDepartmentManagerSetTimeEdit( $this->environment);
+                $messageBuilderRecruiter = new CreateForRecruiterSetTimeEdit( $this->environment);
+            }elseif($candidateLink !== null){
+                $candidateLink->setDateInterview($form->get(self::DATE_INTERVIEW)->getData());
+                $candidateLink->setConfRoom($form->get(self::CONF_ROOM)->getData());
+                $entityManager->persist($candidateLink);
+                $candidateVacancyProvider = new CandidateLinkProvider($candidateLink);
+                if ($vacancy->getVacancyViewerUser() !== null){
+                    $messageBuilderViewer = new CreateForViewerSetTimeEdit($this->environment);
+                    $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
+                }
+                $messageBuilder = new CreateForDepartmentManagerSetTimeEdit( $this->environment);
+                $messageBuilderRecruiter = new CreateForRecruiterSetTimeEdit( $this->environment);
+            }else{
+                throw new NoDataException(self::CANDIDATE_LINK_VACANCY_NOT_FOUND);
+            }
+            $mailer->send($messageBuilder->build($candidateVacancyProvider));
+            $mailer->send($messageBuilderRecruiter->build($candidateVacancyProvider));
+
+            $entityManager->flush();
+
+            return $this->redirectToRoute('vacancy_show_candidates', [
+                'id' => $vacancy->getId()
+            ]);
+        }
+
+        return $this->render('recruiting/vacancy/showRecruiter/assignDateInterviewNew.html.twig',
+            [
+                'form' => $form->createView(),
+            ]);
+    }
+
 }

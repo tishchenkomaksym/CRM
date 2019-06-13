@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Requests</a></li>
+            <li class="breadcrumb-item active" aria-current="page">View Request</li>
+            <li class="breadcrumb-item active" aria-current="page">Interview timing approval</li>
+        </ol>
+    </nav>
+{% endblock %}
+{% block body %}
+    <table class="table" style="table-layout: fixed">
+        <tbody>
+        <tr>
+            <th>Request#</th>
+            <td>{{ vacancy.id }}</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+        </tr>
+        <tr>
+            <th>By</th>
+            <td>{{ vacancy.createdBy }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div>
+        <p class="alert alert-danger">
+            Status: {{ vacancy.status }}
+        </p>
+    </div>
+    {% if candidateVacancy != null  %}
+        {% if candidateVacancy.dateInterview == null %}
+            <a class="btn btn-primary pb-2" href="{{ path('interview_assign_data_new', {'id':vacancy.id, 'candidateVacancy': app.request.get('candidateVacancy')}) }}">
+                Create new
+            </a>
+        {% else %}
+            <a class="btn btn-primary pb-2" href="{{ path('interview_assign_data_edit', {'id':vacancy.id, 'candidateVacancy': app.request.get('candidateVacancy')}) }}">
+                Edit
+            </a>
+        {% endif %}
+    {% elseif candidateLink != null %}
+        {% if candidateLink.dateInterview == null %}
+            <a class="btn btn-primary pb-2" href="{{ path('interview_assign_data_new', {'id':vacancy.id, 'candidateLink': app.request.get('candidateLink')}) }}">
+                Create new
+            </a>
+        {% else %}
+            <a class="btn btn-primary pb-2" href="{{ path('interview_assign_data_edit', {'id':vacancy.id, 'candidateLink': app.request.get('candidateLink')}) }}">
+                Edit
+            </a>
+        {% endif %}
+    {% endif %}
+
+    <div id="calendar"></div>
+
+    <script>
+        $('#calendar').fullCalendar({ displayEventTime: false});
+    </script>
+{% endblock %}

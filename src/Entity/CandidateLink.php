@@ -94,6 +94,16 @@ class CandidateLink
      */
     private $candidateVacancyHistories;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $dateInterview;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\ConfRoom", inversedBy="candidateLinks")
+     */
+    private $confRoom;
+
 
     public function getId(): ?int
     {
@@ -280,6 +290,30 @@ class CandidateLink
                 $commentViewer->setCandidateLink(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDateInterview(): ?\DateTimeInterface
+    {
+        return $this->dateInterview;
+    }
+
+    public function setDateInterview(?\DateTimeInterface $dateInterview): self
+    {
+        $this->dateInterview = $dateInterview;
+
+        return $this;
+    }
+
+    public function getConfRoom(): ?ConfRoom
+    {
+        return $this->confRoom;
+    }
+
+    public function setConfRoom(?ConfRoom $confRoom): self
+    {
+        $this->confRoom = $confRoom;
 
         return $this;
     }

@@ -13,9 +13,11 @@ use App\Repository\CandidateRepository;
 use App\Repository\CandidateVacancyRepository;
 use App\Service\Candidate\CandidatePhotoDecorator;
 use App\Service\CandidateVacancyHistory\CandidateVacancyHistoryDataProvider;
+use App\Service\Vacancy\CandidateEditRelationToCandidateLinkToCandidateVacancy\NoDataException;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\FormValidators\CandidateVacancySearch;
 use App\Service\Vacancy\Letters\CreateForDepartmentManagerCandidateApprove\NewMessageBuilderForDepartmentManagerCandidateApprove;
 use App\Service\Vacancy\Letters\CreateForViewerCandidateApprove\NewMessageBuilderForViewer;
+use PhpParser\Node\Stmt\If_;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -212,6 +214,7 @@ class CandidateVacancyController extends AbstractController
      * @param Request $request
      * @param CandidateVacancySearch $candidateVacancySearch
      * @return NoDateException|Response
+     * @throws NoDataException
      */
     public function interestIsChecked(
         Vacancy $vacancy,
@@ -220,12 +223,15 @@ class CandidateVacancyController extends AbstractController
     ) {
         $candidateId = $request->get(self::CANDIDATE_ID);
         $candidateVacancy = $candidateVacancySearch->searchCandidateVacancy($candidateId, $vacancy->getId());
-        $form = $this->createForm(CandidateVacancyDenialReasonType::class, $candidateVacancy);
+        $form = $this->createForm(CandidateVacancyDenialReasonType::class) ;
         $form->handleRequest($request);
 
+        if ($candidateVacancy === null){
+            throw new NoDataException('CandidateVacancy not found');
+        }
         $entityManager = $this->getDoctrine()->getManager();
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($candidateVacancy);
+            $entityManager->persist($candidateVacancy->setDenialReason($form->get('denialReason')->getData()));
             $entityManager->flush();
             return $this->redirectToRoute('vacancy_show_candidates', [
                     'id' => $vacancy->getId()
