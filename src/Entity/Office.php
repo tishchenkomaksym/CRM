@@ -33,9 +33,15 @@ class Office
      */
     private $topManager;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ConfRoom", mappedBy="office")
+     */
+    private $confRooms;
+
     public function __construct()
     {
         $this->departments = new ArrayCollection();
+        $this->confRooms = new ArrayCollection();
     }
 
 
@@ -95,6 +101,37 @@ class Office
     public function setTopManager(?User $topManager): self
     {
         $this->topManager = $topManager;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ConfRoom[]
+     */
+    public function getConfRooms(): Collection
+    {
+        return $this->confRooms;
+    }
+
+    public function addConfRoom(ConfRoom $confRoom): self
+    {
+        if (!$this->confRooms->contains($confRoom)) {
+            $this->confRooms[] = $confRoom;
+            $confRoom->setOffice($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConfRoom(ConfRoom $confRoom): self
+    {
+        if ($this->confRooms->contains($confRoom)) {
+            $this->confRooms->removeElement($confRoom);
+            // set the owning side to null (unless already changed)
+            if ($confRoom->getOffice() === $this) {
+                $confRoom->setOffice(null);
+            }
+        }
 
         return $this;
     }
