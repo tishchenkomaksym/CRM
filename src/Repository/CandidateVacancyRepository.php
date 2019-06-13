@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\CandidateVacancy;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -47,4 +48,22 @@ class CandidateVacancyRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function letterBeforeDay()
+    {
+        $date = new DateTime();
+        $date->modify('+1 days');
+        $date->setTime(00, 00,00);
+        $date2 = new DateTime();
+        $date2->modify('+1 days');
+        $date2->setTime(23, 59,00);
+         return $this->createQueryBuilder('c')
+            ->where('c.dateInterview IS NOT NULL')
+            ->andWhere('c.dateInterview BETWEEN :from AND :to')
+            ->setParameter('from', $date)
+            ->setParameter('to', $date2)
+            ->getQuery()
+            ->getResult();
+    }
+
 }

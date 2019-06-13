@@ -1,0 +1,13 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+
+    <p>
+        Вы изменили дату/время интервью по Заявке№
+            {{ candidateVacancy.vacancyId }}
+        с кандидатом {{ candidateVacancy.candidateName }}
+        {{ candidateVacancy.candidateSurname }} на {{ candidateVacancy.dateInterview|date('Y-m-d') }} в
+        {{ candidateVacancy.dateInterview|date('H:i:s') }} в {{ candidateVacancy.confRoom }}.
+    </p>
+
+{% endblock %}

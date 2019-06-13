@@ -122,11 +122,16 @@
                             {% elseif candidateVacancy.candidateStatus == 'Candidate is interested in vacancy' %}
                                 <span class="btn btn-secondary">
                                         Candidate is waiting for approval
-                                    </span>
-                            {% else %}
-                                <span class="btn btn-secondary">
-                                     Check Candidate Interest
                                 </span>
+                            {% elseif candidateVacancy.candidateStatus == 'Closed by recrutier' or candidateVacancy.candidateStatus == 'Closed by department manager'%}
+                            {% else %}
+                                <a class="btn btn-primary" href="{{ path('interview_assign_data', {'id':vacancy.id, 'candidateVacancy': candidateVacancy.id}) }}">
+                                    {% if candidateVacancy.dateInterview == null %}
+                                        Set interview time
+                                    {% else %}
+                                        Edit interview time
+                                    {% endif %}
+                                </a>
                             {% endif %}
                         </th>
                     </tr>
@@ -189,11 +194,6 @@
                                     {{ candidateLink.candidate.updatedDate|date('Y-m-d') }}
                                 </a>
                             </td>
-{#                            {% if  app.request.get('edit') is not null%}#}
-{#                                <td>#}
-{#                                    <a class="btn btn-primary" href="{{ path('check_interest_link_edit', {'id': candidate.id, 'vacancy': vacancy.id }) }}">Edit</a>#}
-{#                                </td>#}
-{#                            {% endif %}#}
                         </tr>
                         <tr>
                             <th colspan="2">
@@ -215,10 +215,15 @@
                                     <span class="btn btn-secondary">
                                         Candidate is waiting for approval
                                     </span>
+                                {% elseif candidateLink.candidateStatus == 'Closed by recrutier' or candidateLink.candidateStatus == 'Closed by department manager' %}
                                 {% else %}
-                                    <span class="btn btn-secondary">
-                                        Set interview time
-                                    </span>
+                                    <a class="btn btn-primary" href="{{ path('interview_assign_data', {'id':vacancy.id, 'candidateLink': candidateLink.id} ) }}">
+                                        {% if candidateLink.dateInterview == null %}
+                                            Set interview time
+                                        {% else %}
+                                            Edit interview time
+                                        {% endif %}
+                                    </a>
                                 {% endif %}
                             </th>
                         </tr>

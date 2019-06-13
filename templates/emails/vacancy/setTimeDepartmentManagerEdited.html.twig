@@ -1,0 +1,12 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+
+    <p>
+        Обратите внимание, что интервью по Заявке
+        с кандидатом {{ candidateVacancy.candidateName }} {{ candidateVacancy.candidateSurname }}
+        переносится на {{ candidateVacancy.dateInterview|date('Y-m-d') }} в
+        {{ candidateVacancy.dateInterview|date('H:i:s') }} в {{ candidateVacancy.confRoom}}.
+    </p>
+
+{% endblock %}

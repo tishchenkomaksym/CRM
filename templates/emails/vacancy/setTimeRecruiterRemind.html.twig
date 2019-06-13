@@ -1,0 +1,16 @@
+
+
+{% block text %}
+
+    <p>
+        Вы назначили интервью по Заявке№
+            {{ candidateVacancy.vacancyId }}
+        с кандидатом {{ candidateVacancy.candidate.name }}
+        {{ candidateVacancy.candidateSurname }} на {{ candidateVacancy.dateInterview|date('Y-m-d') }} в
+        {{ candidateVacancy.dateInterview|date('H:i:s') }} в
+            {{ candidateVacancy.confRoom}}.
+        Если произойдут какие-то изменения в дате или месте проведения интервью - отредактируйте, пожалуйста,
+        нужный ивент в календаре, и внесите туда изменения. Не забудьте проверить бронь конференс-рума.
+    </p>
+
+{% endblock %}

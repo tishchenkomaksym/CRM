@@ -1,0 +1,15 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+
+    <p>
+        Интервью по Заявке№
+            {{ candidateVacancy.vacancyId }}
+        с кандидатом {{ candidateVacancy.candidateName }} {{ candidateVacancy.candidateSurname }}
+        состоится {{ candidateVacancy.dateInterview|date('Y-m-d') }} в
+        {{ candidateVacancy.dateInterview|date('H:i:s') }} в
+            {{ candidateVacancy.confRoom}}.
+        Если вы по какой-то причине не сможете прийти на интервью, оповестите, пожалуйста, ответственного за заявку рекрутера заранее.
+    </p>
+
+{% endblock %}

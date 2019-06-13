@@ -4,9 +4,8 @@
 namespace App\Form\Recruiting\CandidateVacancy;
 
 
-use App\Entity\CandidateVacancy;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,7 +14,7 @@ class CandidateVacancyDenialReasonType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('denialReason',null,[
+            ->add('denialReason',TextareaType::class,[
                 'required' => true
             ]);
 
@@ -24,7 +23,7 @@ class CandidateVacancyDenialReasonType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => CandidateVacancy::class,
+            'data_class' => null,
         ]);
     }
 }

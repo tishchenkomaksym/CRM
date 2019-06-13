@@ -6,6 +6,8 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraint as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CandidateVacancyRepository")
@@ -106,6 +108,16 @@ class CandidateVacancy
      * @ORM\OneToMany(targetEntity="App\Entity\CommentViewer", mappedBy="candidateVacancy")
      */
     private $commentViewers;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $dateInterview;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\ConfRoom", inversedBy="candidateVacancies")
+     */
+    private $confRoom;
 
     public function __construct()
     {
@@ -346,6 +358,30 @@ class CandidateVacancy
                 $commentViewer->setCandidateVacancy(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDateInterview(): ?\DateTimeInterface
+    {
+        return $this->dateInterview;
+    }
+
+    public function setDateInterview(?\DateTimeInterface $dateInterview): self
+    {
+        $this->dateInterview = $dateInterview;
+
+        return $this;
+    }
+
+    public function getConfRoom(): ?ConfRoom
+    {
+        return $this->confRoom;
+    }
+
+    public function setConfRoom(?ConfRoom $confRoom): self
+    {
+        $this->confRoom = $confRoom;
 
         return $this;
     }
