@@ -136,6 +136,16 @@
                 {% endfor %}
             </td>
         </tr>
+        {% if is_granted("ROLE_QA") %}
+        <tr>
+            <th>Qa Manager</th>
+            <td>
+                {% for qaManager in qaUserManagers %}
+                    {{ qaManager }}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endif %}
         <tr>
             <th>Current position and level</th>
             <td>{{ userLevel }}</td>

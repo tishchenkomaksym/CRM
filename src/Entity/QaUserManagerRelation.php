@@ -17,13 +17,13 @@ class QaUserManagerRelation
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="qaUserManagerRelations")
      * @ORM\JoinColumn(nullable=false)
      */
     private $qaUser;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="qaManagerUserRelations")
      * @ORM\JoinColumn(nullable=false)
      */
     private $qaManager;
