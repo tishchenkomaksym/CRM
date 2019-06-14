@@ -6,12 +6,11 @@
 parameters:
     locale: 'en'
     uploads_directory: '%kernel.project_dir%/public/uploads'
-    parameters:
-      router.request_context.host: 'user-profile.devzone.net'
-      router.request_context.scheme: 'http'
-      router.request_context.base_url: '/'
-      asset.request_context.base_path: '%router.request_context.base_url%'
-      asset.request_context.secure: true
+    router.request_context.host: 'user-profile.devzone.net'
+    router.request_context.scheme: 'http'
+    router.request_context.base_url: ''
+    asset.request_context.base_path: '%router.request_context.base_url%'
+    asset.request_context.secure: true
 
 services:
     # default configuration for services in *this* file
