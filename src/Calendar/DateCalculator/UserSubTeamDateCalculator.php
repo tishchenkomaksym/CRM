@@ -18,7 +18,8 @@ class UserSubTeamDateCalculator
      * @throws Exception
      * @return DateTime
      */
-    public function getDateWithOffset(?UserInfo $userInfo, Sdt $sdt, HolidayService $holidayService) {
+    public function getDateWithOffset(?UserInfo $userInfo, Sdt $sdt, HolidayService $holidayService): DateTime
+    {
         if ($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
             $endDate = BaseDateCalculator::getDateWithOffset($sdt->getCreateDate(), $sdt->getCount());
         } else {
