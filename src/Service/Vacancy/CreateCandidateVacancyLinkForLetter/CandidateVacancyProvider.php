@@ -20,6 +20,31 @@ class CandidateVacancyProvider implements CandidateLinkVacancyInterface
         $this->candidateVacancy = $candidateVacancy;
     }
 
+    public function vacancyApproveDate()
+    {
+        return $this->candidateVacancy->getVacancy()->getApproveDate();
+    }
+
+    public function vacancyApprovedByEmail()
+    {
+        return $this->candidateVacancy->getVacancy()->getApprovedBy()->getEmail();
+    }
+
+    public function vacancyAssignedToEmail()
+    {
+        return $this->candidateVacancy->getVacancy()->getAssignee()->getEmail();
+    }
+
+    public function vacancyCreatedAt()
+    {
+        return $this->candidateVacancy->getVacancy()->getCreatedAt();
+    }
+
+    public function vacancyCreatedByEmail()
+    {
+        return $this->candidateVacancy->getVacancy()->getCreatedBy()->getEmail();
+    }
+
     public function vacancyId():int
     {
         return $this->candidateVacancy->getVacancy()->getId();
@@ -33,6 +58,11 @@ class CandidateVacancyProvider implements CandidateLinkVacancyInterface
     public function confRoom():string
     {
         return $this->candidateVacancy->getConfRoom()->getName();
+    }
+
+    public function candidateId():string
+    {
+        return $this->candidateVacancy->getCandidate()->getId();
     }
 
     public function candidateName():string

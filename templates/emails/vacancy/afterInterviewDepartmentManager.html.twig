@@ -1,0 +1,44 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+    <table>
+        <tbody>
+        <tr>
+            <th>Request #</th>
+            <td style="word-break: break-all">{{ candidateVacancy.vacancyId }}</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td style="word-break: break-all">{{ candidateVacancy.vacancyCreatedAt|date('Y-m-d H:i:s') }}</td>
+        </tr>
+        <tr>
+            <th>By</th>
+            <td style="word-break: break-all">{{ candidateVacancy.vacancyCreatedByEmail }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <p>
+        Вы провели интервью с кандидатом {{ candidateVacancy.candidateName }} {{ candidateVacancy.candidateSurname }},
+        кликните на кнопку ниже чтобы уточнить подошел Вам кандидат или нет.
+    </p>
+    <a href="{{ url('candidate_after_interview',{'id': candidateVacancy.candidateId, 'vacancy': candidateVacancy.vacancyId}) }}">
+        Check candidate
+    </a>
+    <table>
+        <tbody>
+        <tr>
+            <th>Assigned</th>
+            <td>{{ candidateVacancy.vacancyAssignedToEmail }}</td>
+        </tr>
+        <tr>
+            <th>Approved</th>
+            <td>{{ candidateVacancy.vacancyApproveDate|date('Y-m-d H:i:s') }}</td>
+        </tr>
+        <tr>
+            <th>Approved By</th>
+            <td>{{ candidateVacancy.vacancyApprovedByEmail }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+{% endblock %}

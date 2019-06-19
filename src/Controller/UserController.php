@@ -184,6 +184,14 @@ class UserController extends AbstractController
             $workingHoursInformation = $baseWorkHoursInformationBuilder->build($user, new DateTime());
         }else{
             $userInfo = $userInfoRepository->findOneBy(['user' => $this->getUser()->getId()]);
+            if ($userInfo === null) {
+                $userInfo = new UserInfo();
+                $userInfo->setUser($user);
+                $userInfo->setBirthDay(new DateTime());
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($userInfo);
+                $entityManager->flush();
+            }
             $todaySalaryReport = $reportInfoRepository->getTodaySalaryReport();
             $nextSalaryReport = $reportInfoRepository->getNextSalaryReport(new DateTime());
             if ($nextSalaryReport === null){

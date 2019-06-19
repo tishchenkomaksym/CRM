@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Approve for Request# {{ builder.vacancy.id }}</li>
+        </ol>
+    </nav>
+{% endblock %}
+{% block menu %}
+{% endblock %}
+{% block body %}
+    <div>
+        <p class="pt-3">
+            Вы провели интервью с кандидатом. Теперь Вам надо уточнить подошел Вам или нет кандидат,
+            с которым Вы проводили интервью. Нажмите “Approve candidate” если кандидат Вам подошёл и
+            Вы хотите заключить с ним контракт, или “Deny candidate” если он Вам не подошёл.
+        </p>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Position</th>
+            <th>Location</th>
+            <th>Phone</th>
+            <th>Request Status</th>
+            <th>Candidate Status</th>
+            <th>Updated</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% if builder.candidate.photo != null %}
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                            <img width="200px" height="200px" class="img-fluid " src="/uploads/{{ candidate.photo }}" alt="Photo">
+                        </a>
+                    </td>
+                {% else %}
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                            <img width="200px" height="200px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                        </a>
+                    </td>
+                {% endif %}
+
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.name }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.surname }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.position }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.location }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.phone }}</a></td>
+                {% if builder.vacancy != null %}
+                    <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.vacancy.status }}</a></td>
+                {% endif %}
+                <td>
+                    <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                        {% if builder.candidateVacancy != null %}
+                            {{ builder.candidateVacancy.candidateStatus }}
+                        {% else %}
+                            {{ builder.candidateLink.candidateStatus }}
+                        {% endif %}
+                    </a>
+                </td>
+                <td>
+                    {{ builder.vacancy.updatedDate|date('Y-m-d H:i:s') }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-between">
+        <a class="btn btn-success" href="{{ path('candidate_after_interview_approve', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+            Approve candidate
+        </a>
+        <a class="btn btn-danger" href="{{ path('candidate_after_interview_deny', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+            Deny candidate
+        </a>
+    </div>
+
+{% endblock %}
