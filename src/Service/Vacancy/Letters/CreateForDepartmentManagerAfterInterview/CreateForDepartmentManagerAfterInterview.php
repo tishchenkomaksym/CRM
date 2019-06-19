@@ -33,8 +33,8 @@ class CreateForDepartmentManagerAfterInterview
     {
 
         $email = $candidateVacancyProvider->recruiterEmail();
-        $letter = new Swift_Message( 'Result of interview with candidate' . $candidateVacancyProvider->candidateName() .
-            $candidateVacancyProvider->candidateSurname());
+        $letter = new Swift_Message( 'Result of interview with candidate' . $candidateVacancyProvider->candidate()->getName() .
+            $candidateVacancyProvider->candidate()->getSurname());
         $letter
             ->setFrom(getenv('LOCAL_EMAIL'))
             ->setTo($email)

@@ -4,17 +4,15 @@
 namespace App\Service\Vacancy\CreateCandidateVacancyLinkForLetter;
 
 
+use App\Entity\Candidate;
 use App\Entity\Vacancy;
 
 interface CandidateLinkVacancyInterface
 {
-    public function vacancyId();
 
     public function vacancy():Vacancy;
 
     public function vacancyCreatedAt();
-
-    public function vacancyCreatedByEmail();
 
     public function vacancyAssignedToEmail();
 
@@ -24,11 +22,7 @@ interface CandidateLinkVacancyInterface
 
     public function confRoom();
 
-    public function candidateId();
-
-    public function candidateName();
-
-    public function candidateSurname();
+    public function candidate():Candidate;
 
     public function departmentManagerEmail();
 

@@ -33,8 +33,8 @@ class CreateForViewerSetTime
     {
 
         $email = $candidateVacancyProvider->viewerEmail();
-        $letter = new Swift_Message( 'Interview date and time for candidate' . $candidateVacancyProvider->candidateName() .
-            $candidateVacancyProvider->candidateSurname() . 'under Vacancy#' . $candidateVacancyProvider->vacancyId() . 'have been set');
+        $letter = new Swift_Message( 'Interview date and time for candidate' . $candidateVacancyProvider->candidate()->getName() .
+            $candidateVacancyProvider->candidate()->getSurname() . 'under Vacancy#' . $candidateVacancyProvider->vacancy()->getId() . 'have been set');
         $letter
             ->setFrom(getenv('LOCAL_EMAIL'))
             ->setTo($email)

@@ -6,6 +6,7 @@ namespace App\Service\Vacancy\CandidateLinkRelationsToCandidate\VacancyCandidate
 
 use App\Entity\Candidate;
 use App\Entity\CandidateLink;
+use App\Entity\User;
 use App\Entity\VacancyLink;
 use DateTimeImmutable;
 use Exception;
@@ -22,14 +23,14 @@ class FormVacancyCandidateBuilderLinks
     private $parameterBag;
 
     /**
-     * @var TokenStorageInterface
+     * @var User
      */
     private $user;
 
-    public  function __construct(ParameterBagInterface $parameterBag, TokenStorageInterface $tokenStorage)
+    public function __construct(ParameterBagInterface $parameterBag, TokenStorageInterface $tokenStorage)
     {
         $this->parameterBag = $parameterBag;
-        if ($tokenStorage->getToken() !== null ){
+        if (($tokenStorage->getToken() !== null) && $tokenStorage->getToken()->getUser() instanceof User) {
             $this->user = $tokenStorage->getToken()->getUser();
         }
     }
@@ -42,8 +43,12 @@ class FormVacancyCandidateBuilderLinks
      * @return CandidateLink
      * @throws Exception
      */
-    public function build(CandidateLink $candidateLink, Candidate $candidate, VacancyLink $vacancyLink, string $from): CandidateLink
-    {
+    public function build(
+        CandidateLink $candidateLink,
+        Candidate $candidate,
+        VacancyLink $vacancyLink,
+        string $from
+    ): CandidateLink {
         if ($candidateLink->getReceivedCV() !== null) {
             /** @var UploadedFile $file */
             $file = $candidateLink->getReceivedCv();

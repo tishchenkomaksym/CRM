@@ -7,6 +7,7 @@ namespace App\Service\Vacancy\CandidateLinkRelationsToCandidate\VacancyCandidate
 use App\Entity\Candidate;
 use App\Entity\CandidateLink;
 use App\Entity\CandidateVacancyHistory;
+use App\Entity\User;
 use App\Entity\VacancyLink;
 use DateTime;
 use DateTimeImmutable;
@@ -19,6 +20,9 @@ class NonExistsCandidateBuilderLinks
 {
     private $entityManager;
 
+    /**
+     * @var User
+     */
     private $user;
     /**
      * @var ParameterBagInterface
@@ -30,7 +34,7 @@ class NonExistsCandidateBuilderLinks
         ParameterBagInterface $parameterBag)
     {
         $this->entityManager = $entityManager;
-        if ($tokenStorage->getToken() !== null ){
+        if (($tokenStorage->getToken() !== null) && $tokenStorage->getToken()->getUser() instanceof User) {
             $this->user = $tokenStorage->getToken()->getUser();
         }
         $this->parameterBag = $parameterBag;

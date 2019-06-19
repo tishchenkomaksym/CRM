@@ -31,10 +31,16 @@ class CandidateManagerApprovalCheckExistenceValidator extends ConstraintValidato
         if (!$constraint instanceof CandidateManagerApprovalCheckExistence) {
             throw new UnexpectedTypeException($constraint, CandidateManagerApprovalCheckExistence::class);
         }
-            if (!empty($this->managerApprovalExistenceLogic->existence($constraint->candidateLink, $constraint->candidateVacancy))) {
+        if (($constraint->candidateVacancy !== null) && !empty($this->managerApprovalExistenceLogic->existence($constraint->candidateVacancy))) {
+            $this->context->buildViolation($constraint->message)
+                ->addViolation();
+        }
+
+            if (($constraint->candidateLink !== null) && !empty($this->managerApprovalExistenceLogic->existenceCandidateLink($constraint->candidateLink))) {
                 $this->context->buildViolation($constraint->message)
                     ->addViolation();
             }
+
 
     }
 }

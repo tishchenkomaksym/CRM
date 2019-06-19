@@ -4,9 +4,9 @@
 
     <p>
         Вы изменили дату/время интервью по Заявке№
-            {{ candidateVacancy.vacancyId }}
-        с кандидатом {{ candidateVacancy.candidateName }}
-        {{ candidateVacancy.candidateSurname }} на {{ candidateVacancy.dateInterview|date('Y-m-d') }} в
+            {{ candidateVacancy.vacancy.id }}
+        с кандидатом {{ candidateVacancy.candidate.name }}
+        {{ candidateVacancy.candidate.name }} на {{ candidateVacancy.dateInterview|date('Y-m-d') }} в
         {{ candidateVacancy.dateInterview|date('H:i:s') }} в {{ candidateVacancy.confRoom }}.
     </p>
 

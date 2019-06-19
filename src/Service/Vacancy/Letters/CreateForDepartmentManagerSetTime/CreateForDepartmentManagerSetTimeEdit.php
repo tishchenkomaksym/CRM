@@ -3,8 +3,6 @@
 
 namespace App\Service\Vacancy\Letters\CreateForDepartmentManagerSetTime;
 
-
-use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateLinkVacancyInterface;
 use Swift_Message;
 use Twig\Environment;
@@ -34,8 +32,8 @@ class CreateForDepartmentManagerSetTimeEdit
     {
 
         $email = $candidateVacancyProvider->departmentManagerEmail();
-        $letter = new Swift_Message( 'Date/time of Interview for candidate ' . $candidateVacancyProvider->candidateName() .
-            $candidateVacancyProvider->candidateSurname() . 'under Vacancy#' . $candidateVacancyProvider->vacancyId() . 'was changed"');
+        $letter = new Swift_Message( 'Date/time of Interview for candidate ' . $candidateVacancyProvider->candidate()->getName() .
+            $candidateVacancyProvider->candidate()->getSurname() . 'under Vacancy#' . $candidateVacancyProvider->vacancy()->getId() . 'was changed"');
         $letter
             ->setFrom(getenv('LOCAL_EMAIL'))
             ->setTo($email)
