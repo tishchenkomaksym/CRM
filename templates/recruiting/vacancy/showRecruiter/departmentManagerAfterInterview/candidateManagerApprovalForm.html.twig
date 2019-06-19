@@ -1,0 +1,9 @@
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+<div>
+    <p>
+        Прошу начать оформление всех необходимых документов для заключения контракта, а также подготовку рабочего места и проинформировать о точной дате выхода ЧП.
+    </p>
+</div>
+<button class="btn btn-success">{{ button_label|default('Send') }}</button>
+{{ form_end(form) }}

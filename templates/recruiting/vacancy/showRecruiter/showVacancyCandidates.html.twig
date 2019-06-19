@@ -123,8 +123,18 @@
                                 <span class="btn btn-secondary">
                                         Candidate is waiting for approval
                                 </span>
-                            {% elseif candidateVacancy.candidateStatus == 'Closed by recrutier' or candidateVacancy.candidateStatus == 'Closed by department manager'%}
-                            {% else %}
+                            {% elseif candidateVacancy.candidateStatus == 'Closed by recrutier' or candidateVacancy.candidateStatus == 'Closed by department manager' and candidateVacancy.candidateManagerDeny is not defined%}
+                            {% elseif candidateVacancy.candidateStatus == 'Interview' %}
+                                <a class="btn btn-primary" href="{{ path('candidate_after_interview_view_recruiter', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    Interview
+                                </a>
+                            {% elseif candidateVacancy.candidateManagerDeny is not empty %}
+                                {% if candidateVacancy.candidateStatus == 'Closed by department manager' and candidateVacancy.candidateManagerDeny.recruiterReported is null %}
+                                    <a class="btn btn-primary" href="{{ path('candidate_after_interview_candidate_backfeed', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
+                                        Interview
+                                    </a>
+                                {% endif %}
+                            {% elseif candidateVacancy.candidateStatus == 'Approved for the interview' %}
                                 <a class="btn btn-primary" href="{{ path('interview_assign_data', {'id':vacancy.id, 'candidateVacancy': candidateVacancy.id}) }}">
                                     {% if candidateVacancy.dateInterview == null %}
                                         Set interview time
@@ -215,8 +225,18 @@
                                     <span class="btn btn-secondary">
                                         Candidate is waiting for approval
                                     </span>
-                                {% elseif candidateLink.candidateStatus == 'Closed by recrutier' or candidateLink.candidateStatus == 'Closed by department manager' %}
-                                {% else %}
+                                {% elseif candidateLink.candidateStatus == 'Closed by recrutier' or candidateLink.candidateStatus == 'Closed by department manager' and candidateLink.candidateManagerDeny is not defined %}
+                                {% elseif candidateLink.candidateStatus == 'Interview' %}
+                                    <a href="{{ path('candidate_after_interview_view_recruiter', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                        Interview
+                                    </a>
+                                {% elseif candidateLink.candidateManagerDeny is not empty %}
+                                    {% if candidateLink.candidateStatus == 'Closed by department manager' and candidateLink.candidateManagerDeny.recruiterReported is null %}
+                                        <a class="btn btn-primary" href="{{ path('candidate_after_interview_candidate_backfeed', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                            Interview
+                                        </a>FK_E85A1533AD5BEB7
+                                    {% endif %}
+                                {% elseif candidateLink.candidateStatus == 'Approved for the interview' %}
                                     <a class="btn btn-primary" href="{{ path('interview_assign_data', {'id':vacancy.id, 'candidateLink': candidateLink.id} ) }}">
                                         {% if candidateLink.dateInterview == null %}
                                             Set interview time

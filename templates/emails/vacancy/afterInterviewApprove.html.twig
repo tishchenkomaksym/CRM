@@ -1,0 +1,49 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+
+    <p>
+        Настоящим письмом сообщаю, что после проведения интервью компанией Заказчиком было принято решение
+        заключить контракт с
+        {% if candidateVacancy.candidateLink != null %}
+            {{ candidateVacancy.candidateLink.candidate.surname }} {{ candidateVacancy.candidateLink.candidate.name }}
+            на позицию {{ candidateVacancy.candidateLink.vacancy.position }}.
+        {% elseif candidateVacancy.candidateVacancy != null  %}
+            {{ candidateVacancy.candidateVacancy.candidate.surname }} {{ candidateVacancy.candidateVacancy.candidate.name }}
+            на позицию {{ candidateVacancy.candidateVacancy.vacancy.position }}.
+        {% endif %}
+    </p>
+    <div>
+        <p>
+            Название департамента/отдела {{ candidateVacancy.team.department.name }}.
+        </p>
+        <p>
+            Команда {{ candidateVacancy.team.name }}.
+        </p>
+        <p>
+            Направление услуг ЧП {{ candidateVacancy.directionEnterpreneur }}.
+        </p>
+        <p>
+            Уровень подготовки/Level {{ candidateVacancy.level }}
+        </p>
+    </div>
+    <div>
+        <p>
+            Рекомендуемая дата выхода - {{ candidateVacancy.startdate|date('Y-m-d') }}.
+        </p>
+        <p>
+            Оговоренная оплата оказываемых услуг по контракту - {{ candidateVacancy.salary }}($).
+        </p>
+        <p>
+            Рекомендуемое расположение рабочего места (кабинет) - {{ candidateVacancy.workPlace }}
+        </p>
+        {% if candidateVacancy.nickname != null %}
+            *Псевдоним - {{ candidateVacancy.nickname }}
+        {% endif %}
+        <p>
+            Прошу начать оформление всех необходимых документов для заключения контракта, а также подготовку рабочего
+            места и проинформировать о точной дате выхода ЧП.
+        </p>
+    </div>
+
+{% endblock %}

@@ -119,6 +119,17 @@ class CandidateVacancy
      */
     private $confRoom;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\CandidateManagerApproval", mappedBy="candidateVacancy", cascade={"persist", "remove"})
+     */
+    private $candidateManagerApproval;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\CandidateManagerDeny", mappedBy="candidateVacancy", cascade={"persist", "remove"})
+     */
+    private $candidateManagerDeny;
+
+
     public function __construct()
     {
         $this->candidateVacancyHistories = new ArrayCollection();
@@ -385,4 +396,41 @@ class CandidateVacancy
 
         return $this;
     }
+
+    public function getCandidateManagerApproval(): ?CandidateManagerApproval
+    {
+        return $this->candidateManagerApproval;
+    }
+
+    public function setCandidateManagerApproval(?CandidateManagerApproval $candidateManagerApproval): self
+    {
+        $this->candidateManagerApproval = $candidateManagerApproval;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newCandidateVacancy = $candidateManagerApproval === null ? null : $this;
+        if ($newCandidateVacancy !== $candidateManagerApproval->getCandidateVacancy()) {
+            $candidateManagerApproval->setCandidateVacancy($newCandidateVacancy);
+        }
+
+        return $this;
+    }
+
+    public function getCandidateManagerDeny(): ?CandidateManagerDeny
+    {
+        return $this->candidateManagerDeny;
+    }
+
+    public function setCandidateManagerDeny(?CandidateManagerDeny $candidateManagerDeny): self
+    {
+        $this->candidateManagerDeny = $candidateManagerDeny;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newCandidateVacancy = $candidateManagerDeny === null ? null : $this;
+        if ($newCandidateVacancy !== $candidateManagerDeny->getCandidateVacancy()) {
+            $candidateManagerDeny->setCandidateVacancy($newCandidateVacancy);
+        }
+
+        return $this;
+    }
+
 }

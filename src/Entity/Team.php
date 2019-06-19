@@ -33,9 +33,16 @@ class Team
      */
     private $users;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CandidateManagerApproval", mappedBy="team")
+     */
+    private $candidateManagerApprovals;
+
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->candidateManagerApprovals = new ArrayCollection();
     }
 
 
@@ -103,5 +110,37 @@ class Team
 
         return $this;
     }
+
+    /**
+     * @return Collection|CandidateManagerApproval[]
+     */
+    public function getCandidateManagerApprovals(): Collection
+    {
+        return $this->candidateManagerApprovals;
+    }
+
+    public function addCandidateManagerApproval(CandidateManagerApproval $candidateManagerApproval): self
+    {
+        if (!$this->candidateManagerApprovals->contains($candidateManagerApproval)) {
+            $this->candidateManagerApprovals[] = $candidateManagerApproval;
+            $candidateManagerApproval->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCandidateManagerApproval(CandidateManagerApproval $candidateManagerApproval): self
+    {
+        if ($this->candidateManagerApprovals->contains($candidateManagerApproval)) {
+            $this->candidateManagerApprovals->removeElement($candidateManagerApproval);
+            // set the owning side to null (unless already changed)
+            if ($candidateManagerApproval->getTeam() === $this) {
+                $candidateManagerApproval->setTeam(null);
+            }
+        }
+
+        return $this;
+    }
+
 
 }

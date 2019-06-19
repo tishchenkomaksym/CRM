@@ -66,4 +66,17 @@ class CandidateVacancyRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function letterAfterInterview()
+    {
+        $date = new DateTime();
+        $date2 = new DateTime();
+        $date2->modify('+1 hours');
+        return $this->createQueryBuilder('c')
+            ->where('c.dateInterview BETWEEN :from AND :to')
+            ->setParameter('from', $date)
+            ->setParameter('to', $date2)
+            ->getQuery()
+            ->getResult();
+    }
+
 }

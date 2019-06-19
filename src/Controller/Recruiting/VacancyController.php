@@ -121,6 +121,7 @@ class VacancyController extends AbstractController
 
 
     /**
+     * @IsGranted("ROLE_TOP_MANAGER")
      * @Route("/approve/{id}", name="approved", methods={"GET"})
      * @param UserRepository $userRepository
      * @param Vacancy $vacancy
@@ -161,6 +162,7 @@ class VacancyController extends AbstractController
     }
 
     /**
+     * @IsGranted("ROLE_TOP_MANAGER")
      * @Route("/deny/{id}", name="denied", methods={"GET","POST"})
      * @param Vacancy $vacancy
      * @param Request $request
@@ -385,9 +387,7 @@ class VacancyController extends AbstractController
             $existsCandidateBuilder = new ExistsCandidateBuilderLinks($candidateRepository);
             $existsUser = $existsCandidateBuilder->build(
                 $name,
-                $surname,
-                $vacancyLink,
-                self::VACANCY_ENTITY_IN_VIEW);
+                $surname);
             if ($existsUser !== null) {
                 $context = new ContextForRelationStrategyLinks(
                     $strategyExistenceLinks

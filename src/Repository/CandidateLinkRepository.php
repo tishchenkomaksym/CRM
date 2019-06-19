@@ -65,4 +65,18 @@ class CandidateLinkRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function letterAfterInterview()
+    {
+        $date = new DateTime();
+        $date2 = new DateTime();
+        $date2->modify('+1 hour');
+        return $this->createQueryBuilder('c')
+            ->where('c.dateInterview IS NOT NULL')
+            ->andWhere('c.dateInterview BETWEEN :from AND :to')
+            ->setParameter('from', $date)
+            ->setParameter('to', $date2)
+            ->getQuery()
+            ->getResult();
+    }
 }

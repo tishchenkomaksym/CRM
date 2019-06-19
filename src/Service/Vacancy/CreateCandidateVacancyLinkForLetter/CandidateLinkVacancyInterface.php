@@ -12,7 +12,19 @@ interface CandidateLinkVacancyInterface
 
     public function vacancy():Vacancy;
 
+    public function vacancyCreatedAt();
+
+    public function vacancyCreatedByEmail();
+
+    public function vacancyAssignedToEmail();
+
+    public function vacancyApproveDate();
+
+    public function vacancyApprovedByEmail();
+
     public function confRoom();
+
+    public function candidateId();
 
     public function candidateName();
 

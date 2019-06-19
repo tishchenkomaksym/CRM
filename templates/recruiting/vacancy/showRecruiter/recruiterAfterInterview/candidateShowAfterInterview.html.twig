@@ -1,0 +1,131 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Request</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('vacancy_show_candidates', {'id': builder.vacancy.id}) }}">View Request</a></li>
+            <li class="breadcrumb-item">Interview</li>
+        </ol>
+    </nav
+{% endblock %}
+{% block menu %}
+    <ul class="list-group list-group-flush">
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
+        {% endif %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('candidate_index') }}">Candidate Database</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+{% block body %}
+    <table class="table" style="table-layout: fixed">
+        <tbody>
+        <tr>
+            <th>Request#</th>
+            <td>{{ builder.vacancy.id }}</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>{{ builder.vacancy.createdAt|date('Y-m-d')}}</td>
+        </tr>
+        <tr>
+            <th>By</th>
+            <td>{{ builder.vacancy.createdBy }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div>
+        <p class="alert alert-warning">
+            Status:
+            {% if builder.candidateVacancy != null %}
+                {{ builder.candidateVacancy.candidateStatus }}
+            {% else %}
+                {{ builder.candidateLink.candidateStatus }}
+            {% endif %}
+        </p>
+    </div>
+    <div>
+        <p class="pt-3">
+            После проведения интервью менеджером отдела было принято решение заключить с кандидатом контракт.
+            На своей почте Вы найдете письмо “Contract Сonclusion || Name, Last name of candidate” на
+            своей почте. На основании этого письма Вам следует составить оффер для кандидата и отослать
+            его кандидату (это может происходить и в виде переписки, и в виде телефонного разговора).
+            После того, как кандидат рассмотрел наше предложение, вы должны выяснить у кандидата принимает
+            ли он его. Если кандидат откзывается от предложения, следует выяснить причину отказа.
+        </p>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Position</th>
+            <th>Location</th>
+            <th>Phone</th>
+            <th>Request Status</th>
+            <th>Candidate Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            {% if builder.candidate.photo != null %}
+                <td>
+                    <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                        <img width="200px" height="200px" class="img-fluid " src="/uploads/{{ candidate.photo }}" alt="Photo">
+                    </a>
+                </td>
+            {% else %}
+                <td>
+                    <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                        <img width="200px" height="200px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                    </a>
+                </td>
+            {% endif %}
+
+            <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.name }}</a></td>
+            <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.surname }}</a></td>
+            <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.position }}</a></td>
+            <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.location }}</a></td>
+            <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.phone }}</a></td>
+            {% if builder.vacancy != null %}
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.vacancy.status }}</a></td>
+            {% endif %}
+            <td>
+                <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                    {% if builder.candidateVacancy != null %}
+                        {{ builder.candidateVacancy.candidateStatus }}
+                    {% else %}
+                        {{ builder.candidateLink.candidateStatus }}
+                    {% endif %}
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-between">
+        {{ include('recruiting/vacancy/showRecruiter/recruiterAfterInterview/contractConcludingForm.html.twig') }}
+        {{ include('recruiting/vacancy/showRecruiter/recruiterAfterInterview/declineForm.html.twig') }}
+    </div>
+    <div class="text-center pt-5">
+        <a class="btn btn-warning" href="{{ path('vacancy_show_candidates', {'id': builder.vacancy.id}) }}">
+            Back to candidates list
+        </a>
+    </div>
+    <br>
+    <div class="navbar bg-light d-flex justify-content-between">
+        <div class="badge badge-success">
+            assigned to you by:{{ builder.vacancy.assignedBy }}
+        </div>
+        <div>
+            <span class="badge badge-success">Date of assigning</span>
+            {{ builder.vacancy.assigneeDate|date('Y-m-d') }}
+        </div>
+    </div>
+{% endblock %}
