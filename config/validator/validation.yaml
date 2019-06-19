@@ -5,3 +5,11 @@ App\Entity\CandidateVacancy:
           mimeTypes: [application/pdf, application/x-pdf, application/vnd.ms-excel, application/msword,
                       application/vnd.openxmlformats-officedocument.wordprocessingml.document]
           mimeTypesMessage: "Please upload a valid files: pdf, x-pdf, docx, doc or excel(xls)"
+
+App\Entity\CandidateLink:
+  properties:
+    receivedCv:
+      - File:
+          mimeTypes: [application/pdf, application/x-pdf, application/vnd.ms-excel, application/msword,
+                      application/vnd.openxmlformats-officedocument.wordprocessingml.document]
+          mimeTypesMessage: "Please upload a valid files: pdf, x-pdf, docx, doc or excel(xls)"
