@@ -78,6 +78,9 @@ class SdtPeriodValidator extends ConstraintValidator
         if (isset($user)) {
             $userInfo = $this->userInfoRepository->findOneBy(['user' => $user->getId()]);
         }
+        if ($value->getCreateDate() === null) {
+            throw new \InvalidArgumentException('no createDate in SdtPeriodValidator');
+        }
         $newStartDate = $value->getCreateDate();
         $newEndDate = $this->endDateOfSdtCalculator->calculate($value);
         $sdtCollection = $this->userInformationService
