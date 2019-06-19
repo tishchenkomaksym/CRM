@@ -1,17 +1,18 @@
 <?php
 
 
-namespace App\Service\Vacancy\CreateDateConsoleCommand;
+namespace App\Command\CandidateVacancyLetters;
+
 
 use App\Repository\CandidateLinkRepository;
 use App\Repository\CandidateVacancyRepository;
 use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateLinkProvider;
 use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateLinkVacancyInterface;
 use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateVacancyProvider;
+use App\Service\Vacancy\Letters\CreateForDepartmentManagerAfterInterview\CreateForDepartmentManagerAfterInterview;
 use App\Service\Vacancy\Letters\CreateForDepartmentManagerSetTime\CreateForDepartmentManagerSetTimeRemind;
 use App\Service\Vacancy\Letters\CreateForRecruiterSetTime\CreateForRecruiterSetTimeRemind;
 use App\Service\Vacancy\Letters\CreateForViewerSetTime\CreateForViewerSetTimeRemind;
-use DateTime;
 use Swift_Mailer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,9 +22,9 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class CreateDateConsoleCommand extends Command
+class LetterAfterInterviewConsoleCommand extends Command
 {
-    protected static $defaultName = 'app:mail-before-one-day-date-interview';
+    protected static $defaultName = 'app:mail-after-date-interview';
     /**
      * @var Environment
      */
@@ -53,7 +54,6 @@ class CreateDateConsoleCommand extends Command
         $this->mailer = $mailer;
         $this->candidateVacancies = $candidateVacancyRepository;
         $this->candidateLinks = $candidateLinkRepository;
-
     }
 
 
@@ -65,10 +65,10 @@ class CreateDateConsoleCommand extends Command
      */
     public function assignDateLettersCandidateVacancyRemind(): void
     {
-        if (!empty($this->candidateVacancies->letterBeforeDay())) {
-            foreach ($this->candidateVacancies->letterBeforeDay() as $candidateVacancy) {
-                    $candidateVacancyProvider = new CandidateVacancyProvider($candidateVacancy);
-                    $this->messageBuilder($candidateVacancyProvider);
+        if (!empty($this->candidateVacancies->letterAfterInterview())) {
+            foreach ($this->candidateVacancies->letterAfterInterview() as $candidateVacancy) {
+                $candidateVacancyProvider = new CandidateVacancyProvider($candidateVacancy);
+                $this->messageBuilder($candidateVacancyProvider);
             }
         }
     }
@@ -80,11 +80,11 @@ class CreateDateConsoleCommand extends Command
      */
     public function assignDateLettersCandidateLinkRemind(): void
     {
-        if (!empty($this->candidateLinks->letterBeforeDay())) {
-            foreach ($this->candidateLinks->letterBeforeDay() as $candidateLink) {
-                    $candidateLinkProvider = new CandidateLinkProvider($candidateLink);
+        if (!empty($this->candidateLinks->letterAfterInterview())) {
+            foreach ($this->candidateLinks->letterAfterInterview() as $candidateLink) {
+                $candidateLinkProvider = new CandidateLinkProvider($candidateLink);
 
-                    $this->messageBuilder($candidateLinkProvider);
+                $this->messageBuilder($candidateLinkProvider);
 
             }
         }
@@ -98,15 +98,8 @@ class CreateDateConsoleCommand extends Command
      */
     public function messageBuilder(CandidateLinkVacancyInterface $candidateLinkVacancyProvider): void
     {
-        if ($candidateLinkVacancyProvider->vacancy()->getVacancyViewerUser() !== null) {
-            $messageBuilderViewer = new CreateForViewerSetTimeRemind($this->environment);
-            $this->mailer->send($messageBuilderViewer->build($candidateLinkVacancyProvider));
-        }
-        $messageBuilder = new CreateForDepartmentManagerSetTimeRemind($this->environment);
-        $messageBuilderRecruiter = new CreateForRecruiterSetTimeRemind($this->environment);
-        echo 'YES MESSAGE ';
+        $messageBuilder = new CreateForDepartmentManagerAfterInterview($this->environment);
         $this->mailer->send($messageBuilder->build($candidateLinkVacancyProvider));
-        $this->mailer->send($messageBuilderRecruiter->build($candidateLinkVacancyProvider));
     }
 
     protected function configure()
@@ -117,7 +110,6 @@ class CreateDateConsoleCommand extends Command
             // the full command description shown when running the command with
             // the "--help" option
             ->setHelp('This command allows you to learn Date.');
-//            ->setName(self::$nowDate);
     }
 
     /**

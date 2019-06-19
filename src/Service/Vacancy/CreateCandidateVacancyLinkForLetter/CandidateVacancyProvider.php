@@ -4,8 +4,12 @@
 namespace App\Service\Vacancy\CreateCandidateVacancyLinkForLetter;
 
 
+use App\Entity\Candidate;
 use App\Entity\CandidateVacancy;
 use App\Entity\Vacancy;
+use App\Service\Vacancy\CandidateEditRelationToCandidateLinkToCandidateVacancy\NoDataException;
+use DateTimeImmutable;
+use DateTimeInterface;
 
 class CandidateVacancyProvider implements CandidateLinkVacancyInterface
 {
@@ -14,54 +18,113 @@ class CandidateVacancyProvider implements CandidateLinkVacancyInterface
      */
     private $candidateVacancy;
 
+
+
     public function __construct(CandidateVacancy $candidateVacancy)
     {
-
         $this->candidateVacancy = $candidateVacancy;
     }
 
-    public function vacancyId():int
-    {
-        return $this->candidateVacancy->getVacancy()->getId();
-    }
-
+    /**
+     * @return Vacancy
+     */
     public function vacancy():Vacancy
     {
         return $this->candidateVacancy->getVacancy();
     }
 
-    public function confRoom():string
+    public function vacancyApproveDate(): DateTimeImmutable
     {
+        return $this->vacancy()->getApproveDate();
+    }
+
+    /**
+     * @return string
+     * @throws NoDataException
+     */
+    public function vacancyApprovedByEmail():string
+    {
+        if ($this->vacancy()->getApprovedBy() === null){
+            throw new NoDataException('Approved By not Found');
+        }
+        return $this->vacancy()->getApprovedBy()->getEmail();
+    }
+
+    /**
+     * @return string
+     * @throws NoDataException
+     */
+    public function vacancyAssignedToEmail():string
+    {
+        if ($this->vacancy()->getAssignee() === null){
+            throw new NoDataException('AssigneeBy not Found');
+        }
+        return $this->vacancy()->getAssignee()->getEmail();
+    }
+
+    public function vacancyCreatedAt(): DateTimeImmutable
+    {
+        return $this->vacancy()->getCreatedAt();
+    }
+
+    /**
+     * @return string
+     * @throws NoDataException
+     */
+    public function confRoom(): string
+    {
+        if ($this->candidateVacancy->getConfRoom() === null){
+            throw new NoDataException('ConfRoom not Found');
+        }
         return $this->candidateVacancy->getConfRoom()->getName();
     }
 
-    public function candidateName():string
+    public function candidate():Candidate
     {
-        return $this->candidateVacancy->getCandidate()->getName();
+        return $this->candidateVacancy->getCandidate();
     }
 
-    public function candidateSurname():string
+    /**
+     * @return string
+     * @throws NoDataException
+     */
+    public function departmentManagerEmail(): string
     {
-        return $this->candidateVacancy->getCandidate()->getSurname();
+        if ($this->vacancy()->getCreatedBy() === null){
+            throw new NoDataException('Vacancy CreatedBy not Found');
+        }
+        return $this->vacancy()->getCreatedBy()->getEmail();
     }
 
-    public function departmentManagerEmail():string
+    /**
+     * @return string
+     * @throws NoDataException
+     */
+    public function viewerEmail(): string
     {
-        return $this->candidateVacancy->getCreatedBy()->getEmail();
+        if ($this->vacancy()->getVacancyViewerUser() === null){
+            throw new NoDataException('VacancyViewer not Found');
+        }
+        if ($this->vacancy()->getVacancyViewerUser()->getUser() === null){
+            throw new NoDataException('User not Found');
+        }
+        return $this->vacancy()->getVacancyViewerUser()->getUser()->getEmail();
     }
 
-    public function viewerEmail():string
-    {
-        return $this->candidateVacancy->getVacancy()->getVacancyViewerUser()->getEmail();
-    }
-
-    public function dateInterview()
+    public function dateInterview():?DateTimeInterface
     {
         return $this->candidateVacancy->getDateInterview();
     }
 
-    public function recruiterEmail()
+    /**
+     * @return string
+     * @throws NoDataException
+     */
+    public function recruiterEmail():string
     {
+        if ($this->candidateVacancy->getCreatedBy() === null){
+            throw new NoDataException('CandidateLink CreatedBy not Found');
+        }
         return $this->candidateVacancy->getCreatedBy()->getEmail();
     }
 }

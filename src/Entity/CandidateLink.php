@@ -104,6 +104,17 @@ class CandidateLink
      */
     private $confRoom;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\CandidateManagerApproval", mappedBy="candidateLink", cascade={"persist", "remove"})
+     */
+    private $candidateManagerApproval;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\CandidateManagerDeny", mappedBy="candidateLink", cascade={"persist", "remove"})
+     */
+    private $candidateManagerDeny;
+
+
 
     public function getId(): ?int
     {
@@ -317,4 +328,41 @@ class CandidateLink
 
         return $this;
     }
+
+    public function getCandidateManagerApproval(): ?CandidateManagerApproval
+    {
+        return $this->candidateManagerApproval;
+    }
+
+    public function setCandidateManagerApproval(?CandidateManagerApproval $candidateManagerApproval): self
+    {
+        $this->candidateManagerApproval = $candidateManagerApproval;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newCandidateLink = $candidateManagerApproval === null ? null : $this;
+        if ($newCandidateLink !== $candidateManagerApproval->getCandidateLink()) {
+            $candidateManagerApproval->setCandidateLink($newCandidateLink);
+        }
+
+        return $this;
+    }
+
+    public function getCandidateManagerDeny(): ?CandidateManagerDeny
+    {
+        return $this->candidateManagerDeny;
+    }
+
+    public function setCandidateManagerDeny(?CandidateManagerDeny $candidateManagerDeny): self
+    {
+        $this->candidateManagerDeny = $candidateManagerDeny;
+
+        // set (or unset) the owning side of the relation if necessary
+        $newCandidateLink = $candidateManagerDeny === null ? null : $this;
+        if ($newCandidateLink !== $candidateManagerDeny->getCandidateLink()) {
+            $candidateManagerDeny->setCandidateLink($newCandidateLink);
+        }
+
+        return $this;
+    }
+
 }

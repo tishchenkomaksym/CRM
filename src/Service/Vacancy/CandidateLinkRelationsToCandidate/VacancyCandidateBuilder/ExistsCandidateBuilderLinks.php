@@ -4,7 +4,6 @@
 namespace App\Service\Vacancy\CandidateLinkRelationsToCandidate\VacancyCandidateBuilder;
 
 
-use App\Entity\VacancyLink;
 use App\Repository\CandidateRepository;
 use App\Repository\CandidateVacancyRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

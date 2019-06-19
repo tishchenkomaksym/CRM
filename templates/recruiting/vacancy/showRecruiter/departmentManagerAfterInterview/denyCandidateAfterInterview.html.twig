@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+{% block menu %}
+{% endblock %}
+
+{% block body %}
+    <div class="pt-5">
+        <p>Для заключения контракта с кандидатом, заполните, пожалуйста, поля ниже:</p>
+        <p> Настоящим письмом сообщаю, что после проведения интервью компанией Заказчиком было принято решение заключить
+            контракт с {{ builder.candidate.surname }} {{ builder.candidate.name }}(Фамилия, Имя) на позицию {{ builder.vacancy.position }}</p>
+    </div>
+    {{ include('recruiting/vacancy/showRecruiter/departmentManagerAfterInterview/candidateManagerApprovalForm.html.twig') }}
+
+{% endblock %}

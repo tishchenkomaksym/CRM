@@ -31,9 +31,9 @@ class CreateForRecruiterSetTimeEdit
     public function build(CandidateLinkVacancyInterface $candidateVacancyProvider): Swift_Message
     {
 
-        $email = $candidateVacancyProvider->recruiterEmail();;
-        $letter = new Swift_Message( 'Date/time of Interview for candidate' . $candidateVacancyProvider->candidateName() .
-            $candidateVacancyProvider->candidateSurname() . 'under Vacancy#' . $candidateVacancyProvider->vacancyId() . 'was changed by you');
+        $email = $candidateVacancyProvider->recruiterEmail();
+        $letter = new Swift_Message( 'Date/time of Interview for candidate' . $candidateVacancyProvider->candidate()->getName() .
+            $candidateVacancyProvider->candidate()->getSurname() . 'under Vacancy#' . $candidateVacancyProvider->vacancy()->getId() . 'was changed by you');
         $letter
             ->setFrom(getenv('LOCAL_EMAIL'))
             ->setTo($email)

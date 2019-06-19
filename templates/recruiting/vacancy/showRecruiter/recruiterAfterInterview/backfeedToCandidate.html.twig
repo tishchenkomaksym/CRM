@@ -1,0 +1,209 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Request</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('vacancy_show_candidates', {'id': builder.vacancy.id}) }}">View Request</a></li>
+            <li class="breadcrumb-item">Interview</li>
+        </ol>
+    </nav
+{% endblock %}
+{% block menu %}
+    <ul class="list-group list-group-flush">
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
+        {% endif %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('candidate_index') }}">Candidate Database</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+{% block body %}
+    <div>
+        <table class="table">
+            <tbody>
+            <tr>
+                <th>Request#</th>
+                <td>{{ builder.vacancy.id }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ builder.vacancy.createdAt|date('Y-m-d')}}</td>
+            </tr>
+            <tr>
+                <th>By</th>
+                <td>{{ builder.vacancy.createdBy }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div>
+            <p class="alert alert-warning">
+                Status:
+                {% if builder.candidateVacancy != null %}
+                    {{ builder.candidateVacancy.candidateStatus }}
+                {% else %}
+                    {{ builder.candidateLink.candidateStatus }}
+                {% endif %}
+            </p>
+        </div>
+        <div>
+            <p class="pt-3">
+                После проведения интервью менеджером отдела было принято решение не брать на работу кандидата.
+                Детальное обоснование ниже:
+            </p>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Photo</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Position</th>
+                <th>Location</th>
+                <th>Phone</th>
+                <th>Request Status</th>
+                <th>Candidate Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                {% if builder.candidate.photo != null %}
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                            <img width="200px" height="200px" class="img-fluid " src="/uploads/{{ candidate.photo }}" alt="Photo">
+                        </a>
+                    </td>
+                {% else %}
+                    <td>
+                        <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                            <img width="200px" height="200px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                        </a>
+                    </td>
+                {% endif %}
+
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.name }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.surname }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.position }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.location }}</a></td>
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.phone }}</a></td>
+                {% if builder.vacancy != null %}
+                    <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.vacancy.status }}</a></td>
+                {% endif %}
+                <td>
+                    <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                        {% if builder.candidateVacancy != null %}
+                            {{ builder.candidateVacancy.candidateStatus }}
+                        {% else %}
+                            {{ builder.candidateLink.candidateStatus }}
+                        {% endif %}
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div>
+            {% if builder.candidateVacancy != null %}
+                {% for denyReasonDepartment in builder.candidateVacancy.candidateManagerDeny.denyReasonDepartments %}
+                    <p>
+                        &#10004; {{ denyReasonDepartment.denyChoiceDepartment.name }}
+                    </p>
+                {% endfor %}
+                {% if builder.candidateVacancy.candidateManagerDeny.impression != null %}
+                    <div>
+                        Комментарий по кандидату
+                        <p class="border border-warning py-2 px-2">
+                            {{ builder.candidateVacancy.candidateManagerDeny.impression }}
+                        </p>
+                    </div>
+                {% endif %}
+            {% else %}
+                {% for denyReasonDepartment in builder.candidateLink.candidateManagerDeny.denyReasonDepartments %}
+                    <p>
+                        &#10004; {{ denyReasonDepartment.denyChoiceDepartment.name }}
+                    </p>
+                {% endfor %}
+                {% if builder.candidateLink.candidateManagerDeny.impression != null %}
+                    <div>
+                        Комментарий по кандидату
+                        <p class="border border-warning py-2 px-2">
+                            {{ builder.candidateLink.candidateManagerDeny.impression }}
+                        </p>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div>
+            <div>
+                Свяжитесь с кандидатом для предоставления обратной связи. Используя полученные от менеджера причины отказа, обоснуйте для кандидата почему мы ему отказали.
+                Вы можете использовать нижеследующие шаблоны для отказа кандидату:
+            </div>
+            <div class="border border-warning py-2 px-2 mt-3">
+                <ul>
+                    <li>Добрый день, ИМЯ!</li>
+                    <li>Спасибо за Ваше время потраченное на собеседование.</li>
+                    <li>После Вашего собеседования наши технические специалисты предоставили фидбек.</li>
+                    <li>Технические навыки:</li>
+                    <li>Что понравилось:</li>
+                    <li>-</li>
+                    <li>-</li>
+                    <li>...</li>
+                    <li>Что необходимо подтянуть:</li>
+                    <li>-</li>
+                    <li>-</li>
+                    <li>...</li>
+                    <li>В связи с этим…</li>
+                </ul>
+            </div>
+            <div class="border border-warning py-2 px-2 mt-3">
+                <ul>
+                    <li>Добрый день, ИМЯ!</li>
+                    <li>Спасибо, за проявленный интерес к нашей вакансии.</li>
+                    <li>По результатам технического интервью, на данный момент мы не готовы предложить Вам
+                        сотрудничество с нашей компанией.</li>
+                    <li>Так как уровень Ваших технических знаний не соответствует заявленным требованиям проекта.</li>
+                    <li>Советуем Вам (более конкретные обоснования, где пробелы в знаниях)</li>
+                    <li>-</li>
+                    <li>-</li>
+                    <li>-</li>
+                    <li>По правилам нашей компании Вы можете попробовать свои силы через 6 месяцев.</li>
+                    <li>Будем рады, пообщаться с Вами вновь.</li>
+                    <li>Спасибо за уделенное время для общения.</li>
+                    <li>Хорошего дня.</li>
+                </ul>
+            </div>
+            <div class="border border-warning py-2 px-2 mt-3">
+                <ul>
+                    <li>Добрый день, ИМЯ!</li>
+                    <li>Спасибо, за проявленный интерес к нашей вакансии.</li>
+                    <li>По результатам технического интервью, на данный момент мы не готовы предложить Вам
+                        сотрудничество с нашей компанией.</li>
+                    <li>Так как уровень Ваших технических знаний не соответствует заявленным требованиям проекта.</li>
+                    <li>Советуем Вам (более конкретные обоснования, где пробелы в знаниях)</li>
+                    <li>-</li>
+                    <li>-</li>
+                    <li>-</li>
+                    <li>По правилам нашей компании Вы можете попробовать свои силы через 6 месяцев.</li>
+                    <li>Будем рады, пообщаться с Вами вновь.</li>
+                    <li>Спасибо за уделенное время для общения.</li>
+                    <li>Хорошего дня.</li>
+                </ul>
+            </div>
+        </div>
+       {{ include('recruiting/vacancy/showRecruiter/recruiterAfterInterview/backFeedToCandidateForm.html.twig') }}
+        <br>
+        <div class="navbar bg-light d-flex justify-content-between">
+            <div class="badge badge-success">
+                assigned to you by:{{ builder.vacancy.assignedBy }}
+            </div>
+            <div>
+                <span class="badge badge-success">Date of assigning</span>
+                {{ builder.vacancy.assigneeDate|date('Y-m-d') }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

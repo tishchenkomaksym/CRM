@@ -6,6 +6,7 @@ namespace App\Service\Vacancy\CandidateVacancyRelationsToCandidate\VacancyCandid
 
 use App\Entity\Candidate;
 use App\Entity\CandidateVacancy;
+use App\Entity\User;
 use App\Entity\Vacancy;
 use DateTimeImmutable;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -20,12 +21,15 @@ class FormVacancyCandidateBuilder
      */
     private $parameterBag;
 
+    /**
+     * @var User
+     */
     private $user;
 
     public  function __construct(ParameterBagInterface $parameterBag, TokenStorageInterface $tokenStorage)
     {
         $this->parameterBag = $parameterBag;
-        if ($tokenStorage->getToken() !== null ){
+        if (($tokenStorage->getToken() !== null) && $tokenStorage->getToken()->getUser() instanceof User) {
             $this->user = $tokenStorage->getToken()->getUser();
         }
     }
