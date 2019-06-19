@@ -36,6 +36,7 @@ class UserSdtType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $constraints = 'constraints';
         $builder
             ->add(
                 'count',
@@ -43,6 +44,7 @@ class UserSdtType extends AbstractType
                 [
                     FormType::LABEL => 'Amount of SDT days',
                     'attr' => ['min' => 1],
+                    $constraints => [new NotBlank(),]
                 ]
             )
             ->add(
@@ -50,6 +52,7 @@ class UserSdtType extends AbstractType
                 DateType::class,
                 [
                     'widget' => 'single_text',
+                    $constraints => [new NotBlank(),],
                     FormType::LABEL => 'Starting date of your SDT',
                 ]
             )
@@ -59,7 +62,7 @@ class UserSdtType extends AbstractType
                 [
                     FormType::LABEL => 'Person who will be in charge instead of you for this period',
                     'choices' => $this->actingPeople,
-                    'constraints' => [new NotBlank(),]
+                    $constraints => [new NotBlank(),]
                 ]
             )
             ->add(
