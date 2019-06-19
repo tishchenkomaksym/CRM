@@ -14,6 +14,7 @@ use App\Entity\Sdt;
 use App\Repository\SDTEmailAssigneeRepository;
 use App\Repository\UserInfoRepository;
 use App\Service\HolidayService;
+use Exception;
 
 class NewSdtMailFromSdtAdapter
 {
@@ -36,14 +37,14 @@ class NewSdtMailFromSdtAdapter
      * @param UserSubTeamDateCalculator $userSubTeamDateCalculator
      * @return NewSdtMailData
      * @throws NoDateException
-     * @throws \Exception
+     * @throws Exception
      */
-    public  function getNewSdtMail(Sdt $sdt,
+    public function getNewSdtMail(
+        Sdt $sdt,
         HolidayService $holidayService,
         UserInfoRepository $userInfoRepository,
-        UserSubTeamDateCalculator $userSubTeamDateCalculator): NewSdtMailData
-
-    {
+        UserSubTeamDateCalculator $userSubTeamDateCalculator
+    ): NewSdtMailData {
         $createDate = $sdt->getCreateDate();
         $emails = [];
 
@@ -52,10 +53,7 @@ class NewSdtMailFromSdtAdapter
         }
         if ($createDate !== null) {
             $userInfo = $userInfoRepository->findOneBy(['user' => $sdt->getUser()->getId()]);
-            $endDate = 0;
-            if ($userInfo !== null) {
-                $endDate = $userSubTeamDateCalculator->getDateWithOffset($userInfo, $sdt, $holidayService);
-            }
+            $endDate = $userSubTeamDateCalculator->getDateWithOffset($userInfo, $sdt, $holidayService);
 
             return new NewSdtMailData(
                 $sdt->getUser()->getName(),
