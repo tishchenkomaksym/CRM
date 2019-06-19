@@ -13,7 +13,6 @@ use App\Service\Sdt\Interval\EndDateOfSdtCalculator;
 use App\Service\WorkingDays\BaseWorkingDaysCalculator;
 use DateTime;
 use Exception;
-use RuntimeException;
 
 class UsedSdtDaysCalculator
 {
@@ -52,6 +51,7 @@ class UsedSdtDaysCalculator
                 throw new \InvalidArgumentException('no date');
             }
             $startDate = new DateTime("@{$startDate->getTimeStamp()}");
+
             $endDate = $this->endDateOfSdtCalculator->calculate($sdt);
             if ($startPeriod < $startDate && $endPeriod > $endDate) {
                 $usedSdt += $this->workingDaysCalculator->getWorkingDaysBetweenDates($startDate, $endDate);
