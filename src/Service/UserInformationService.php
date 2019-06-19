@@ -55,6 +55,32 @@ class UserInformationService
      * @param User $user
      * @return User[]
      */
+    public function getQaManager(User $user): array
+    {
+        $managers = [];
+        foreach ($user->getQaUserManagerRelations() as $relation) {
+            $managers[] = $relation->getQaManager();
+        }
+        return $managers;
+    }
+    /**
+     * @param User $user
+     * @return User[]
+     */
+    public function getQaManagerUsers(User $user): array
+    {
+        $returnValue = [];
+        foreach ($user->getQaUserManagerRelations() as $relation) {
+            $returnValue[] = $relation->getQaUser();
+        }
+
+        return $returnValue;
+    }
+
+    /**
+     * @param User $user
+     * @return User[]
+     */
     public function getPhpDeveloperManager(User $user): array
     {
         $managers = [];

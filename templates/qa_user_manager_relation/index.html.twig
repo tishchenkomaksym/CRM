@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}QaUserManagerRelation index{% endblock %}
+
+{% block body %}
+    <h1>QaUserManagerRelation index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for qa_user_manager_relation in qa_user_manager_relations %}
+            <tr>
+                <td>{{ qa_user_manager_relation.id }}</td>
+                <td>
+                    <a href="{{ path('qa_user_manager_relation_edit', {'id': qa_user_manager_relation.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('qa_user_manager_relation_new') }}">Create new</a>
+{% endblock %}

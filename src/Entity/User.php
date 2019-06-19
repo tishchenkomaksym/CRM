@@ -66,6 +66,14 @@ class User implements UserInterface
      * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperManagerRelation", mappedBy="manager", orphanRemoval=true)
      */
     private $phpManagerDeveloperRelations;
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\QaUserManagerRelation", mappedBy="qaUser", orphanRemoval=true)
+     */
+    private $qaUserManagerRelations;
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\QaUserManagerRelation", mappedBy="qaManager", orphanRemoval=true)
+     */
+    private $qaManagerUserRelations;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\PhpDeveloperRiseRequest", mappedBy="phpDeveloper", orphanRemoval=true)
@@ -121,6 +129,7 @@ class User implements UserInterface
         $this->sdtArchives = new ArrayCollection();
         $this->vacancies = new ArrayCollection();
         $this->offices = new ArrayCollection();
+        $this->qaUserManagerRelations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -372,6 +381,66 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($phpManagerDeveloperRelation->getManager() === $this) {
                 $phpManagerDeveloperRelation->setManager(null);
+            }
+        }
+
+        return $this;
+    }
+    /**
+     * @return Collection|QaUserManagerRelation[]
+     */
+    public function getQaManagerUserRelations(): Collection
+    {
+        return $this->qaManagerUserRelations;
+    }
+
+    public function addQaManagerUserRelations(QaUserManagerRelation $qaManagerUserRelations): self
+    {
+        if (!$this->qaManagerUserRelations->contains($qaManagerUserRelations)) {
+            $this->qaManagerUserRelations[] = $qaManagerUserRelations;
+            $qaManagerUserRelations->setQaManager($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQaManagerUserRelations(QaUserManagerRelation $qaManagerUserRelations): self
+    {
+        if ($this->qaManagerUserRelations->contains($qaManagerUserRelations)) {
+            $this->qaManagerUserRelations->removeElement($qaManagerUserRelations);
+            // set the owning side to null (unless already changed)
+            if ($qaManagerUserRelations->getQaManager() === $this) {
+                $qaManagerUserRelations->setQaManager(null);
+            }
+        }
+
+        return $this;
+    }
+    /**
+     * @return Collection|QaUserManagerRelation[]
+     */
+    public function getQaUserManagerRelations(): Collection
+    {
+        return $this->qaUserManagerRelations;
+    }
+
+    public function addQaUserManagerRelations(QaUserManagerRelation $qaUserManagerRelation): self
+    {
+        if (!$this->qaUserManagerRelations->contains($qaUserManagerRelation)) {
+            $this->qaUserManagerRelations[] = $qaUserManagerRelation;
+            $qaUserManagerRelation->setQaManager($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQaUserManagerRelations(QaUserManagerRelation $qaUserManagerRelation): self
+    {
+        if ($this->qaUserManagerRelations->contains($qaUserManagerRelation)) {
+            $this->qaUserManagerRelations->removeElement($qaUserManagerRelation);
+            // set the owning side to null (unless already changed)
+            if ($qaUserManagerRelation->getQaManager() === $this) {
+                $qaUserManagerRelation->setQaManager(null);
             }
         }
 

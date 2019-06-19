@@ -180,6 +180,7 @@ class UserController extends AbstractController
             }
             $sdtUsed = $baseSalaryReportBuilder->build($todaySalaryReport, $nextSalaryReport, $user);
             $manager = $service->getPhpDeveloperManager($user);
+            $qaManager = $service->getQaManager($user);
             $leftSdt = $leftSdtCalculator->calculate($user);
             $workingHoursInformation = $baseWorkHoursInformationBuilder->build($user, new DateTime());
         }else{
@@ -199,6 +200,7 @@ class UserController extends AbstractController
             }
             $sdtUsed = $baseSalaryReportBuilder->build($todaySalaryReport, $nextSalaryReport, $this->getUser());
             $manager = $service->getPhpDeveloperManager($this->getUser());
+            $qaManager = $service->getQaManager($this->getUser());
             $leftSdt = $leftSdtCalculator->calculate($this->getUser());
             $workingHoursInformation = $baseWorkHoursInformationBuilder->build($this->getUser(), new DateTime());
         }
@@ -210,6 +212,7 @@ class UserController extends AbstractController
                 'user' => $userInfo,
                 'userLevel' => $service->getPhpUserLevel($user),
                 'developerManagers' => $manager,
+                'qaUserManagers' => $qaManager,
                 'leftSdt' => $leftSdt,
                 'todaySalaryReport' => $todaySalaryReport,
                 'nextSalaryReport' => $nextSalaryReport,
