@@ -44,6 +44,9 @@ class SdtDaysCalculator
         $leftSdt = $this->leftSdtCalculator->calculate($user, $to);
         $sdtArray = $user->getSdt();
         foreach ($sdtArray as $sdt) {
+            if ($sdt->getCreateDate() === null) {
+                throw new \InvalidArgumentException('no createDate in SdtDaysCalculator');
+            }
             $endDate = $this->endDateOfSdtCalculator->calculate($sdt);
             if ($endDate > $to && $sdt->getCreateDate() <= $to) {
                 $leftSdt = $sdt->getCount() + $leftSdt - $sdtCountUsed;
