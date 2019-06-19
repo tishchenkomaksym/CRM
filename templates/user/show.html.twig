@@ -204,7 +204,6 @@
         {% endif %}
         </tbody>
     </table>
-
     {% if is_granted("ROLE_ACCOUNT_MANAGER") %}
         {% if user.user.phpDeveloperLevelRelation is null %}
             <a class="btn" href="{{ path('user_php_developer_level_relation_new',{'id':user.user.id}) }}">Add PHP Level</a>

@@ -10,6 +10,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Count;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class DenyAfterInterviewByDepartmentManagerType extends AbstractType
 {
@@ -23,7 +25,8 @@ class DenyAfterInterviewByDepartmentManagerType extends AbstractType
                 'required'=>true,
                 'expanded' => true,
                 'label' => false,
-                'mapped' => false
+                'mapped' => false,
+                'constraints' => [new Count(['min' => 1])]
 
             ])
             ->add('impression', null,[

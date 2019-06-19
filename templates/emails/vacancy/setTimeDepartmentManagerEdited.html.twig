@@ -4,7 +4,7 @@
 
     <p>
         Обратите внимание, что интервью по Заявке
-        с кандидатом {{ candidateVacancy.candidateName }} {{ candidateVacancy.candidateSurname }}
+        с кандидатом {{ candidateVacancy.candidate.name }} {{ candidateVacancy.candidate.surname }}
         переносится на {{ candidateVacancy.dateInterview|date('Y-m-d') }} в
         {{ candidateVacancy.dateInterview|date('H:i:s') }} в {{ candidateVacancy.confRoom}}.
     </p>

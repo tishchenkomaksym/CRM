@@ -4,8 +4,8 @@
 
     <p>
         Интервью по Заявке#
-            {{ candidateVacancy.vacancyId }}
-        с кандидатом {{ candidateVacancy.candidateName }} {{ candidateVacancy.candidateSurname }}
+            {{ candidateVacancy.vacancy.id }}
+        с кандидатом {{ candidateVacancy.candidate.name }} {{ candidateVacancy.candidate.surname }}
         переносится на {{ candidateVacancy.dateInterview|date('Y-m-d') }} в
         {{ candidateVacancy.dateInterview|date('H:i:s') }} в {{ candidateVacancy.confRoom}}.
         Если вы по какой-то причине не сможете прийти на интервью, оповестите, пожалуйста, ответственного за заявку рекрутера заранее.

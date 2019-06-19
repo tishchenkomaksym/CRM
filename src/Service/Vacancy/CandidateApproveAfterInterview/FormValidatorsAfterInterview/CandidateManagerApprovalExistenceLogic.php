@@ -5,7 +5,6 @@ namespace App\Service\Vacancy\CandidateApproveAfterInterview\FormValidatorsAfter
 
 
 use App\Entity\CandidateLink;
-use App\Entity\CandidateManagerDeny;
 use App\Entity\CandidateVacancy;
 use App\Repository\CandidateManagerApprovalRepository;
 use App\Repository\CandidateManagerDenyRepository;
@@ -13,7 +12,9 @@ use App\Repository\CandidateManagerDenyRepository;
 class CandidateManagerApprovalExistenceLogic
 {
 
+    public const CANDIDATE_LINK = 'candidateLink';
 
+    public const CANDIDATE_VACANCY = 'candidateVacancy';
     /**
      * @var CandidateManagerApprovalRepository
      */
@@ -31,25 +32,31 @@ class CandidateManagerApprovalExistenceLogic
         $this->candidateManagerDenyRepository = $candidateManagerDenyRepository;
     }
 
-    public function existence($candidateLink, $candidateVacancy): array
+    public function existence(CandidateVacancy $candidateVacancy): array
     {
         $candidateVacancies = [];
-        if ($candidateLink !== null) {
-            if ($this->managerApprovalRepository->findOneBy(['candidateLink' => $candidateLink->getId()]) !== null) {
-                $candidateVacancies[] = $this->managerApprovalRepository->findOneBy(['candidateLink' => $candidateLink->getId()]);
+//        if ($candidateVacancy !== null){
+            if ($this->managerApprovalRepository->findOneBy([self::CANDIDATE_VACANCY => $candidateVacancy->getId()]) !== null) {
+                $candidateVacancies[] = $this->managerApprovalRepository->findOneBy([self::CANDIDATE_VACANCY => $candidateVacancy->getId()]);
             }
-            if ($this->candidateManagerDenyRepository->findOneBy(['candidateLink' => $candidateLink->getId()]) !== null) {
-                $candidateVacancies[] = $this->candidateManagerDenyRepository->findOneBy(['candidateLink' => $candidateLink->getId()]);
+            if($this->candidateManagerDenyRepository->findOneBy([self::CANDIDATE_VACANCY => $candidateVacancy->getId()]) !== null){
+                $candidateVacancies[] = $this->candidateManagerDenyRepository->findOneBy([self::CANDIDATE_VACANCY => $candidateVacancy->getId()]);
             }
-        }
-        if ($candidateVacancy !== null){
-            if ($this->managerApprovalRepository->findOneBy(['candidateVacancy' => $candidateVacancy->getId()]) !== null) {
-                $candidateVacancies[] = $this->managerApprovalRepository->findOneBy(['candidateVacancy' => $candidateVacancy->getId()]);
+//        }
+        return $candidateVacancies;
+    }
+
+    public function existenceCandidateLink(CandidateLink $candidateLink): array
+    {
+        $candidateVacancies = [];
+//        if ($candidateLink !== null) {
+            if ($this->managerApprovalRepository->findOneBy([self::CANDIDATE_LINK => $candidateLink->getId()]) !== null) {
+                $candidateVacancies[] = $this->managerApprovalRepository->findOneBy([self::CANDIDATE_LINK => $candidateLink->getId()]);
             }
-            if($this->candidateManagerDenyRepository->findOneBy(['candidateVacancy' => $candidateVacancy->getId()]) !== null){
-                $candidateVacancies[] = $this->candidateManagerDenyRepository->findOneBy(['candidateVacancy' => $candidateVacancy->getId()]);;
+            if ($this->candidateManagerDenyRepository->findOneBy([self::CANDIDATE_LINK => $candidateLink->getId()]) !== null) {
+                $candidateVacancies[] = $this->candidateManagerDenyRepository->findOneBy([self::CANDIDATE_LINK => $candidateLink->getId()]);
             }
-        }
+//        }
         return $candidateVacancies;
     }
 

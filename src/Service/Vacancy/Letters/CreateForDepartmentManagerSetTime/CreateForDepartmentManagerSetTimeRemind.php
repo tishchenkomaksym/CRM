@@ -32,8 +32,8 @@ class CreateForDepartmentManagerSetTimeRemind
 
         $email = $candidateVacancyProvider->departmentManagerEmail();
 
-        $letter = new Swift_Message( 'Reminder of Interview date and time for candidate' . $candidateVacancyProvider->candidateName() .
-            $candidateVacancyProvider->candidateSurname() . 'under Vacancy#' . $candidateVacancyProvider->vacancyId());
+        $letter = new Swift_Message( 'Reminder of Interview date and time for candidate' . $candidateVacancyProvider->candidate()->getName() .
+            $candidateVacancyProvider->candidate()->getSurname() . 'under Vacancy#' . $candidateVacancyProvider->vacancy()->getId());
         $letter
             ->setFrom(getenv('LOCAL_EMAIL'))
             ->setTo($email)

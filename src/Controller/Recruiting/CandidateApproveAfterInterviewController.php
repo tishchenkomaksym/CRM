@@ -77,10 +77,14 @@ class CandidateApproveAfterInterviewController extends AbstractController
             $candidate,
             $vacancyId
         );
-
-        if(!empty($managerApprovalExistenceLogic->existence($builder->getCandidateLink(), $builder->getCandidateVacancy()))){
+        if ($builder->getCandidateVacancy() !== null){
+            if(!empty($managerApprovalExistenceLogic->existence($builder->getCandidateVacancy()))){
+                throw new NoDataException('This candidate was already approved or denied');
+            }
+        }elseif(!empty($managerApprovalExistenceLogic->existenceCandidateLink($builder->getCandidateLink()))){
             throw new NoDataException('This candidate was already approved or denied');
         }
+
         return $this->render('recruiting/vacancy/showRecruiter/departmentManagerAfterInterview/candidateAfterInterview.html.twig',
             [
                 self::BUILDER => $builder
