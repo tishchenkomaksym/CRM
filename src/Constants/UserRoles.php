@@ -27,4 +27,6 @@ interface UserRoles
     public const ROLE_VACANCY_WATCHER_USER = 'ROLE_VACANCY_WATCHER_USER';
     public const ROLE_VIEW_SALARY_REPORT = 'ROLE_VIEW_SALARY_REPORT';
     public const ROLE_MANAGE_ROLES = 'ROLE_MANAGE_ROLES';
+    public const ROLE_QA = 'ROLE_QA_AGENT';
+    public const ROLE_QA_MANGER = 'ROLE_QA_MANGER';
 }

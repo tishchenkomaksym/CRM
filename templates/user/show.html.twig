@@ -136,6 +136,16 @@
                 {% endfor %}
             </td>
         </tr>
+        {% if is_granted("ROLE_QA") %}
+        <tr>
+            <th>Qa Manager</th>
+            <td>
+                {% for qaManager in qaUserManagers %}
+                    {{ qaManager }}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endif %}
         <tr>
             <th>Current position and level</th>
             <td>{{ userLevel }}</td>
@@ -200,6 +210,7 @@
             <a class="btn" href="{{ path('user_php_developer_level_relation_new',{'id':user.user.id}) }}">Add PHP Level</a>
         {% endif %}
         <a class="btn" href="{{ path('php_developer_manager_relation_new',{'id':user.user.id}) }}">Add PHP Manager</a>
+        <a class="btn" href="{{ path('qa_user_manager_relation_new',{'id':user.user.id}) }}">Add QA Manager</a>
         <a href="{{ path('sdt_email_assignee_index',{'id':user.user.id}) }}">SDT Emails</a>
     {% endif %}
 

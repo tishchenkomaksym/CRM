@@ -41,6 +41,7 @@ class ProfileController extends AbstractController
     )
     {
         $user = $this->getUser();
+        $qaManager = $service->getQaManager($user);
         $manager = $service->getPhpDeveloperManager($user);
         $leftSdt = $leftSdtCalculator->calculate($this->getUser());
 
@@ -50,6 +51,7 @@ class ProfileController extends AbstractController
             [
                 'userLevel' => $service->getPhpUserLevel($user),
                 'developerManagers' => $manager,
+                'qaManagers' => $qaManager,
                 'leftSdt' => $leftSdt,
                 'workingHoursInformation' => $workingHoursInformation
             ]

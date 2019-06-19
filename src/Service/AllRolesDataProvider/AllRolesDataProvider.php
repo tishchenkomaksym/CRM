@@ -25,7 +25,9 @@ class AllRolesDataProvider implements UserRoles
         self::ROLE_TOP_MANAGER => self::ROLE_TOP_MANAGER,
         self::ROLE_VACANCY_VIEWER_USER => self::ROLE_VACANCY_VIEWER_USER,
         self::ROLE_VACANCY_WATCHER_USER => self::ROLE_VACANCY_WATCHER_USER,
-        self::ROLE_VIEW_SALARY_REPORT => self::ROLE_VIEW_SALARY_REPORT
+        self::ROLE_VIEW_SALARY_REPORT => self::ROLE_VIEW_SALARY_REPORT,
+        self::ROLE_QA => self::ROLE_QA,
+        self::ROLE_QA_MANGER => self::ROLE_QA_MANGER
     ];
 
     public function getRoles(): array
