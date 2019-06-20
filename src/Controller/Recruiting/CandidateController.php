@@ -80,6 +80,7 @@ class CandidateController extends AbstractController
 
             $entityManager = $this->getDoctrine()->getManager();
             $candidate->setCreatedAt(new DateTimeImmutable('now'));
+            $candidate->setCreatedBy($this->getUser());
 
             $entityManager->persist($candidate);
             $entityManager->flush();
