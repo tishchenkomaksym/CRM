@@ -43,10 +43,17 @@ class PhpDeveloperLevel
      */
     private $phpDeveloperLevelHoursRequired;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\QaRequiredSkillTestMark", mappedBy="qaLevel")
+     */
+    private $qaRequiredSkillTestMarks;
+
     public function __construct()
     {
         $this->phpDeveloperLevelTests = new ArrayCollection();
         $this->phpDeveloperRelations = new ArrayCollection();
+        $this->test = new ArrayCollection();
+        $this->qaRequiredSkillTestMarks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -140,4 +147,36 @@ class PhpDeveloperLevel
 
         return $this;
     }
+
+    /**
+     * @return Collection|QaRequiredSkillTestMark[]
+     */
+    public function getQaRequiredSkillTestMarks(): Collection
+    {
+        return $this->qaRequiredSkillTestMarks;
+    }
+
+    public function addQaRequiredSkillTestMark(QaRequiredSkillTestMark $qaRequiredSkillTestMark): self
+    {
+        if (!$this->qaRequiredSkillTestMarks->contains($qaRequiredSkillTestMark)) {
+            $this->qaRequiredSkillTestMarks[] = $qaRequiredSkillTestMark;
+            $qaRequiredSkillTestMark->setQaLevel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQaRequiredSkillTestMark(QaRequiredSkillTestMark $qaRequiredSkillTestMark): self
+    {
+        if ($this->qaRequiredSkillTestMarks->contains($qaRequiredSkillTestMark)) {
+            $this->qaRequiredSkillTestMarks->removeElement($qaRequiredSkillTestMark);
+            // set the owning side to null (unless already changed)
+            if ($qaRequiredSkillTestMark->getQaLevel() === $this) {
+                $qaRequiredSkillTestMark->setQaLevel(null);
+            }
+        }
+
+        return $this;
+    }
+
 }
