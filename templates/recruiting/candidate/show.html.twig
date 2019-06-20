@@ -18,8 +18,20 @@
                 <td>
                     <a class="btn btn-secondary" href="{{ path('candidate_edit', {'id': candidate.id}) }}">edit</a>
                 </td>
-                <td>Created
+                <td>
+                    Created
                     {{ candidate.createdAt|date('Y-m-d') }}
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    CreatedBy
+                    {% if candidate.createdBy != null %}
+                        {{ candidate.createdBy.email }}
+                    {% endif %}
                 </td>
             </tr>
             <tr>
