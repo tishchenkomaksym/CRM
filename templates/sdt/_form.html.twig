@@ -2,6 +2,11 @@
     {{ form_widget(form) }}
     <button class="btn btn-primary" >{{ button_label|default('Save') }}</button>
     <a href="{{ path('sdt_index') }}" class="btn btn-secondary" role="button">back to list</a>
-
-
+<script>
+    $('.datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        orientation: 'bottom',
+    });
+</script>
 {{ form_end(form) }}
