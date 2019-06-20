@@ -11,9 +11,13 @@
         <div class="col-3">
             <div class="card">
                 <div class="card-body">
+                    {% if is_granted('ROLE_QA_AGENT')%}
+                    <h5 class="card-title">Qa Lvl</h5>
+                    {% elseif  is_granted('ROLE_PHP_DEVELOPER')%}
                     <h5 class="card-title">PHP developer Lvl</h5>
+                    {% endif %}
                     {#<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
-                    <p class="card-text">PHP developer level: <span class="badge badge-info">{{ userLevel }}</span></p>
+                    <p class="card-text">Current level: <span class="badge badge-info">{{ userLevel }}</span></p>
                     {#<a href="{{ path('php_developer_salary_raise') }}" class="card-link">Details</a>#}
                     {#<a href="#" class="card-link">Another link</a>#}
                 </div>
@@ -66,7 +70,7 @@
     <br/>
     <div class="row"><h3>Information:</h3></div>
     <div class="row">
-        {% if is_granted('ROLE_PHP_DEVELOPER') %}
+        {% if is_granted('ROLE_PHP_DEVELOPER')%}
         <div class="col-3">
             <div class="card">
                 <div class="card-body">
@@ -78,6 +82,18 @@
                 </div>
             </div>
         </div>
+        {% elseif is_granted('ROLE_QA_AGENT')%}
+            <div class="col-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Salary raise</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Rise info</h6>
+                        <p class="card-text">Click here if you want to take info about rise</p>
+                        <a href="{{ path('qa_view') }}" class="card-link">Details</a>
+                        {#<a href="#" class="card-link">Another link</a>#}
+                    </div>
+                </div>
+            </div>
         {% endif %}
         <div class="col-3">
             <div class="card">
