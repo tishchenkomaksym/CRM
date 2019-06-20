@@ -31,7 +31,7 @@ class EndDateOfSdtCalculator
      * @return DateTime
      * @throws Exception
      */
-    public function calculate(Sdt $sdt): ?DateTime
+    public function calculate(Sdt $sdt): DateTime
     {
         /** @var dateTime $dateTime */
         $dateTime = $sdt->getCreateDate();
