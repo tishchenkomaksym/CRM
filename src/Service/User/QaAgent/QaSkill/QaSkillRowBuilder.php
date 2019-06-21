@@ -12,10 +12,6 @@ use App\Repository\QaSkillTestRepository;
 class QaSkillRowBuilder
 {
     /**
-     * @var QaSkillTest
-     */
-    private $qaSkillTest;
-    /**
      * @var QaSkillTestRepository
      */
     private $skillTestRepository;
@@ -31,35 +27,35 @@ class QaSkillRowBuilder
     public function __construct(
         QaSkillTestRepository $skillTestRepository,
         QaRequiredSkillTestMarkRepository $requiredSkillTestMarkRepository,
-        QaActualSkillTestMarkRepository $actualSkillTestMarkRepository,
-        QaSkillTest $qaSkillTest
+        QaActualSkillTestMarkRepository $actualSkillTestMarkRepository
     )
     {
         $this->skillTestRepository = $skillTestRepository;
         $this->requiredSkillTestMarkRepository = $requiredSkillTestMarkRepository;
         $this->actualSkillTestMarkRepository = $actualSkillTestMarkRepository;
-        $this->qaSkillTest = $qaSkillTest;
     }
 
     /**
      * @param QaSkillRow $qaSkillRow
+     * @param QaSkillTest $qaSkillTest
      * @return void
      */
-    public function buildTitle(QaSkillRow $qaSkillRow): void
+    public function buildTitle(QaSkillRow $qaSkillRow, QaSkillTest $qaSkillTest): void
     {
-        $test = $this->skillTestRepository->findOneBy(['test' => $this->qaSkillTest]);
-        if ($test !== null) {
-            $qaSkillRow->setTitle($test->getTitle());
-        }
+            $qaSkillRow->setTitle($qaSkillTest->getTitle());
     }
     /**
      * @param PhpDeveloperLevel $level
      * @param QaSkillRow $qaSkillRow
+     * @param QaSkillTest $qaSkillTest
      * @return void
      */
-    public function buildRequiredMark(?PhpDeveloperLevel $level, QaSkillRow $qaSkillRow): void
+    public function buildRequiredMark(
+        ?PhpDeveloperLevel $level,
+        QaSkillRow $qaSkillRow,
+        QaSkillTest $qaSkillTest): void
     {
-        $requiredMark = $this->requiredSkillTestMarkRepository->findOneBy(['test'=> $this->qaSkillTest, 'qaLevel' => $level]);
+        $requiredMark = $this->requiredSkillTestMarkRepository->findOneBy(['test'=> $qaSkillTest, 'qaLevel' => $level]);
         if ($requiredMark !== null) {
             $qaSkillRow->setRequiredPoints($requiredMark->getRequiredPoints());
         }
@@ -67,33 +63,35 @@ class QaSkillRowBuilder
     /**
      * @param User $user
      * @param QaSkillRow $qaSkillRow
+     * @param QaSkillTest $qaSkillTest
      * @return void
      */
-    public function buildActualMark(User $user, QaSkillRow $qaSkillRow): void
+    public function buildActualMark(User $user, QaSkillRow $qaSkillRow, QaSkillTest $qaSkillTest): void
     {
-        $actualMark = $this->actualSkillTestMarkRepository->findOneBy(['test' => $this->qaSkillTest, 'user' => $user]);
+        $actualMark = $this->actualSkillTestMarkRepository->findOneBy(['test' => $qaSkillTest, 'user' => $user]);
         if ($actualMark !== null) {
             $qaSkillRow->setActualPoints($actualMark->getActualPoints());
         }
     }
     /**
      * @param QaSkillRow $qaSkillRow
+     * @param QaSkillTest $qaSkillTest
      * @return void
      */
-    public function buildTestLink(QaSkillRow $qaSkillRow): void
+    public function buildTestLink(QaSkillRow $qaSkillRow, QaSkillTest $qaSkillTest): void
     {
-        $test = $this->skillTestRepository->findOneBy(['id' => $this->qaSkillTest->getId()]);
-        if ($test !== null) {
-            $qaSkillRow->setTestLink($test->getLink());
-        }
+            $qaSkillRow->setTestLink($qaSkillTest->getLink());
     }
 
-    public function getResult(User $user): QaSkillRow {
+    public function getResult(QaSkillTest $skillTest, User $user): QaSkillRow {
         $qaSkillRow = new QaSkillRow();
-        $this->buildTitle($qaSkillRow);
-        $this->buildRequiredMark($user->getPhpDeveloperLevelRelation()->getPhpDeveloperLevel(), $qaSkillRow);
-        $this->buildActualMark($user, $qaSkillRow);
-        $this->buildTestLink($qaSkillRow);
+        $this->buildTitle($qaSkillRow, $skillTest);
+        $this->buildRequiredMark(
+            $user->getPhpDeveloperLevelRelation()->getPhpDeveloperLevel(),
+            $qaSkillRow,
+            $skillTest);
+        $this->buildActualMark($user, $qaSkillRow, $skillTest);
+        $this->buildTestLink($qaSkillRow, $skillTest);
 
         return $qaSkillRow;
     }
