@@ -5,16 +5,13 @@ namespace App\Service\User\QaAgent\QaSkill;
 use App\Entity\PhpDeveloperLevel;
 use App\Entity\User;
 use App\Entity\QaSkillTest;
+use App\Repository\PhpDeveloperLevelRepository;
 use App\Repository\QaActualSkillTestMarkRepository;
 use App\Repository\QaRequiredSkillTestMarkRepository;
 use App\Repository\QaSkillTestRepository;
 
 class QaSkillRowBuilder
 {
-    /**
-     * @var QaSkillTestRepository
-     */
-    private $skillTestRepository;
     /**
      * @var QaRequiredSkillTestMarkRepository
      */
@@ -23,16 +20,20 @@ class QaSkillRowBuilder
      * @var QaActualSkillTestMarkRepository
      */
     private $actualSkillTestMarkRepository;
+    /**
+     * @var PhpDeveloperLevelRepository
+     */
+    private $phpDeveloperLevelRepository;
 
     public function __construct(
-        QaSkillTestRepository $skillTestRepository,
         QaRequiredSkillTestMarkRepository $requiredSkillTestMarkRepository,
-        QaActualSkillTestMarkRepository $actualSkillTestMarkRepository
+        QaActualSkillTestMarkRepository $actualSkillTestMarkRepository,
+        PhpDeveloperLevelRepository $phpDeveloperLevelRepository
     )
     {
-        $this->skillTestRepository = $skillTestRepository;
         $this->requiredSkillTestMarkRepository = $requiredSkillTestMarkRepository;
         $this->actualSkillTestMarkRepository = $actualSkillTestMarkRepository;
+        $this->phpDeveloperLevelRepository = $phpDeveloperLevelRepository;
     }
 
     /**
@@ -55,9 +56,18 @@ class QaSkillRowBuilder
         QaSkillRow $qaSkillRow,
         QaSkillTest $qaSkillTest): void
     {
-        $requiredMark = $this->requiredSkillTestMarkRepository->findOneBy(['test'=> $qaSkillTest, 'qaLevel' => $level]);
-        if ($requiredMark !== null) {
-            $qaSkillRow->setRequiredPoints($requiredMark->getRequiredPoints());
+        if(isset($level)) {
+            $userLevel = $this->phpDeveloperLevelRepository
+                ->findOneBy(['title' => $level->getTitle()]);
+            if($userLevel !== null) {
+                $nextLevel = $userLevel->getNextLevel();
+            } else {
+                $nextLevel = $userLevel;
+            }
+            $requiredMark = $this->requiredSkillTestMarkRepository->findOneBy(['test'=> $qaSkillTest, 'qaLevel' => $nextLevel]);
+            if ($requiredMark !== null) {
+                $qaSkillRow->setRequiredPoints($requiredMark->getRequiredPoints());
+            }
         }
     }
     /**
@@ -84,13 +94,13 @@ class QaSkillRowBuilder
     }
     /**
      * @param QaSkillRow $qaSkillRow
-     * @param QaSkillTest $qaSkillTest
      * @return void
      */
     public function buildPassed(QaSkillRow $qaSkillRow): void
     {
         $actual = $qaSkillRow->getActualPoints();
-        $required = $qaSkillRow->getRequiredPoints();
+        $required = $qaSkillRow->getTitle();
+
         if($actual !== null && $required !== null &&
         $actual >= $required) {
             $qaSkillRow->setPassed(true);

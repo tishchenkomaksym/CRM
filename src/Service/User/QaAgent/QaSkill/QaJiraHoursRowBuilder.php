@@ -5,6 +5,7 @@ namespace App\Service\User\QaAgent\QaSkill;
 use App\Entity\PhpDeveloperLevel;
 use App\Entity\QaJiraComponent;
 use App\Entity\User;
+use App\Repository\PhpDeveloperLevelRepository;
 use App\Repository\QaRequiredJiraComponentHoursRepository;
 use App\Service\User\QaAgent\DataProvider\QaJiraHoursDataProvider;
 
@@ -18,15 +19,21 @@ class QaJiraHoursRowBuilder
      * @var QaJiraHoursDataProvider
      */
     private $jiraHoursDataProvider;
+    /**
+     * @var PhpDeveloperLevelRepository
+     */
+    private $phpDeveloperLevelRepository;
 
 
     public function __construct(
         QaRequiredJiraComponentHoursRepository $jiraRequiredHoursRepository,
-        QaJiraHoursDataProvider $jiraHoursDataProvider
+        QaJiraHoursDataProvider $jiraHoursDataProvider,
+        PhpDeveloperLevelRepository $phpDeveloperLevelRepository
     )
     {
         $this->jiraRequiredHoursRepository = $jiraRequiredHoursRepository;
         $this->jiraHoursDataProvider = $jiraHoursDataProvider;
+        $this->phpDeveloperLevelRepository = $phpDeveloperLevelRepository;
 
     }
 
@@ -50,9 +57,18 @@ class QaJiraHoursRowBuilder
         QaJiraHoursRow $qaJiraHoursRow,
         QaJiraComponent $component): void
     {
-        $requiredHours = $this->jiraRequiredHoursRepository->findOneBy(['jiraComponent'=> $component, 'qaLevel' => $level]);
-        if ($requiredHours !== null) {
-            $qaJiraHoursRow->setRequiredHours($requiredHours->getRequiredHours());
+        if(isset($level)) {
+            $userLevel = $this->phpDeveloperLevelRepository
+                ->findOneBy(['title' => $level->getTitle()]);
+            if($userLevel !== null) {
+                $nextLevel = $userLevel->getNextLevel();
+            } else {
+                $nextLevel = $userLevel;
+            }
+            $requiredHours = $this->jiraRequiredHoursRepository->findOneBy(['jiraComponent'=> $component, 'qaLevel' => $nextLevel]);
+            if ($requiredHours !== null) {
+                $qaJiraHoursRow->setRequiredHours($requiredHours->getRequiredHours());
+            }
         }
     }
     /**
