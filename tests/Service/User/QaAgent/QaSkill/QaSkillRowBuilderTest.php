@@ -51,7 +51,7 @@ class QaSkillRowBuilderTest extends TestCase
          */
         $actualSkillTestMarkRepositoryMock = $this->createMock(QaActualSkillTestMarkRepository::class);
         $actualSkillTestMarkRepositoryMock->method('findOneBy')->willReturn($actualMarkMock);
-        $actualMarkMock->method('getActualPoints')->willReturn(21);
+        $actualMarkMock->method('getActualPoints')->willReturn(31);
         /**
          * @var PhpDeveloperLevel|MockObject $levelMock
          */
@@ -60,8 +60,7 @@ class QaSkillRowBuilderTest extends TestCase
         $object = new QaSkillRowBuilder(
             $skillTestRepositoryMock,
             $requiredSkillTestMarkRepositoryMock,
-            $actualSkillTestMarkRepositoryMock,
-            $qaSkillTestMock
+            $actualSkillTestMarkRepositoryMock
         );
 
         $userMock->method('getPhpDeveloperLevelRelation')->willReturn($levelRelationMock);
@@ -70,10 +69,11 @@ class QaSkillRowBuilderTest extends TestCase
         $assertObject = new QaSkillRow();
         $assertObject->setTitle('title');
         $assertObject->setRequiredPoints(30);
-        $assertObject->setActualPoints(21);
+        $assertObject->setActualPoints(31);
         $assertObject->setTestLink('link');
+        $assertObject->setPassed(true);
 
-        $result = $object->getResult($userMock);
+        $result = $object->getResult($qaSkillTestMock, $userMock);
         $this->assertEquals($assertObject, $result);
     }
 }

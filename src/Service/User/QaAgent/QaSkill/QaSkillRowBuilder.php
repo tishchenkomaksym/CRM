@@ -82,6 +82,20 @@ class QaSkillRowBuilder
     {
             $qaSkillRow->setTestLink($qaSkillTest->getLink());
     }
+    /**
+     * @param QaSkillRow $qaSkillRow
+     * @param QaSkillTest $qaSkillTest
+     * @return void
+     */
+    public function buildPassed(QaSkillRow $qaSkillRow): void
+    {
+        $actual = $qaSkillRow->getActualPoints();
+        $required = $qaSkillRow->getRequiredPoints();
+        if($actual !== null && $required !== null &&
+        $actual >= $required) {
+            $qaSkillRow->setPassed(true);
+        }
+    }
 
     public function getResult(QaSkillTest $skillTest, User $user): QaSkillRow {
         $qaSkillRow = new QaSkillRow();
@@ -92,6 +106,7 @@ class QaSkillRowBuilder
             $skillTest);
         $this->buildActualMark($user, $qaSkillRow, $skillTest);
         $this->buildTestLink($qaSkillRow, $skillTest);
+        $this->buildPassed($qaSkillRow);
 
         return $qaSkillRow;
     }

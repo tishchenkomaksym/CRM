@@ -7,11 +7,13 @@ class QaSkillRow
     /*** @var string */
     private $title = '';
     /*** @var int */
-    private $actualPoints = 0;
+    private $actualPoints;
     /*** @var int */
-    private $requiredPoints = 0;
+    private $requiredPoints;
     /** @var string */
     private $testLink = '';
+    /** @var bool */
+    private $passed = false;
 
     public function setTitle(string $skillTitle): QaSkillRow
     {
@@ -46,5 +48,14 @@ class QaSkillRow
     public function getTestLink(): string
     {
         return $this->testLink;
+    }
+    public function setPassed(bool $passed): QaSkillRow
+    {
+        $this->passed = $passed;
+        return $this;
+    }
+    public function getPassed(): bool
+    {
+        return $this->passed;
     }
 }

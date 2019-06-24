@@ -45,18 +45,14 @@ class QaController extends AbstractController
      * @throws Exception
      */
     public function technicalSkills(
-        UserInformationService $service,
         QaTechnicalSkillDTOBuilder $technicalSkillsBuilder
     ): Response
     {
         $user = $this->getUser();
-        $qaManager = $service->getQaManager($user);
         $skillTests = $technicalSkillsBuilder->getResult($user);
         return $this->render(
             'qa_view/technicalSkills.html.twig',
             [
-                'userLevel' => $service->getPhpUserLevel($user),
-                'qaManagers' => $qaManager,
                 'skillRows' => $skillTests->getSkillRows(),
                 'jiraHours' => $skillTests->getJiraHours(),
             ]

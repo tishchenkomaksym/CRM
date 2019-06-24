@@ -22,7 +22,7 @@
                     <td>{{ item.actualPoints }}</td>
                     <td>{{ item.requiredPoints }}</td>
                     <td><a href="{{ item.testLink }}">Get test</a></td>
-                    <td>{% if item.actualPoints >= item.requiredPoints %}
+                    <td>{% if item.passed %}
                             <span class="badge badge-success">Passed</span>
                         {% else %}
                             <span class="badge badge-secondary">Not Passed</span>
