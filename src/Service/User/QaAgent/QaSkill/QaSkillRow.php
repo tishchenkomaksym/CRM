@@ -21,20 +21,20 @@ class QaSkillRow
     public function getTitle(): string {
         return $this->title;
     }
-    public function setActualPoints(int $points): QaSkillRow
+    public function setActualPoints(?int $points): QaSkillRow
     {
         $this->actualPoints = $points;
         return $this;
     }
-    public function getActualPoints(): int {
+    public function getActualPoints(): ?int {
         return $this->actualPoints;
     }
-    public function setRequiredPoints(int $points): QaSkillRow
+    public function setRequiredPoints(?int $points): QaSkillRow
     {
         $this->requiredPoints = $points;
         return $this;
     }
-    public function getRequiredPoints(): int
+    public function getRequiredPoints(): ?int
     {
         return $this->requiredPoints;
     }

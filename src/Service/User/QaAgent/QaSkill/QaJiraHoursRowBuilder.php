@@ -3,17 +3,13 @@
 namespace App\Service\User\QaAgent\QaSkill;
 
 use App\Entity\PhpDeveloperLevel;
+use App\Entity\QaJiraComponent;
 use App\Entity\User;
-use App\Entity\QaSkillTest;
-use App\Repository\QaJiraComponentRepository;
 use App\Repository\QaRequiredJiraComponentHoursRepository;
+use App\Service\User\QaAgent\DataProvider\QaJiraHoursDataProvider;
 
 class QaJiraHoursRowBuilder
 {
-    /**
-     * @var QaJiraComponentRepository
-     */
-    private $jiraComponentRepository;
     /**
      * @var QaRequiredJiraComponentHoursRepository
      */
@@ -25,76 +21,66 @@ class QaJiraHoursRowBuilder
 
 
     public function __construct(
-        QaJiraComponentRepository $jiraComponentRepository,
         QaRequiredJiraComponentHoursRepository $jiraRequiredHoursRepository,
         QaJiraHoursDataProvider $jiraHoursDataProvider
     )
     {
-        $this->jiraComponentRepository = $jiraComponentRepository;
         $this->jiraRequiredHoursRepository = $jiraRequiredHoursRepository;
         $this->jiraHoursDataProvider = $jiraHoursDataProvider;
 
     }
 
     /**
-     * @param QaSkillRow $qaSkillRow
-     * @param QaSkillTest $qaSkillTest
+     * @param QaJiraHoursRow $qaJiraHoursRow
+     * @param QaJiraComponent $component
      * @return void
      */
-    public function buildTitle(QaSkillRow $qaSkillRow, QaSkillTest $qaSkillTest): void
+    public function buildTitle(QaJiraHoursRow $qaJiraHoursRow, QaJiraComponent $component): void
     {
-            $qaSkillRow->setTitle($qaSkillTest->getTitle());
+        $qaJiraHoursRow->setTitle($component->getTitle());
     }
     /**
      * @param PhpDeveloperLevel $level
-     * @param QaSkillRow $qaSkillRow
-     * @param QaSkillTest $qaSkillTest
+     * @param QaJiraHoursRow $qaJiraHoursRow
+     * @param QaJiraComponent $component
      * @return void
      */
-    public function buildRequiredMark(
+    public function buildRequiredHours(
         ?PhpDeveloperLevel $level,
-        QaSkillRow $qaSkillRow,
-        QaSkillTest $qaSkillTest): void
+        QaJiraHoursRow $qaJiraHoursRow,
+        QaJiraComponent $component): void
     {
-        $requiredMark = $this->requiredSkillTestMarkRepository->findOneBy(['test'=> $qaSkillTest, 'qaLevel' => $level]);
-        if ($requiredMark !== null) {
-            $qaSkillRow->setRequiredPoints($requiredMark->getRequiredPoints());
+        $requiredHours = $this->jiraRequiredHoursRepository->findOneBy(['jiraComponent'=> $component, 'qaLevel' => $level]);
+        if ($requiredHours !== null) {
+            $qaJiraHoursRow->setRequiredHours($requiredHours->getRequiredHours());
         }
     }
     /**
      * @param User $user
-     * @param QaSkillRow $qaSkillRow
-     * @param QaSkillTest $qaSkillTest
+     * @param QaJiraHoursRow $qaJiraHoursRow
+     * @param QaJiraComponent $component
      * @return void
      */
-    public function buildActualMark(User $user, QaSkillRow $qaSkillRow, QaSkillTest $qaSkillTest): void
+    public function buildActualHours(User $user, QaJiraHoursRow $qaJiraHoursRow, QaJiraComponent $component): void
     {
-        $actualMark = $this->actualSkillTestMarkRepository->findOneBy(['test' => $qaSkillTest, 'user' => $user]);
-        if ($actualMark !== null) {
-            $qaSkillRow->setActualPoints($actualMark->getActualPoints());
+        //Update this later with right using dataProvider logic
+        $actualHours = $this->jiraHoursDataProvider;
+        if ($actualHours !== null) {
+            $qaJiraHoursRow->setActualHours($actualHours->getActualHours());
         }
     }
-    /**
-     * @param QaSkillRow $qaSkillRow
-     * @param QaSkillTest $qaSkillTest
-     * @return void
-     */
-    public function buildTestLink(QaSkillRow $qaSkillRow, QaSkillTest $qaSkillTest): void
-    {
-            $qaSkillRow->setTestLink($qaSkillTest->getLink());
-    }
 
-    public function getResult(QaSkillTest $skillTest, User $user): QaSkillRow {
-        $qaSkillRow = new QaSkillRow();
-        $this->buildTitle($qaSkillRow, $skillTest);
-        $this->buildRequiredMark(
+
+    public function getResult(QaJiraComponent $component, User $user): QaJiraHoursRow {
+        $qaJiraHoursRow = new QaJiraHoursRow();
+        $this->buildTitle($qaJiraHoursRow, $component);
+        $this->buildRequiredHours(
             $user->getPhpDeveloperLevelRelation()->getPhpDeveloperLevel(),
-            $qaSkillRow,
-            $skillTest);
-        $this->buildActualMark($user, $qaSkillRow, $skillTest);
-        $this->buildTestLink($qaSkillRow, $skillTest);
+            $qaJiraHoursRow,
+            $component);
+        $this->buildActualHours($user, $qaJiraHoursRow, $component);
 
-        return $qaSkillRow;
+        return $qaJiraHoursRow;
     }
 }
 

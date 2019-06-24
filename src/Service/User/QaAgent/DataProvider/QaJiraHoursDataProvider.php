@@ -11,7 +11,7 @@ class QaJiraHoursDataProvider
     /*** @var float */
     private $requiredHours = 0;
 
-    public function setTitle(string $componentTitle): QaJiraHoursRow
+    public function setTitle(string $componentTitle): QaJiraHoursDataProvider
     {
         $this->title = $componentTitle;
         return $this;
@@ -19,7 +19,7 @@ class QaJiraHoursDataProvider
     public function getTitle(): string {
         return $this->title;
     }
-    public function setActualHours(float $hours): QaJiraHoursRow
+    public function setActualHours(float $hours): QaJiraHoursDataProvider
     {
         $this->actualHours = $hours;
         return $this;
@@ -27,7 +27,7 @@ class QaJiraHoursDataProvider
     public function getActualHours(): int {
         return $this->actualHours;
     }
-    public function setRequiredHours(float $hours): QaJiraHoursRow
+    public function setRequiredHours(float $hours): QaJiraHoursDataProvider
     {
         $this->requiredHours = $hours;
         return $this;

@@ -68,7 +68,7 @@ class QaSkillRowBuilder
      */
     public function buildActualMark(User $user, QaSkillRow $qaSkillRow, QaSkillTest $qaSkillTest): void
     {
-        $actualMark = $this->actualSkillTestMarkRepository->findOneBy(['test' => $qaSkillTest, 'user' => $user]);
+        $actualMark = $this->actualSkillTestMarkRepository->findOneBy(['qaSkillTest' => $qaSkillTest, 'user' => $user]);
         if ($actualMark !== null) {
             $qaSkillRow->setActualPoints($actualMark->getActualPoints());
         }

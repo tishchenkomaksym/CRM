@@ -32,7 +32,7 @@ class QaJiraHoursRow
         $this->requiredHours = $hours;
         return $this;
     }
-    public function getRequiredHours(): int
+    public function getRequiredHours(): float
     {
         return $this->requiredHours;
     }

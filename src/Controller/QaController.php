@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\QaAgent\Builder\QaTechnicalSkillDTOBuilder;
 use App\Service\UserInformationService;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -39,20 +40,25 @@ class QaController extends AbstractController
     /**
      * @Route("/qa/view/technical/skills", name="qa_view_technical_skills")
      * @param UserInformationService $service
+     * @param QaTechnicalSkillDTOBuilder $technicalSkillsBuilder
      * @return Response
      * @throws Exception
      */
     public function technicalSkills(
-        UserInformationService $service
-    )
+        UserInformationService $service,
+        QaTechnicalSkillDTOBuilder $technicalSkillsBuilder
+    ): Response
     {
         $user = $this->getUser();
         $qaManager = $service->getQaManager($user);
+        $skillTests = $technicalSkillsBuilder->getResult($user);
         return $this->render(
             'qa_view/technicalSkills.html.twig',
             [
                 'userLevel' => $service->getPhpUserLevel($user),
-                'qaManagers' => $qaManager
+                'qaManagers' => $qaManager,
+                'skillRows' => $skillTests->getSkillRows(),
+                'jiraHours' => $skillTests->getJiraHours(),
             ]
         );
     }

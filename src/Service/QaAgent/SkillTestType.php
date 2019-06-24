@@ -19,7 +19,7 @@ abstract class SkillTestType
      * @param string $typeShortName
      * @return string
      */
-    public static function getTypeName($typeShortName)
+    public static function getTypeName($typeShortName): string
     {
         if (!isset(static::$typeName[$typeShortName])) {
             return "Unknown type ($typeShortName)";
@@ -31,7 +31,7 @@ abstract class SkillTestType
     /**
      * @return array<string>
      */
-    public static function getAvailableTypes()
+    public static function getAvailableTypes(): array
     {
         return [
             self::TYPE_TECHNICAL,
