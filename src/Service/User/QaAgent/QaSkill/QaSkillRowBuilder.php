@@ -99,7 +99,7 @@ class QaSkillRowBuilder
     public function buildPassed(QaSkillRow $qaSkillRow): void
     {
         $actual = $qaSkillRow->getActualPoints();
-        $required = $qaSkillRow->getTitle();
+        $required = $qaSkillRow->getRequiredPoints();
 
         if($actual !== null && $required !== null &&
         $actual >= $required) {
