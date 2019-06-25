@@ -7,6 +7,7 @@ namespace App\Form\SDT;
 use App\Constants\FormType;
 use App\Entity\Sdt;
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\TextType;
 use Exception;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -52,6 +53,9 @@ class UserSdtType extends AbstractType
                 DateType::class,
                 [
                     'widget' => 'single_text',
+                    'html5' => false,
+                    'attr' => ['class' => 'datepicker'],
+                    'format' => 'yyyy-MM-dd',
                     $constraints => [new NotBlank(),],
                     FormType::LABEL => 'Starting date of your SDT',
                 ]
