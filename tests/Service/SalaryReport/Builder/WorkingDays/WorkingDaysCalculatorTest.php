@@ -66,7 +66,7 @@ class WorkingDaysCalculatorTest extends TestCase
         $baseWorkingDayCalculator = new BaseWorkingDaysCalculator($holidayService);
         $workingDaysCalculator = new CalendarWorkingDaysCalculator($baseWorkingDayCalculator);
         $salaryReportInfo = new SalaryReportInfo();
-        $date = new DateTimeImmutable('2019-07-28');
+        $date = new DateTimeImmutable('2019-06-28');
         $salaryReportInfo->setCreateDate($date);
         $result = $workingDaysCalculator->calculateForSpecialSubTeams($salaryReportInfo, $startDate);
         $this->assertEquals($days, $result);
@@ -75,13 +75,13 @@ class WorkingDaysCalculatorTest extends TestCase
     {
         return [
             [
-                5,
+                30,
                 new DateTime('2019-07-27'),
             ],
             [
-                31,
-                new DateTime('2019-06-29'),
-            ],
+                3,
+                new DateTime('2019-06-28'),
+            ]
         ];
     }
 }
