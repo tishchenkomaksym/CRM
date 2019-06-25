@@ -72,7 +72,7 @@ class BaseSalaryReportBuilder
         $dateForSdt = new DateTime();
         /** @noinspection NullPointerExceptionInspection */
         $dateForSdt->setTimestamp($newReport->getCreateDate()->getTimestamp());
-        $dateForSdt->setDate($dateForSdt->format('Y'), $dateForSdt->format('m'), (int)$dateForSdt->format('d') - 1);
+        $dateForSdt->setDate($dateForSdt->format('Y'), $dateForSdt->format('m'), (int)$dateForSdt->format('d') +1);
         $dateForSdt->setTime(23, 59, 59);
 
         /**
