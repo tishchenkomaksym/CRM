@@ -1,0 +1,18 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+
+    <p>
+        Дата выхода нового сотрудника назначена на: {{ candidateVacancyLink.dateStartWork|date('Y-m-d') }}.
+
+        Не забудьте ещё раз уточнить у кандидата, подходит ли ему эта дата. Если дата переносится по какой-либо
+        причине - у вас есть возможность изменить её
+        {% if candidateLink != null %}
+            <a href="{{ url('candidate_after_interview_start-date_edit',{'id': candidateLink.vacancyLink.vacancy.id, 'candidateLink': candidateLink.id}) }}">тут.</a>
+        {% else %}
+            <a href="{{ url('candidate_after_interview_start-date_edit',{'id': candidateVacancy.vacancy.id, 'candidateVacancy': candidateVacancy.id}) }}">тут.</a>
+        {% endif %}
+
+    </p>
+
+{% endblock %}

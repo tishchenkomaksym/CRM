@@ -6,10 +6,11 @@ namespace App\Command\CandidateVacancyLetters;
 
 use App\Repository\CandidateLinkRepository;
 use App\Repository\CandidateVacancyRepository;
+use App\Service\CandidateForms\CandidateForms;
 use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateLinkProvider;
 use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateLinkVacancyInterface;
 use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateVacancyProvider;
-use App\Service\Vacancy\Letters\CreateForDepartmentManagerAfterInterview\CreateForDepartmentManagerAfterInterview;
+use App\Service\Vacancy\Letters\CreateEmployeeStartDateForRecruiter\CreateEmployeeStartDateForRecruiterRemind;
 use Swift_Mailer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,9 +20,9 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class LetterAfterInterviewConsoleCommand extends Command
+class RemindLetterBeforeStartWorkConsoleCommand extends Command
 {
-    protected static $defaultName = 'app:mail-after-date-interview';
+    protected static $defaultName = 'app:mail-before-start-date-employee';
     /**
      * @var Environment
      */
@@ -38,12 +39,17 @@ class LetterAfterInterviewConsoleCommand extends Command
      * @var CandidateLinkRepository
      */
     private $candidateLinks;
+    /**
+     * @var CandidateForms
+     */
+    private $candidateForms;
 
 
     public function __construct(Environment $environment,
         Swift_Mailer $mailer,
         CandidateVacancyRepository $candidateVacancyRepository,
-        CandidateLinkRepository $candidateLinkRepository) {
+        CandidateLinkRepository $candidateLinkRepository,
+        CandidateForms $candidateForms) {
 
         parent::__construct();
 
@@ -51,6 +57,7 @@ class LetterAfterInterviewConsoleCommand extends Command
         $this->mailer = $mailer;
         $this->candidateVacancies = $candidateVacancyRepository;
         $this->candidateLinks = $candidateLinkRepository;
+        $this->candidateForms = $candidateForms;
     }
 
 
@@ -60,10 +67,11 @@ class LetterAfterInterviewConsoleCommand extends Command
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function assignDateLettersCandidateVacancyRemind(): void
+    public function startDateRemind(): void
     {
-        if (!empty($this->candidateVacancies->letterAfterInterview())) {
-            foreach ($this->candidateVacancies->letterAfterInterview() as $candidateVacancy) {
+        if (!empty($this->candidateVacancies->letterBeforeTwoDay())) {
+            foreach ($this->candidateVacancies->letterBeforeTwoDay() as $candidateVacancy) {
+                echo 'Yes message';
                 $candidateVacancyProvider = new CandidateVacancyProvider($candidateVacancy);
                 $this->messageBuilder($candidateVacancyProvider);
             }
@@ -75,14 +83,13 @@ class LetterAfterInterviewConsoleCommand extends Command
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function assignDateLettersCandidateLinkRemind(): void
+    public function startDateRemindCandidateLink(): void
     {
-        if (!empty($this->candidateLinks->letterAfterInterview())) {
-            foreach ($this->candidateLinks->letterAfterInterview() as $candidateLink) {
+        if (!empty($this->candidateLinks->letterBeforeTwoDay())) {
+            foreach ($this->candidateLinks->letterBeforeTwoDay() as $candidateLink) {
+                echo 'Yes message';
                 $candidateLinkProvider = new CandidateLinkProvider($candidateLink);
-
                 $this->messageBuilder($candidateLinkProvider);
-
             }
         }
     }
@@ -95,8 +102,8 @@ class LetterAfterInterviewConsoleCommand extends Command
      */
     public function messageBuilder(CandidateLinkVacancyInterface $candidateLinkVacancyProvider): void
     {
-        $messageBuilder = new CreateForDepartmentManagerAfterInterview($this->environment);
-        $this->mailer->send($messageBuilder->build($candidateLinkVacancyProvider));
+        $messageBuilder = new CreateEmployeeStartDateForRecruiterRemind($this->environment);
+        $this->mailer->send($messageBuilder->build($candidateLinkVacancyProvider, $this->candidateForms));
     }
 
     protected function configure():void
@@ -119,7 +126,7 @@ class LetterAfterInterviewConsoleCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->assignDateLettersCandidateLinkRemind();
-        $this->assignDateLettersCandidateVacancyRemind();
+        $this->startDateRemindCandidateLink();
+        $this->startDateRemind();
     }
 }

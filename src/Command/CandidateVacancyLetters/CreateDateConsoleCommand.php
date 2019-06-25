@@ -11,7 +11,6 @@ use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateVacancyProv
 use App\Service\Vacancy\Letters\CreateForDepartmentManagerSetTime\CreateForDepartmentManagerSetTimeRemind;
 use App\Service\Vacancy\Letters\CreateForRecruiterSetTime\CreateForRecruiterSetTimeRemind;
 use App\Service\Vacancy\Letters\CreateForViewerSetTime\CreateForViewerSetTimeRemind;
-use DateTime;
 use Swift_Mailer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -104,12 +103,11 @@ class CreateDateConsoleCommand extends Command
         }
         $messageBuilder = new CreateForDepartmentManagerSetTimeRemind($this->environment);
         $messageBuilderRecruiter = new CreateForRecruiterSetTimeRemind($this->environment);
-        echo 'YES MESSAGE ';
         $this->mailer->send($messageBuilder->build($candidateLinkVacancyProvider));
         $this->mailer->send($messageBuilderRecruiter->build($candidateLinkVacancyProvider));
     }
 
-    protected function configure()
+    protected function configure():void
     {
         $this
             // the short description shown while running "php bin/console list"
