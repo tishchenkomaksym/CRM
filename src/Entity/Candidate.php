@@ -32,11 +32,6 @@ class Candidate
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $position;
-
-    /**
      * @ORM\Column(type="string", length=255)
      */
     private $location;
@@ -124,9 +119,16 @@ class Candidate
     private $createdBy;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\EmployeeOnboardingInfo", mappedBy="candidate", cascade={"persist", "remove"})
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $employeeOnboardingInfo;
+    private $applyingPosition;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $currentPosition;
+
+
 
 
     public function __construct()
@@ -159,18 +161,6 @@ class Candidate
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getPosition(): ?string
-    {
-        return $this->position;
-    }
-
-    public function setPosition(?string $position): self
-    {
-        $this->position = $position;
 
         return $this;
     }
@@ -418,19 +408,26 @@ class Candidate
         return $this;
     }
 
-    public function getEmployeeOnboardingInfo(): ?EmployeeOnboardingInfo
+    public function getApplyingPosition(): ?string
     {
-        return $this->employeeOnboardingInfo;
+        return $this->applyingPosition;
     }
 
-    public function setEmployeeOnboardingInfo(EmployeeOnboardingInfo $employeeOnboardingInfo): self
+    public function setApplyingPosition(?string $applyingPosition): self
     {
-        $this->employeeOnboardingInfo = $employeeOnboardingInfo;
+        $this->applyingPosition = $applyingPosition;
 
-        // set the owning side of the relation if necessary
-        if ($this !== $employeeOnboardingInfo->getCandidate()) {
-            $employeeOnboardingInfo->setCandidate($this);
-        }
+        return $this;
+    }
+
+    public function getCurrentPosition(): ?string
+    {
+        return $this->currentPosition;
+    }
+
+    public function setCurrentPosition(?string $currentPosition): self
+    {
+        $this->currentPosition = $currentPosition;
 
         return $this;
     }

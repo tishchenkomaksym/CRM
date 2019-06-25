@@ -10,23 +10,34 @@ use App\Entity\CandidateManagerDeny;
 use App\Entity\CandidateOfferDeny;
 use App\Entity\Vacancy;
 use App\Form\Recruiting\ApproveAfterInterviewByDepartmentManagerType;
+use App\Form\Recruiting\AssignStartDateEmployeeType;
 use App\Form\Recruiting\CandidateContractConcludingType;
 use App\Form\Recruiting\CandidateDeclinePropositionType;
 use App\Form\Recruiting\DenyAfterInterviewByCandidateType;
 use App\Form\Recruiting\DenyAfterInterviewByDepartmentManagerType;
 use App\Form\Recruiting\DenyAfterInterviewNotSuitableSalaryType;
 use App\Form\Recruiting\RecruiterReportedType;
+use App\Service\CandidateForms\CandidateForms;
 use App\Service\Vacancy\CandidateApprove\DepartmentManagerApproveViewDTOBuilder;
 use App\Service\Vacancy\CandidateApproveAfterInterview\CreateNewDenyReasonCandidate;
 use App\Service\Vacancy\CandidateApproveAfterInterview\CreateNewDenyReasonDepartment;
 use App\Service\Vacancy\CandidateEditRelationToCandidateLinkToCandidateVacancy\NoDataException;
 use App\Service\Vacancy\CandidateApproveAfterInterview\FormValidatorsAfterInterview\CandidateManagerApprovalCheckExistence;
 use App\Service\Vacancy\CandidateApproveAfterInterview\FormValidatorsAfterInterview\CandidateManagerApprovalExistenceLogic;
+use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateLinkProvider;
+use App\Service\Vacancy\CreateCandidateVacancyLinkForLetter\CandidateVacancyProvider;
 use App\Service\Vacancy\Letters\CreateAfterInterviewApprove\CreateAfterInterviewApprove;
 use App\Service\Vacancy\Letters\CreateAfterInterviewApproveAcceptCandidate\CreateAfterInterviewApproveAcceptCandidate;
+use App\Service\Vacancy\Letters\CreateEmployeeStartDateForManager\CreateEmployeeStartDateForManager;
+use App\Service\Vacancy\Letters\CreateEmployeeStartDateForManager\CreateEmployeeStartDateForManagerEdit;
+use App\Service\Vacancy\Letters\CreateEmployeeStartDateForRecruiter\CreateEmployeeStartDateForRecruiter;
+use App\Service\Vacancy\Letters\CreateEmployeeStartDateForRecruiter\CreateEmployeeStartDateForRecruiterEdit;
+use App\Service\Vacancy\Letters\CreateEmployeeStartDateForViewer\CreateEmployeeStartDateForViewer;
+use App\Service\Vacancy\Letters\CreateEmployeeStartDateForViewer\CreateEmployeeStartDateForViewerEdit;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Swift_Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -46,6 +57,14 @@ class CandidateApproveAfterInterviewController extends AbstractController
     public const VACANCY_SHOW_CANDIDATES = 'vacancy_show_candidates';
 
     public const CHOICES = 'choices';
+
+    public const CANDIDATE = 'candidate';
+
+    public const CANDIDATE_VACANCY = 'candidateVacancy';
+
+    public const START_DATE_EMPLOYEE  = 'startDateEmployee';
+
+    public const CANDIDATE_LINK = 'candidateLink';
 
     /**
      * @var Environment
@@ -90,7 +109,6 @@ class CandidateApproveAfterInterviewController extends AbstractController
                 self::BUILDER => $builder
             ]);
     }
-
 
     /**
      * @IsGranted("ROLE_RECRUITING_DEPARTMENT_MANAGER")
@@ -163,7 +181,6 @@ class CandidateApproveAfterInterviewController extends AbstractController
                 self::VACANCY_ENTITY_IN_VIEW => $vacancy,
             ]);
     }
-
 
     /**
      * @IsGranted("ROLE_RECRUITING_DEPARTMENT_MANAGER")
@@ -429,6 +446,139 @@ class CandidateApproveAfterInterviewController extends AbstractController
         return $this->render('recruiting/vacancy/showRecruiter/recruiterAfterInterview/backfeedToCandidate.html.twig',
             [
                 'builder' => $builder,
+                'form' => $form->createView()
+            ]);
+    }
+
+    /**
+     * @IsGranted("ROLE_RECRUITER")
+     * @Route("/vacancy/candidate/after/interview/start-date/calendar/{id}", name="candidate_after_interview_start-date_calendar", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param Request $request
+     * @param CandidateForms $candidateForms
+     * @return Response
+     */
+    public function startDateEmployeeCalendar(Vacancy $vacancy, Request $request, CandidateForms $candidateForms): Response
+    {
+        $candidateVacancy = $candidateForms->candidateVacancyByIdSearch($request->get(self::CANDIDATE_VACANCY));
+        $candidateLink = $candidateForms->candidateLinkByIdSearch($request->get(self::CANDIDATE_LINK));
+        return $this->render('recruiting/vacancy/showRecruiter/startDateEmployee/startDateEmployeeCalendar.html.twig',
+            [
+                'vacancy' => $vacancy,
+                self::CANDIDATE_VACANCY => $candidateVacancy,
+                self::CANDIDATE_LINK => $candidateLink
+            ]);
+    }
+
+    /**
+     * @IsGranted("ROLE_RECRUITER")
+     * @Route("/vacancy/candidate/after/interview/start-date/new/{id}", name="candidate_after_interview_start-date_new", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param Request $request
+     * @param CandidateForms $candidateForms
+     * @param Swift_Mailer $mailer
+     * @return Response
+     * @throws LoaderError
+     * @throws NoDataException
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function setStartDateEmployee(Vacancy $vacancy,
+                                        Request $request,
+                                        CandidateForms $candidateForms,
+                                        Swift_Mailer $mailer): Response
+    {
+        $form = $this->createForm(AssignStartDateEmployeeType::class);
+        $form->handleRequest($request);
+        $entityManager = $this->getDoctrine()->getManager();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($candidateForms->candidateLinkByIdSearch($request->get(self::CANDIDATE_LINK)) !== null){
+                $candidateVacancy = $candidateForms->candidateLinkByIdSearch($request->get(self::CANDIDATE_LINK));
+                $candidateVacancyProvider = new CandidateLinkProvider($candidateVacancy);
+            }else{
+                $candidateVacancy = $candidateForms->candidateVacancyByIdSearch($request->get(self::CANDIDATE_VACANCY));
+                $candidateVacancyProvider = new CandidateVacancyProvider($candidateVacancy);
+            }
+            if ($candidateVacancy === null){
+                throw new NoDataException('CandidateVacancyLink not found');
+            }
+
+            $entityManager->persist($candidateVacancy->setDateStartWork($form->get(self::START_DATE_EMPLOYEE)->getData()));
+            if ($vacancy->getVacancyViewerUser() !== null){
+                $messageBuilderViewer = new CreateEmployeeStartDateForViewer($this->environment);
+                $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
+            }
+            $messageBuilder = new CreateEmployeeStartDateForManager($this->environment);
+            $messageBuilderRecruiter = new CreateEmployeeStartDateForRecruiter($this->environment);
+            $mailer->send($messageBuilder->build($candidateVacancyProvider));
+            $mailer->send($messageBuilderRecruiter->build($candidateVacancyProvider));
+            $entityManager->flush();
+            return $this->redirectToRoute(self::VACANCY_SHOW_CANDIDATES, [
+                'id' => $vacancy->getId()
+            ]);
+        }
+        return $this->render('recruiting/vacancy/showRecruiter/startDateEmployee/newStartDateEmployee.html.twig',
+            [
+                'form' => $form->createView()
+            ]);
+    }
+
+    /**
+     * @IsGranted("ROLE_RECRUITER")
+     * @Route("/vacancy/candidate/after/interview/start-date/edit/{id}", name="candidate_after_interview_start-date_edit", methods={"GET","POST"})
+     * @param Vacancy $vacancy
+     * @param Request $request
+     * @param CandidateForms $candidateForms
+     * @param Swift_Mailer $mailer
+     * @return RedirectResponse|Response
+     * @throws LoaderError
+     * @throws NoDataException
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function editStartDateEmployee(Vacancy $vacancy,
+        Request $request,
+        CandidateForms $candidateForms,
+        Swift_Mailer $mailer):Response
+    {
+        $candidateVacancy = $candidateForms->candidateVacancyByIdSearch($request->get(self::CANDIDATE_VACANCY));
+        $candidateLink = $candidateForms->candidateLinkByIdSearch($request->get(self::CANDIDATE_LINK));
+
+        $form = $this->createForm(AssignStartDateEmployeeType::class);
+        if ($candidateVacancy !== null){
+            $form->get(self::START_DATE_EMPLOYEE)->setData($candidateVacancy->getDateStartWork());
+        }elseif($candidateLink !== null){
+            $form->get(self::START_DATE_EMPLOYEE)->setData($candidateLink->getDateStartWork());
+        }else{
+            throw new NoDataException('CandidateLinkVacancy not found');
+        }
+        $form->handleRequest($request);
+        $entityManager = $this->getDoctrine()->getManager();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($candidateLink !== null){
+                $candidateVacancyProvider = new CandidateLinkProvider($candidateLink);
+                $entityManager->persist($candidateLink->setDateStartWork($form->get(self::START_DATE_EMPLOYEE)->getData()));
+            }else{
+                $candidateVacancyProvider = new CandidateVacancyProvider($candidateVacancy);
+                $entityManager->persist($candidateVacancy->setDateStartWork($form->get(self::START_DATE_EMPLOYEE)->getData()));
+            }
+            if ($vacancy->getVacancyViewerUser() !== null){
+                $messageBuilderViewer = new CreateEmployeeStartDateForViewerEdit($this->environment);
+                $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
+            }
+            $messageBuilder = new CreateEmployeeStartDateForManagerEdit($this->environment);
+            $messageBuilderRecruiter = new CreateEmployeeStartDateForRecruiterEdit($this->environment);
+            $mailer->send($messageBuilder->build($candidateVacancyProvider));
+            $mailer->send($messageBuilderRecruiter->build($candidateVacancyProvider));
+            $entityManager->flush();
+            return $this->redirectToRoute(self::VACANCY_SHOW_CANDIDATES, [
+                'id' => $vacancy->getId()
+            ]);
+        }
+        return $this->render('recruiting/vacancy/showRecruiter/startDateEmployee/editStartDateEmployee.html.twig',
+            [
                 'form' => $form->createView()
             ]);
     }

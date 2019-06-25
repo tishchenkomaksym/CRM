@@ -26,7 +26,7 @@ class CandidateManagerApprovalCheckExistenceValidator extends ConstraintValidato
      * @param Constraint $constraint
      * @return void
      */
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint):void
     {
         if (!$constraint instanceof CandidateManagerApprovalCheckExistence) {
             throw new UnexpectedTypeException($constraint, CandidateManagerApprovalCheckExistence::class);
@@ -40,7 +40,6 @@ class CandidateManagerApprovalCheckExistenceValidator extends ConstraintValidato
                 $this->context->buildViolation($constraint->message)
                     ->addViolation();
             }
-
 
     }
 }

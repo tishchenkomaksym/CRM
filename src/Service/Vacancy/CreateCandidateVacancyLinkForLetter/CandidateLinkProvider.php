@@ -6,6 +6,7 @@ namespace App\Service\Vacancy\CreateCandidateVacancyLinkForLetter;
 
 use App\Entity\Candidate;
 use App\Entity\CandidateLink;
+use App\Entity\CandidateManagerApproval;
 use App\Entity\Vacancy;
 use App\Service\Vacancy\CandidateEditRelationToCandidateLinkToCandidateVacancy\NoDataException;
 use DateTimeImmutable;
@@ -140,5 +141,15 @@ class CandidateLinkProvider implements CandidateLinkVacancyInterface
             throw new NoDataException('CandidateLink CreatedBy not Found');
         }
         return $this->candidateLink->getCreatedBy()->getEmail();
+    }
+
+    public function candidateManagerApproval():CandidateManagerApproval
+    {
+        return $this->candidateLink->getCandidateManagerApproval();
+    }
+
+    public function dateStartWork(): DateTimeInterface
+    {
+        return $this->candidateLink->getDateStartWork();
     }
 }

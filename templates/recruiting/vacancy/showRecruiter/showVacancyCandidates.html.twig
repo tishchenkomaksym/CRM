@@ -32,7 +32,7 @@
                 <th>Photo</th>
                 <th>Name</th>
                 <th>Surname</th>
-                <th>Position</th>
+                <th>Applying position</th>
                 <th>Location</th>
                 <th>Phone</th>
                 <th>Request Status</th>
@@ -69,7 +69,7 @@
                         </td>
                         <td>
                             <a href="{{ path('candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
-                                {{ candidateVacancy.candidate.position }}
+                                {{ candidateVacancy.candidate.applyingPosition }}
                             </a>
                         </td>
                         <td>
@@ -142,6 +142,15 @@
                                         Edit interview time
                                     {% endif %}
                                 </a>
+                            {% elseif candidateVacancy.candidateStatus == 'Contract Concluding' %}
+
+                                    <a class="btn btn-primary" href="{{ path('candidate_after_interview_start-date_calendar', {'id': vacancy.id, 'candidateVacancy': candidateVacancy.id}) }}">
+                                        {% if candidateVacancy.dateStartWork == null %}
+                                            Set Start Date for new Employee
+                                        {% else %}
+                                            Edit Set Start Date for new Employee
+                                        {% endif %}
+                                    </a>
                             {% endif %}
                         </th>
                     </tr>
@@ -176,7 +185,7 @@
                             </td>
                             <td>
                                 <a href="{{ path('candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
-                                    {{ candidateLink.candidate.position }}
+                                    {{ candidateLink.candidate.applyingPosition }}
                                 </a>
                             </td>
                             <td>
@@ -227,14 +236,14 @@
                                     </span>
                                 {% elseif candidateLink.candidateStatus == 'Closed by recrutier' or candidateLink.candidateStatus == 'Closed by department manager' and candidateLink.candidateManagerDeny is not defined %}
                                 {% elseif candidateLink.candidateStatus == 'Interview' %}
-                                    <a href="{{ path('candidate_after_interview_view_recruiter', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
+                                    <a class="btn btn-primary" href="{{ path('candidate_after_interview_view_recruiter', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
                                         Interview
                                     </a>
                                 {% elseif candidateLink.candidateManagerDeny is not empty %}
                                     {% if candidateLink.candidateStatus == 'Closed by department manager' and candidateLink.candidateManagerDeny.recruiterReported is null %}
                                         <a class="btn btn-primary" href="{{ path('candidate_after_interview_candidate_backfeed', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
                                             Interview
-                                        </a>FK_E85A1533AD5BEB7
+                                        </a>
                                     {% endif %}
                                 {% elseif candidateLink.candidateStatus == 'Approved for the interview' %}
                                     <a class="btn btn-primary" href="{{ path('interview_assign_data', {'id':vacancy.id, 'candidateLink': candidateLink.id} ) }}">
@@ -242,6 +251,14 @@
                                             Set interview time
                                         {% else %}
                                             Edit interview time
+                                        {% endif %}
+                                    </a>
+                                {% elseif candidateLink.candidateStatus == 'Contract Concluding' %}
+                                    <a class="btn btn-primary" href="{{ path('candidate_after_interview_start-date_calendar', {'id': vacancy.id, 'candidateLink': candidateLink.id}) }}">
+                                        {% if candidateLink.dateStartWork == null %}
+                                            Set Start Date for new Employee
+                                        {% else %}
+                                            Edit Set Start Date for new Employee
                                         {% endif %}
                                     </a>
                                 {% endif %}
