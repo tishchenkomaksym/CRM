@@ -79,4 +79,19 @@ class CandidateLinkRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function changeCandidateStatus()
+    {
+        $date = new DateTime();
+        $date->setTime(00, 00,00);
+        $date2 = new DateTime();
+        $date2->setTime(23, 59,00);
+        return $this->createQueryBuilder('c')
+            ->where('c.dateInterview IS NOT NULL')
+            ->andWhere('c.dateInterview BETWEEN :from AND :to')
+            ->setParameter('from', $date)
+            ->setParameter('to', $date2)
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Datetime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -175,12 +176,12 @@ class UserInfo
         return $this;
     }
 
-    public function getBirthDay(): ?\Datetime
+    public function getBirthDay(): ?Datetime
     {
         return $this->birthDay;
     }
 
-    public function setBirthDay(\Datetime $birthDay): self
+    public function setBirthDay(Datetime $birthDay): self
     {
         $this->birthDay = $birthDay;
 

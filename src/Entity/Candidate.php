@@ -123,6 +123,11 @@ class Candidate
      */
     private $createdBy;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\EmployeeOnboardingInfo", mappedBy="candidate", cascade={"persist", "remove"})
+     */
+    private $employeeOnboardingInfo;
+
 
     public function __construct()
     {
@@ -409,6 +414,23 @@ class Candidate
     public function setCreatedBy(?User $createdBy): self
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getEmployeeOnboardingInfo(): ?EmployeeOnboardingInfo
+    {
+        return $this->employeeOnboardingInfo;
+    }
+
+    public function setEmployeeOnboardingInfo(EmployeeOnboardingInfo $employeeOnboardingInfo): self
+    {
+        $this->employeeOnboardingInfo = $employeeOnboardingInfo;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $employeeOnboardingInfo->getCandidate()) {
+            $employeeOnboardingInfo->setCandidate($this);
+        }
 
         return $this;
     }
