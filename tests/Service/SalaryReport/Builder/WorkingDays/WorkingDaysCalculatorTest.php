@@ -52,4 +52,36 @@ class WorkingDaysCalculatorTest extends TestCase
             ],
         ];
     }
+    /**
+     * @dataProvider dataProviderTestCalculateForSpecialSubTeams
+     * @param DateTime $startDate
+     * @param int $days
+     * @throws Exception
+     */
+    public function testCalculateForSpecialSubTeams(int $days, DateTime $startDate) : void
+    {
+        /** @var  HolidayService|MockObject $holidayService */
+        $holidayService = $this->createMock(HolidayService::class);
+        $holidayService->method('getHolidayBetweenDate')->willReturn([]);
+        $baseWorkingDayCalculator = new BaseWorkingDaysCalculator($holidayService);
+        $workingDaysCalculator = new CalendarWorkingDaysCalculator($baseWorkingDayCalculator);
+        $salaryReportInfo = new SalaryReportInfo();
+        $date = new DateTimeImmutable('2019-07-28');
+        $salaryReportInfo->setCreateDate($date);
+        $result = $workingDaysCalculator->calculateForSpecialSubTeams($salaryReportInfo, $startDate);
+        $this->assertEquals($days, $result);
+    }
+    public function dataProviderTestCalculateForSpecialSubTeams()
+    {
+        return [
+            [
+                5,
+                new DateTime('2019-07-27'),
+            ],
+            [
+                30,
+                new DateTime('2019-06-29'),
+            ],
+        ];
+    }
 }
