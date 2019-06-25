@@ -93,4 +93,5 @@ class CandidateVacancyRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
 }
