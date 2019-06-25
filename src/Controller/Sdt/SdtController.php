@@ -167,15 +167,13 @@ class SdtController extends AbstractController
         }
 
         $department = $departmentRepository->findOneBy(['id' => $this->getUser()->getTeam()->getDepartment()]);
-        if ($department !== null) {
-            $department = strtolower($department->getName());
-        }
         $calendarEventItemCollection = new CalendarEventItemCollection();
+
         foreach ($sdtCollection->getItems() as $sdt) {
             $sdtUsersTeam = $teamRepository->findOneBy(['id' => $sdt->getUser()->getTeam()]);
-            if ($sdtUsersTeam !== null && $department !== null) {
-                $sdtUsersTeam = strtolower($sdtUsersTeam->getName());
-                if($departmentViewRules->findOneBy(array('department' => $department, 'team' => $sdtUsersTeam))) {
+            if ($sdtUsersTeam !== null &&
+                $department !== null &&
+                $departmentViewRules->findOneBy(array('department' => $department, 'team' => $sdtUsersTeam))) {
                     $calendarEventItemCollection->add(
                         (new SdtCalendarEventItemBuilder(
                             $holidayService,
@@ -184,9 +182,9 @@ class SdtController extends AbstractController
                             $userSubTeamDateCalculator
                         ))->build($sdt, $this->getUser(), $userInfoRepository)
                     );
-                }
             }
         }
+
         foreach ($holidayService->getHolidays() as $holiday) {
             $calendarEventItemCollection->add(
                 (new HolidayCalendarEventItemBuilder(
