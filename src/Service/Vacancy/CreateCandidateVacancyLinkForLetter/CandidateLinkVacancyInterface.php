@@ -31,4 +31,8 @@ interface CandidateLinkVacancyInterface
     public function recruiterEmail();
 
     public function dateInterview();
+
+    public function dateStartWork();
+
+    public function candidateManagerApproval();
 }

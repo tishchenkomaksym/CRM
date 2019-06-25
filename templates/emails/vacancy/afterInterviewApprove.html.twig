@@ -7,7 +7,7 @@
         заключить контракт с
         {% if candidateVacancy.candidateLink != null %}
             {{ candidateVacancy.candidateLink.candidate.surname }} {{ candidateVacancy.candidateLink.candidate.name }}
-            на позицию {{ candidateVacancy.candidateLink.vacancy.position }}.
+            на позицию {{ candidateVacancy.candidateLink.vacancyLink.vacancy.position }}.
         {% elseif candidateVacancy.candidateVacancy != null  %}
             {{ candidateVacancy.candidateVacancy.candidate.surname }} {{ candidateVacancy.candidateVacancy.candidate.name }}
             на позицию {{ candidateVacancy.candidateVacancy.vacancy.position }}.

@@ -129,6 +129,11 @@ class CandidateVacancy
      */
     private $candidateManagerDeny;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $dateStartWork;
+
 
     public function __construct()
     {
@@ -429,6 +434,18 @@ class CandidateVacancy
         if ($newCandidateVacancy !== $candidateManagerDeny->getCandidateVacancy()) {
             $candidateManagerDeny->setCandidateVacancy($newCandidateVacancy);
         }
+
+        return $this;
+    }
+
+    public function getDateStartWork(): ?\DateTimeInterface
+    {
+        return $this->dateStartWork;
+    }
+
+    public function setDateStartWork(?\DateTimeInterface $dateStartWork): self
+    {
+        $this->dateStartWork = $dateStartWork;
 
         return $this;
     }

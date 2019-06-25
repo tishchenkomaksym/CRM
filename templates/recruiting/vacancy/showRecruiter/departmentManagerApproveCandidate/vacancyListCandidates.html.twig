@@ -18,7 +18,7 @@
             <th>Photo</th>
             <th>Name</th>
             <th>Surname</th>
-            <th>Position</th>
+            <th>Applying Position</th>
             <th>Location</th>
             <th>Phone</th>
             <th>Request Status</th>
@@ -54,7 +54,7 @@
                     </td>
                     <td>
                         <a href="{{ path('approved_interview_candidate_show', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id}) }}">
-                            {{ candidateVacancy.candidate.position }}
+                            {{ candidateVacancy.candidate.applyingPosition }}
                         </a>
                     </td>
                     <td>
@@ -148,7 +148,7 @@
                         </td>
                         <td>
                             <a href="{{ path('approved_interview_candidate_show', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id}) }}">
-                                {{ candidateLink.candidate.position }}
+                                {{ candidateLink.candidate.applyingPosition }}
                             </a>
                         </td>
                         <td>

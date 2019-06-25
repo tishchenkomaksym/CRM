@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Request</a></li>
+{#            <li class="breadcrumb-item"><a href="{{ path('vacancy_show_candidates', {'id': builder.vacancy.id}) }}">View Request</a></li>#}
+            <li class="breadcrumb-item">Interview</li>
+        </ol>
+    </nav
+{% endblock %}
+{% block menu %}
+    <ul class="list-group list-group-flush">
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('vacancy_index') }}">Request</a></li>
+        {% endif %}
+        {% if is_granted('ROLE_RECRUITING_DEPARTMENT_MANAGER') or is_granted('ROLE_VACANCY_VIEWER_USER') %}
+            <li class="list-group-item"><a href="{{ path('candidate_index') }}">Candidate Database</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+{% block body %}
+    <section>
+        <table class="table" style="table-layout: fixed">
+            <tbody>
+            <tr>
+                <th>Request#</th>
+                <td>{{ vacancy.id }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+            </tr>
+            <tr>
+                <th>By</th>
+                <td>{{ vacancy.createdBy }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div>
+            <div class="alert alert-danger text-center">
+                <p>Status: <span>
+                        {% if candidateVacancy != null %}
+                            {{ candidateVacancy.candidateStatus }}
+                        {% else %}
+                            {{ candidateLink.candidateStatus }}
+                        {% endif %}
+                    </span>
+                </p>
+            </div>
+        </div>
+        <p>
+            Вам необходимо утвердить дату выхода нового сотрудника с кандидатом, менеджером отдела (создавшим заявку),
+            бухгалтерией, и отделом Admins. После согласования удобной для всех даты выхода нового сотрудника введите
+            эту дату в форму ниже. У Вас есть возможность возвращаться к этому шагу и редактировать дату выхода нового
+            сотрудника, на случай если она перенесется по каким-либо причинам. После добавления/редактирования даты
+            выхода нового сотрудника менеджеру отдела придёт письмо с датой выхода сотрудника
+        </p>
+        {% if candidateVacancy != null %}
+            {% if candidateVacancy.dateStartWork == null %}
+                <a class="btn btn-primary" href="{{ path('candidate_after_interview_start-date_new', {'id': vacancy.id, 'candidateVacancy': candidateVacancy.id}) }}">
+                    Create new
+                </a>
+            {% else %}
+                <a class="btn btn-primary" href="{{ path('candidate_after_interview_start-date_edit', {'id': vacancy.id, 'candidateVacancy': candidateVacancy.id}) }}">
+                    Edit
+                </a>
+            {% endif %}
+        {% else %}
+            {% if candidateLink.dateStartWork == null %}
+                <a class="btn btn-primary" href="{{ path('candidate_after_interview_start-date_new', {'id': vacancy.id, 'candidateLink': candidateLink.id}) }}">
+                    Create new
+                </a>
+            {% else %}
+                <a class="btn btn-primary" href="{{ path('candidate_after_interview_start-date_edit', {'id': vacancy.id, 'candidateLink': candidateLink.id}) }}">
+                    Edit
+                </a>
+            {% endif %}
+        {% endif %}
+    </section>
+    <div id="calendar"></div>
+    <div class="pt-2 text-center">
+        <a class="btn btn-warning" href="{{ path('vacancy_show_candidates', {'id': vacancy.id}) }}">Back to candidates</a>
+    <script>
+        $('#calendar').fullCalendar({ displayEventTime: false});
+    </script>
+{% endblock %}
