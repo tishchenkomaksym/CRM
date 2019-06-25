@@ -79,7 +79,7 @@ class WorkingDaysCalculatorTest extends TestCase
                 new DateTime('2019-07-27'),
             ],
             [
-                30,
+                31,
                 new DateTime('2019-06-29'),
             ],
         ];
