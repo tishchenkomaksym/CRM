@@ -360,26 +360,21 @@ class CandidateApproveByDepartmentManagerController extends AbstractController
                 $candidateVacancy->setConfRoom($form->get(self::CONF_ROOM)->getData());
                 $entityManager->persist($candidateVacancy);
                 $candidateVacancyProvider = new CandidateVacancyProvider($candidateVacancy);
-                if ($vacancy->getVacancyViewerUser() !== null){
-                    $messageBuilderViewer = new CreateForViewerSetTime($this->environment);
-                    $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
-                }
-                $messageBuilder = new CreateForDepartmentManagerSetTime($this->environment);
-                $messageBuilderRecruiter = new CreateForRecruiterSetTime( $this->environment);
+
             }elseif($candidateLink !== null){
                 $candidateLink->setDateInterview($form->get(self::DATE_INTERVIEW)->getData());
                 $candidateLink->setConfRoom($form->get(self::CONF_ROOM)->getData());
                 $entityManager->persist($candidateLink);
                 $candidateVacancyProvider = new CandidateLinkProvider($candidateLink);
-                if ($vacancy->getVacancyViewerUser() !== null){
-                    $messageBuilderViewer = new CreateForViewerSetTime($this->environment);
-                    $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
-                }
-                $messageBuilder = new CreateForDepartmentManagerSetTime( $this->environment);
-                $messageBuilderRecruiter = new CreateForRecruiterSetTime($this->environment);
             }else{
                 throw new NoDataException(self::CANDIDATE_LINK_VACANCY_NOT_FOUND);
             }
+            if ($vacancy->getVacancyViewerUser() !== null){
+                $messageBuilderViewer = new CreateForViewerSetTime($this->environment);
+                $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
+            }
+            $messageBuilder = new CreateForDepartmentManagerSetTime($this->environment);
+            $messageBuilderRecruiter = new CreateForRecruiterSetTime( $this->environment);
             $mailer->send($messageBuilder->build($candidateVacancyProvider));
             $mailer->send($messageBuilderRecruiter->build($candidateVacancyProvider));
 
@@ -436,26 +431,20 @@ class CandidateApproveByDepartmentManagerController extends AbstractController
                 $candidateVacancy->setConfRoom($form->get(self::CONF_ROOM)->getData());
                 $entityManager->persist($candidateVacancy);
                 $candidateVacancyProvider = new CandidateVacancyProvider($candidateVacancy);
-                if ($vacancy->getVacancyViewerUser() !== null){
-                    $messageBuilderViewer = new CreateForViewerSetTime($this->environment);
-                    $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
-                }
-                $messageBuilder = new CreateForDepartmentManagerSetTimeEdit( $this->environment);
-                $messageBuilderRecruiter = new CreateForRecruiterSetTimeEdit( $this->environment);
             }elseif($candidateLink !== null){
                 $candidateLink->setDateInterview($form->get(self::DATE_INTERVIEW)->getData());
                 $candidateLink->setConfRoom($form->get(self::CONF_ROOM)->getData());
                 $entityManager->persist($candidateLink);
                 $candidateVacancyProvider = new CandidateLinkProvider($candidateLink);
-                if ($vacancy->getVacancyViewerUser() !== null){
-                    $messageBuilderViewer = new CreateForViewerSetTimeEdit($this->environment);
-                    $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
-                }
-                $messageBuilder = new CreateForDepartmentManagerSetTimeEdit( $this->environment);
-                $messageBuilderRecruiter = new CreateForRecruiterSetTimeEdit( $this->environment);
             }else{
                 throw new NoDataException(self::CANDIDATE_LINK_VACANCY_NOT_FOUND);
             }
+            if ($vacancy->getVacancyViewerUser() !== null){
+                $messageBuilderViewer = new CreateForViewerSetTimeEdit($this->environment);
+                $mailer->send($messageBuilderViewer->build($candidateVacancyProvider));
+            }
+            $messageBuilder = new CreateForDepartmentManagerSetTimeEdit($this->environment);
+            $messageBuilderRecruiter = new CreateForRecruiterSetTimeEdit($this->environment);
             $mailer->send($messageBuilder->build($candidateVacancyProvider));
             $mailer->send($messageBuilderRecruiter->build($candidateVacancyProvider));
 

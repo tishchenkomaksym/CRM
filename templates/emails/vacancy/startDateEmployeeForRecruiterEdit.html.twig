@@ -1,0 +1,12 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+
+    <p>
+        Вы изменили дату выхода сотрудника  ЧП {{ candidateVacancy.candidate.name }} {{ candidateVacancy.candidate.surname }}
+        на позицию {{ candidateVacancy.vacancy.position }}.
+
+        Новая дата выхода: {{ candidateVacancy.dateStartWork|date('Y-m-d') }}
+    </p>
+
+{% endblock %}

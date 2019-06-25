@@ -1,0 +1,15 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+
+    <p>
+        Настоящим письмом сообщаю, что после согласования с ЧП {{ candidateVacancy.candidate.name }} {{ candidateVacancy.candidate.surname }},
+        была назначена точная дата его выхода на позицию {{ candidateVacancy.vacancy.position }} в команду {{ candidateVacancy.candidateManagerApproval.team.name }},
+         офис {{ candidateVacancy.candidateManagerApproval.team.department.office.name }}.
+
+        Дата выхода: {{ candidateVacancy.dateStartWork|date('Y-m-d') }}
+
+        Оформление всех необходимых документов для заключения контракта а также процесс подготовки рабочего места были начаты.
+    </p>
+
+{% endblock %}
