@@ -114,6 +114,11 @@ class CandidateLink
      */
     private $candidateManagerDeny;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $dateStartWork;
+
 
 
     public function getId(): ?int
@@ -361,6 +366,18 @@ class CandidateLink
         if ($newCandidateLink !== $candidateManagerDeny->getCandidateLink()) {
             $candidateManagerDeny->setCandidateLink($newCandidateLink);
         }
+
+        return $this;
+    }
+
+    public function getDateStartWork(): ?\DateTimeInterface
+    {
+        return $this->dateStartWork;
+    }
+
+    public function setDateStartWork(?\DateTimeInterface $dateStartWork): self
+    {
+        $this->dateStartWork = $dateStartWork;
 
         return $this;
     }

@@ -79,4 +79,19 @@ class CandidateVacancyRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function letterBeforeTwoDay()
+    {
+        $date = new DateTime();
+        $date->modify('+2 days');
+        $date->setTime(00, 00,00);
+        $date2 = new DateTime();
+        $date2->modify('+2 days');
+        $date2->setTime(23, 59,00);
+        return $this->createQueryBuilder('c')
+            ->where('c.dateStartWork BETWEEN :from AND :to')
+            ->setParameter('from', $date)
+            ->setParameter('to', $date2)
+            ->getQuery()
+            ->getResult();
+    }
 }
