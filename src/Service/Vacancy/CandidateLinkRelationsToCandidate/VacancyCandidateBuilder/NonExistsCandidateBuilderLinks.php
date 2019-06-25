@@ -49,9 +49,9 @@ class NonExistsCandidateBuilderLinks
             ->setName($name)
             ->setSurname($surname)
             ->setPhone('')
-            ->setPosition('')
             ->setLocation('')
             ->setEmail('')
+            ->setCreatedBy($this->user)
             ->setCreatedAt(new DateTimeImmutable('now'));
 
         $candidateLink

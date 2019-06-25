@@ -46,7 +46,8 @@ class CandidateType extends AbstractType
 
             ->add('name')
             ->add('surname')
-            ->add('position')
+            ->add('currentPosition')
+            ->add('applyingPosition')
             ->add('location')
             ->add('vacancy', EntityType::class, [
                     'class' => Vacancy::class,

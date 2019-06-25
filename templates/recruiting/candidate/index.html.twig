@@ -11,7 +11,7 @@
                 <th>Photo</th>
                 <th>Name</th>
                 <th>Surname</th>
-                <th>Position</th>
+                <th>Applying position</th>
                 <th>Location</th>
                 <th>Phone</th>
             </tr>
@@ -38,7 +38,7 @@
 
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.name }}</a></td>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.surname }}</a></td>
-                <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.position }}</a></td>
+                <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.applyingPosition }}</a></td>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.location }}</a></td>
                 <td><a href="{{ path('candidate_show', {'id': candidate.id}) }}">{{ candidate.phone }}</a></td>
             </tr>

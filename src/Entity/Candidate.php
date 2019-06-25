@@ -32,11 +32,6 @@ class Candidate
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $position;
-
-    /**
      * @ORM\Column(type="string", length=255)
      */
     private $location;
@@ -123,6 +118,18 @@ class Candidate
      */
     private $createdBy;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $applyingPosition;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $currentPosition;
+
+
+
 
     public function __construct()
     {
@@ -154,18 +161,6 @@ class Candidate
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getPosition(): ?string
-    {
-        return $this->position;
-    }
-
-    public function setPosition(?string $position): self
-    {
-        $this->position = $position;
 
         return $this;
     }
@@ -409,6 +404,30 @@ class Candidate
     public function setCreatedBy(?User $createdBy): self
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getApplyingPosition(): ?string
+    {
+        return $this->applyingPosition;
+    }
+
+    public function setApplyingPosition(?string $applyingPosition): self
+    {
+        $this->applyingPosition = $applyingPosition;
+
+        return $this;
+    }
+
+    public function getCurrentPosition(): ?string
+    {
+        return $this->currentPosition;
+    }
+
+    public function setCurrentPosition(?string $currentPosition): self
+    {
+        $this->currentPosition = $currentPosition;
 
         return $this;
     }
