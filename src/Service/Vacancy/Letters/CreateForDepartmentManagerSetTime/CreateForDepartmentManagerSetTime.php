@@ -34,8 +34,8 @@ class CreateForDepartmentManagerSetTime
 
         $email = $candidateVacancyStrategy->departmentManagerEmail();
 
-        $letter = new Swift_Message( 'Interview date and time for candidate' . $candidateVacancyStrategy->candidate()->getName() .
-            $candidateVacancyStrategy->candidate()->getSurname() . 'under Vacancy#' . $candidateVacancyStrategy->vacancy()->getId() . 'have been set');
+        $letter = new Swift_Message( 'Interview date and time for candidate ' . $candidateVacancyStrategy->candidate()->getName() .
+            $candidateVacancyStrategy->candidate()->getSurname() . 'under Vacancy#' . $candidateVacancyStrategy->vacancy()->getId() . ' have been set');
         $letter
             ->setFrom(getenv('LOCAL_EMAIL'))
             ->setTo($email)

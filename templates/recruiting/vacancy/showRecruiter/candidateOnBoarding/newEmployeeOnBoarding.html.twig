@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Request</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">View Request</li>
+            <li class="breadcrumb-item active" aria-current="page">
+                New employee onboarding
+            </li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block body %}
+
+    <table class="table" style="table-layout: fixed">
+        <tbody>
+        <tr>
+            <th>Request#</th>
+            <td>{{ vacancy.id }}</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+        </tr>
+        <tr>
+            <th>By</th>
+            <td>{{ vacancy.createdBy }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div>
+        <p class="alert alert-secondary">
+            Status: {{ vacancy.status }}
+        </p>
+    </div>
+    <div>
+        В день выхода нового сотрудника рекрутёр обязан:
+    </div>
+    <ul>
+        <li>
+            встретить нового сотрудника в назначенное время у ворот офиса
+        </li>
+        <li>
+            провести нового сотрудника внутрь офиса
+        </li>
+        <li>
+            показать новому сотруднику офис (все уборные, кухню и как и чем на ней можно пользоваться)
+        </li>
+        <li>
+            провести инструктаж
+        </li>
+        <li>
+            завести в кабинет, в котором будет работать новый сотрудник
+        </li>
+        <li>
+            познакомить нового сотрудника с его командой и менеджером
+        </li>
+        <li>
+            Отправить новому сотруднику на почту все необходимые для его ввода документы
+        </li>
+        <li>
+            Отправить письмо о выходе нового сотрудника на почту соответствующему отделу и оповестить коллег в скайпе
+            (с указанием Full name нового сотрудника, его должности, отдела куда выходит)
+        </li>
+    </ul>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Applying position</th>
+            <th>Location</th>
+            <th>Phone</th>
+            <th>Request Status</th>
+            <th>Candidate Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            {% if builder.candidate.photo != null %}
+                <td>
+                    <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                        <img width="200px" height="200px" class="img-fluid " src="/uploads/{{ candidate.photo }}" alt="Photo">
+                    </a>
+                </td>
+            {% else %}
+                <td>
+                    <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                        <img width="200px" height="200px" class="img-fluid" src="{{ asset('images/noPhoto.png') }}" alt="Photo">
+                    </a>
+                </td>
+            {% endif %}
+
+            <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.name }}</a></td>
+            <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.surname }}</a></td>
+            <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.applyingPosition }}</a></td>
+            <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.location }}</a></td>
+            <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.candidate.phone }}</a></td>
+            {% if builder.vacancy != null %}
+                <td><a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">{{ builder.vacancy.status }}</a></td>
+            {% endif %}
+            <td>
+                <a href="{{ path('approved_interview_candidate_show', {'id': builder.candidate.id, 'vacancy': builder.vacancy.id}) }}">
+                    {% if builder.candidateVacancy != null %}
+                        {{ builder.candidateVacancy.candidateStatus }}
+                    {% else %}
+                        {{ builder.candidateLink.candidateStatus }}
+                    {% endif %}
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div>
+        {% if builder.candidateLink != null %}
+            {% for commentViewer in builder.candidateLink.commentViewers %}
+                <p>Commented by {{ commentViewer.vacancyViewerUser.user.name }}</p>
+                <p class="border border-warning rounded px-2 py-1">
+                    {{ commentViewer.comment }}
+                </p>
+            {% endfor %}
+        {% endif %}
+        {% if builder.candidateVacancy != null %}
+            {% for commentViewer in builder.candidateVacancy.commentViewers %}
+                <p>Commented by {{ commentViewer.vacancyViewerUser.user.email }}</p>
+                <p class="border border-warning rounded px-2 py-1">
+                    {{ commentViewer.comment }}
+                </p>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div>
+        {% if is_granted('ROLE_VACANCY_WATCHER_USER') and builder.vacancy.vacancyViewerUser != null %}
+            {% if builder.checkCandidateLink != null and builder.checkCandidateVacancy != null%}
+                {{ include('recruiting/vacancy/showRecruiter/departmentManagerApproveCandidate/formCommentViewer.html.twig') }}
+            {% else %}
+                <p>Вы уже добавили комментарий</p>
+                {% if builder.checkCandidateLink!= null %}
+                    <a href="{{ path('vacancy_show_approved_interview_department_manager_comment_edit', {'id': builder.checkCandidateLink.id, 'vacancy': builder.vacancy.id}) }}">Назад к комментарию</a>
+                {% else %}
+                    <a href="{{ path('vacancy_show_approved_interview_department_manager_comment_edit', {'id': builder.checkCandidateVacancy.id, 'vacancy': builder.vacancy.id}) }}">Назад к комментарию</a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div>
+        <p>
+            После того, как Вы выполнили все вышеперечисленные действия, нажмите на кнопку “Done”, после чего Вам
+            необходимо будет заполнить информацию о новом сотруднике.
+        </p>
+    </div>
+    <div class="text-center">
+        <a class="btn btn-success" href="{{ path('candidate_onboarding_additional_info', {'id': builder.vacancy.id, 'candidate': builder.candidate.id}) }}">
+            Done
+        </a>
+    </div>
+    <div class="navbar bg-light d-flex justify-content-between">
+        <div class="badge badge-success">
+            assigned to:{{ vacancy.assignee }}
+        </div>
+        <div>
+            <span class="badge badge-success">Approved</span>
+            {{ vacancy.approveDate|date('Y-m-d') }}
+            by {{ vacancy.approvedBy }}
+        </div>
+    </div>
+
+{% endblock %}

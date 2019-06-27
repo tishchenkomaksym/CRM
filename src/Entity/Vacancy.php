@@ -58,7 +58,7 @@ class Vacancy
     private $english;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="integer")
      */
     private $amount;
 

@@ -6,10 +6,10 @@ use App\Data\Sdt\Mail\Adapter\NoDateException;
 use App\Entity\User;
 use App\Entity\UserInfo;
 use App\Form\RolesType;
+use App\Form\UserProfile\UserCreateEditForAccountType;
 use App\Form\UserProfile\UserCreateEditType;
 use App\Form\UserProfile\UserCreateType;
 use App\Repository\SalaryReportInfoRepository;
-use App\Repository\SDTEmailAssigneeRepository;
 use App\Repository\UserInfoRepository;
 use App\Repository\UserRepository;
 use App\Service\Candidate\CandidatePhotoDecorator;
@@ -227,8 +227,6 @@ class UserController extends AbstractController
      * @Route("/{id}/edit", name="user_edit", methods={"GET","POST"})
      * @param UserInfo $userInfo
      * @param Request $request
-     * @param RegistrationUserBuilder $userBuilder
-     * @param SDTEmailAssigneeRepository $assigneeRepository
      * @param CandidatePhotoDecorator $candidatePhotoDecorator
      * @return Response
      * @throws NoDataException
@@ -240,8 +238,11 @@ class UserController extends AbstractController
     ): Response {
         $photo = $userInfo->getPhoto();
         $candidatePhotoDecorator->photoNotNull($userInfo);
-
-        $form = $this->createForm(UserCreateEditType::class, $userInfo);
+        if (!empty($request->get('account'))){
+            $form = $this->createForm(UserCreateEditForAccountType::class, $userInfo);
+        }else{
+            $form = $this->createForm(UserCreateEditType::class, $userInfo);
+        }
         if ($userInfo->getUser() === null){
             throw new NoDataException('User not found');
         }

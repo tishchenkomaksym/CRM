@@ -1,0 +1,12 @@
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+<div>
+    После того, как Вы заполнили поля выше, нажмите на кнопку “Transfer Candidate to Employee”.
+    При клике на неё канидадат приобретёт статус “Employed”.
+    Если в вакансии количество нанимаемых сотрудников больше одного, то после наёма этого сотрудника заявка останется
+    в статаусе “Search for a candidate(s) have been started” пока не будет набрано нужное количество сотрдуников.
+</div>
+<div class="text-center pt-2">
+    <button class="btn btn-success">{{ button_label|default('Transfer Candidate to Employee') }}</button>
+</div>
+{{ form_end(form) }}

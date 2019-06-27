@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Datetime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -84,6 +85,11 @@ class UserInfo
      * @ORM\Column(type="integer", length=255, nullable=true)
      */
     private $salary;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Candidate", cascade={"persist", "remove"})
+     */
+    private $candidate;
 
 
     public function getId(): ?int
@@ -175,12 +181,12 @@ class UserInfo
         return $this;
     }
 
-    public function getBirthDay(): ?\Datetime
+    public function getBirthDay(): ?Datetime
     {
         return $this->birthDay;
     }
 
-    public function setBirthDay(\Datetime $birthDay): self
+    public function setBirthDay(Datetime $birthDay): self
     {
         $this->birthDay = $birthDay;
 
@@ -262,5 +268,17 @@ class UserInfo
             $this->id,
             $this->photo,
             ) = unserialize($serialized, array('allowed_classes' => false));
+    }
+
+    public function getCandidate(): ?Candidate
+    {
+        return $this->candidate;
+    }
+
+    public function setCandidate(?Candidate $candidate): self
+    {
+        $this->candidate = $candidate;
+
+        return $this;
     }
 }
