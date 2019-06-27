@@ -132,6 +132,11 @@ class Candidate
      */
     private $employeeOnBoardingInfo;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $receivedCv;
+
 
 
 
@@ -449,6 +454,18 @@ class Candidate
         if ($this !== $employeeOnBoardingInfo->getCandidate()) {
             $employeeOnBoardingInfo->setCandidate($this);
         }
+
+        return $this;
+    }
+
+    public function getReceivedCv()
+    {
+        return $this->receivedCv;
+    }
+
+    public function setReceivedCv($receivedCv): self
+    {
+        $this->receivedCv = $receivedCv;
 
         return $this;
     }

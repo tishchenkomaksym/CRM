@@ -52,6 +52,16 @@ class CandidatePhotoDecorator
         return $candidate;
     }
 
+    public function receivedCvNotNullCandidate(Candidate $candidate): void
+    {
+        $cvNotNull = $candidate->getReceivedCv() !== null;
+        if ($cvNotNull) {
+            $candidate->setReceivedCv(
+                new File($this->params->get('uploads_directory') . '/' . $candidate->getReceivedCv())
+            );
+        }
+    }
+
     public function receivedCvNotNull(CandidateVacancy $candidateVacancy): void
     {
         $cvNotNull = $candidateVacancy->getReceivedCv() !== null;

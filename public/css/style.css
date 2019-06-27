@@ -1,0 +1,7 @@
+/*form file normal view*/
+.custom-file-input{
+    opacity: 1;
+}
+.custom-file-label{
+    display: none;
+}

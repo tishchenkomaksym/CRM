@@ -78,6 +78,13 @@ class CandidateController extends AbstractController
                 $candidate->setPhoto($fileName);
             }
 
+            if ($candidate->getReceivedCv() !== null) {
+                /** @var UploadedFile $file */
+                $file = $candidate->getReceivedCv();
+                $fileName = $candidatePhotoDecorator->upload($file);
+                $candidate->setReceivedCv($fileName);
+            }
+
             $entityManager = $this->getDoctrine()->getManager();
             $candidate->setCreatedAt(new DateTimeImmutable('now'));
             $candidate->setCreatedBy($this->getUser());
@@ -151,7 +158,9 @@ class CandidateController extends AbstractController
         VacancyFieldDecorator $vacancyFieldDecorator
     ): Response {
         $photo = $candidate->getPhoto();
+        $receivedCv = $candidate->getReceivedCv();
         $candidatePhotoDecorator->photoNotNull($candidate);
+        $candidatePhotoDecorator->receivedCvNotNullCandidate($candidate);
 
         $form = $this->createForm(CandidateType::class, $candidate,
             ['constraints' => [new CandidateVacancyCheckExistenceUpdateCandidate()]]);
@@ -169,6 +178,16 @@ class CandidateController extends AbstractController
                 $candidate->setPhoto($fileName);
             } else {
                 $candidate->setPhoto($photo);
+            }
+
+
+            /** @var UploadedFile $file */
+            $file = $candidate->getReceivedCv();
+            if ($file !== null) {
+                $fileName = $candidatePhotoDecorator->upload($file);
+                $candidate->SetReceivedCv($fileName);
+            } else {
+                $candidate->SetReceivedCv($receivedCv);
             }
             $candidate->setUpdatedDate(new DateTime('now'));
 
