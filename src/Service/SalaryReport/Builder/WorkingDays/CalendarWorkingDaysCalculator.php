@@ -56,4 +56,30 @@ class CalendarWorkingDaysCalculator
         $toDate->add($interval);
         return $this->workingDaysCalculator->getWorkingDaysBetweenDates($monthStartDate, $toDate);
     }
+    /**
+     * @param SalaryReportInfo $salaryReportInfo
+     * @param DateTime $dateTime
+     * @return float|int
+     * @throws Exception
+     */
+    public function calculateForSpecialSubTeams(SalaryReportInfo $salaryReportInfo, DateTime $dateTime)
+    {
+        $date = $salaryReportInfo->getCreateDate();
+        $monthStartDate = new DateTime();
+        $monthStartDate->setTime(0, 0, 0);
+        /** @noinspection NullPointerExceptionInspection */
+        if ($date->format('m') === $dateTime->format('m') &&
+            $date->format('Y') === $dateTime->format('Y')) {
+            /** @noinspection NullPointerExceptionInspection */
+            $monthStartDate->setDate((int)$date->format('Y'), $date->format('m'), $dateTime->format('d'));
+            $toDate = clone $monthStartDate;
+            $toDate->modify('last day of this month')->modify('+1 day');
+        } else {
+            /** @noinspection NullPointerExceptionInspection */
+            $monthStartDate->setDate((int)$date->format('Y'), $date->format('m'), 01);
+            $toDate = clone $monthStartDate;
+            $toDate = date_modify($toDate, '+1 month');
+        }
+        return $monthStartDate->diff($toDate)->days;
+    }
 }
