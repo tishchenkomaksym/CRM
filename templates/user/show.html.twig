@@ -23,6 +23,23 @@
         <tr>
             <th>Full Name</th>
             <td>{{ user.user.name }}</td>
+            {% if user.candidate != null %}
+                <td class="border border-success px-2 py-2">
+                    <span class="border border-success px-1 py-1">Employed</span>
+                    Candidate name: {{ user.candidate.name }} {{ user.candidate.surname }}
+                    By request №
+                    {% for candidateVacancy in user.candidate.candidateVacancies %}
+                        {% if candidateVacancy.candidateStatus == 'Employed' %}
+                            {{ candidateVacancy.vacancy.id }}
+                        {% endif %}
+                    {% endfor %}
+                    {% for candidateLink in user.candidate.candidateLinks %}
+                        {% if candidateLink.candidateStatus == 'Employed' %}
+                            {{ candidateLink.vacancyLink.vacancy.id }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            {% endif %}
         </tr>
         <tr>
             <th>Position</th>

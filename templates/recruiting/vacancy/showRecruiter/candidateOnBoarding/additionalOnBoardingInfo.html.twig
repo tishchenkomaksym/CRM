@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vacancy{% endblock %}
+
+{% block breadcrumbs %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('default') }}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Vacancies</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('vacancy_index') }}">Request</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">View Request</li>
+            <li class="breadcrumb-item active" aria-current="page">
+                New employee onboarding
+            </li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block body %}
+
+    <table class="table" style="table-layout: fixed">
+        <tbody>
+        <tr>
+            <th>Request#</th>
+            <td>{{ vacancy.id }}</td>
+        </tr>
+        <tr>
+            <th>Created</th>
+            <td>{{ vacancy.createdAt|date('Y-m-d')}}</td>
+        </tr>
+        <tr>
+            <th>By</th>
+            <td>{{ vacancy.createdBy }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div>
+        <p class="alert alert-secondary">
+            Status: {{ vacancy.status }}
+        </p>
+    </div>
+    <div>
+        {{ include('recruiting/vacancy/showRecruiter/candidateOnBoarding/additionalInfoForm.html.twig') }}
+    </div>
+    <div class="navbar bg-light d-flex justify-content-between">
+        <div class="badge badge-success">
+            assigned to:{{ vacancy.assignee }}
+        </div>
+        <div>
+            <span class="badge badge-success">Approved</span>
+            {{ vacancy.approveDate|date('Y-m-d') }}
+            by {{ vacancy.approvedBy }}
+        </div>
+    </div>
+
+{% endblock %}

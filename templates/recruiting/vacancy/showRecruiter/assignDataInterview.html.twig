@@ -35,6 +35,15 @@
             Status: {{ vacancy.status }}
         </p>
     </div>
+    <div>
+        <p>
+            Согласуйте время проведения интервью с кандидатом и менеджером (а также всеми вьюэрами вакансии).
+            После определения подходящей даты и времени, проверьте бронь конференс-рума на выбранную дату, и
+            добавьте интервью в календарь. При добавлении в каледарь ивента, менеджеру придёт на почту оповещение
+            с датой и местом проведения интервью. Если дата или место проведения интервью поменяется по какой-либо причине
+            - отредактируйте созданный ивент, и внесите туда требуемые изменения.
+        </p>
+    </div>
     {% if candidateVacancy != null  %}
         {% if candidateVacancy.dateInterview == null %}
             <a class="btn btn-primary pb-2" href="{{ path('interview_assign_data_new', {'id':vacancy.id, 'candidateVacancy': app.request.get('candidateVacancy')}) }}">
@@ -58,6 +67,12 @@
     {% endif %}
 
     <div id="calendar"></div>
+
+    <div class="text-center pt-5 pb-3">
+        <a class="btn btn-warning" href="{{ path('vacancy_show_candidates', {'id': vacancy.id}) }}">
+            Back to candidates list
+        </a>
+    </div>
 
     <script>
         $('#calendar').fullCalendar({ displayEventTime: false});

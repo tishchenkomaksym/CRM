@@ -7,7 +7,6 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CandidateRepository")
@@ -127,6 +126,11 @@ class Candidate
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $currentPosition;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\EmployeeOnBoardingInfo", mappedBy="candidate", cascade={"persist", "remove"})
+     */
+    private $employeeOnBoardingInfo;
 
 
 
@@ -431,5 +435,23 @@ class Candidate
 
         return $this;
     }
+
+    public function getEmployeeOnBoardingInfo(): ?EmployeeOnBoardingInfo
+    {
+        return $this->employeeOnBoardingInfo;
+    }
+
+    public function setEmployeeOnBoardingInfo(EmployeeOnBoardingInfo $employeeOnBoardingInfo): self
+    {
+        $this->employeeOnBoardingInfo = $employeeOnBoardingInfo;
+
+        // set the owning side of the relation if necessary
+        if ($this !== $employeeOnBoardingInfo->getCandidate()) {
+            $employeeOnBoardingInfo->setCandidate($this);
+        }
+
+        return $this;
+    }
+
 
 }

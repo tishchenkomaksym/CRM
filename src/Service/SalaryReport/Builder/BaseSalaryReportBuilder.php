@@ -11,6 +11,7 @@ namespace App\Service\SalaryReport\Builder;
 
 use App\Entity\SalaryReportInfo;
 use App\Entity\User;
+use App\Repository\UserInfoRepository;
 use App\Service\SalaryReport\Builder\SDTDays\SdtDaysCalculator;
 use App\Service\SalaryReport\Builder\WorkingDays\CalendarWorkingDaysCalculator;
 use App\Service\SalaryReport\SalaryReportDTO;
@@ -41,19 +42,25 @@ class BaseSalaryReportBuilder
      * @var BaseWorkingDaysCalculator
      */
     private $baseWorkingDaysCalculator;
+    /**
+     * @var UserInfoRepository
+     */
+    private $userInfoRepository;
 
     public function __construct(
         CalendarWorkingDaysCalculator $workingDaysCalculator,
         SdtDaysCalculator $sdtDaysCalculator,
         UsedSdtDaysCalculator $usedSdtDaysCalculator,
         BaseWorkingDaysCalculator $baseWorkingDaysCalculator,
-        BaseWorkHoursInformationBuilder $baseWorkHoursInformationBuilder
+        BaseWorkHoursInformationBuilder $baseWorkHoursInformationBuilder,
+        UserInfoRepository $userInfoRepository
     ) {
         $this->workingDaysCalculator = $workingDaysCalculator;
         $this->sdtDaysCalculator = $sdtDaysCalculator;
         $this->usedSdtDaysCalculator = $usedSdtDaysCalculator;
         $this->baseWorkHoursInformationBuilder = $baseWorkHoursInformationBuilder;
         $this->baseWorkingDaysCalculator = $baseWorkingDaysCalculator;
+        $this->userInfoRepository = $userInfoRepository;
     }
 
     /**
@@ -72,7 +79,7 @@ class BaseSalaryReportBuilder
         $dateForSdt = new DateTime();
         /** @noinspection NullPointerExceptionInspection */
         $dateForSdt->setTimestamp($newReport->getCreateDate()->getTimestamp());
-        $dateForSdt->setDate($dateForSdt->format('Y'), $dateForSdt->format('m'), (int)$dateForSdt->format('d') - 1);
+        $dateForSdt->setDate($dateForSdt->format('Y'), $dateForSdt->format('m'), (int)$dateForSdt->format('d'));
         $dateForSdt->setTime(23, 59, 59);
 
         /**
@@ -88,10 +95,21 @@ class BaseSalaryReportBuilder
         $returnObject->sdtCountUsed = $this->getSdtCountUsed($previousDateTime, $dateForSdt, $user);
         $returnObject->sdtCountAtOwnExpenseUsed = $this->getSdtAtOwnExpenseUsedCount($previousDateTime, $dateForSdt,
             $user);
-        $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport, $user->getCreateDate()) - $returnObject->sdtCountUsed - $returnObject->sdtCountAtOwnExpenseUsed;
 
-        $returnObject->reportWorkingDays = $this->getReportWorkingDays($previousDateTime, $user->getCreateDate(), $dateWorkingHours,
-            $returnObject->sdtCountUsed + $returnObject->sdtCountAtOwnExpenseUsed);
+        $userInfo = $this->userInfoRepository->findOneBy(['user' => $user->getId()]);
+        if($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
+            $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculateForSpecialSubTeams($newReport,
+                    $user->getCreateDate()) - $returnObject->sdtCountUsed - $returnObject->sdtCountAtOwnExpenseUsed;
+            $returnObject->reportWorkingDays = $this->getReportWorkingDaysForSpecialSubTeams($previousDateTime, $user->getCreateDate(), $dateWorkingHours,
+                $returnObject->sdtCountUsed + $returnObject->sdtCountAtOwnExpenseUsed);
+        } else {
+            $returnObject->calendarWorkingDays = $this->workingDaysCalculator->calculate($newReport,
+                    $user->getCreateDate()) - $returnObject->sdtCountUsed - $returnObject->sdtCountAtOwnExpenseUsed;
+            $returnObject->reportWorkingDays = $this->getReportWorkingDays($previousDateTime, $user->getCreateDate(), $dateWorkingHours,
+                $returnObject->sdtCountUsed + $returnObject->sdtCountAtOwnExpenseUsed);
+        }
+
+
         $returnObject->sdtCount = $this->sdtDaysCalculator->calculate($dateForSdt, $user, $returnObject->sdtCountUsed);
         if($userTeam = $user->getTeam()) {
             $returnObject->team = $userTeam;
@@ -116,6 +134,13 @@ class BaseSalaryReportBuilder
         }
         return $this->baseWorkingDaysCalculator->getWorkingDaysBetweenDates($previousDateTime, $dateForSdt) - $usedSdt;
     }
+    private function getReportWorkingDaysForSpecialSubTeams(DateTime $previousDateTime, DateTime $startDate,  DateTime $dateForSdt, int $usedSdt)
+    {
+        if ($previousDateTime < $startDate) {
+            $previousDateTime = $startDate;
+        }
+        return $previousDateTime->diff($dateForSdt)->days - $usedSdt;
+    }
 
     /**
      * @param DateTime $previousReportDate
@@ -129,9 +154,13 @@ class BaseSalaryReportBuilder
         DateTime $nowTime,
         User $user
     ): int {
+        $userInfo = $this->userInfoRepository->findOneBy(['user' => $user->getId()]);
+        if($userInfo !== null && $userInfo->getSubTeam() === 'Central Tech Support') {
+            return $this->usedSdtDaysCalculator->calculateForSpecialSubTeams($previousReportDate, $nowTime,
+                (new NotAtOwnExpenseFilter())->filter($user->getSdt()->toArray()));
+        }
         return $this->usedSdtDaysCalculator->calculate($previousReportDate, $nowTime,
             (new NotAtOwnExpenseFilter())->filter($user->getSdt()->toArray()));
-
     }
 
     /**
