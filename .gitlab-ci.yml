@@ -1,9 +1,9 @@
 stages:
 - testing
 - code check
-- compile
-- build
-- deploy
+#- compile
+#- build
+#- deploy
 
 
 cache:
@@ -22,74 +22,74 @@ variables:
 #  stage: code check
 #  script: sonar-scanner -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectVersion=$CI_BUILD_ID -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.sources=src -Dsonar.coverage.exclusions=*.js,*.css,*.html,**Interface.php,**Kernel.php -Dsonar.php.tests.reportPath=build/index.xml -Dsonar.php.coverage.reportPaths=build/coverage/coverage_index.xml
 
-compile:
-  stage: compile
-  image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-    - vendor/
-  artifacts:
-    name: src
-    expire_in: 2 days
-    paths:
-    - .
-  script:
-  # If you need carid repositories you need to set up ssh keys
-  #  before_script:
-  #  - eval $(ssh-agent -s)
-  #  - mkdir -p ~/.ssh
-  #  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
-  #  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-  # Setup application in production mode (required to install dependencies)
-  - export APP_ENV=prod
-  # Install ONLY PRODUCTION dependencies
-  - composer install --no-dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
-  only:
-  - master
-  - develop
+#compile:
+#  stage: compile
+#  image: ${CI_REGISTRY}/nexteum-user/nexteum-user-php:7.2-fpm-alpine-dev
+#  cache:
+#    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+#    paths:
+#    - vendor/
+#  artifacts:
+#    name: src
+#    expire_in: 2 days
+#    paths:
+#    - .
+#  script:
+#  # If you need carid repositories you need to set up ssh keys
+#  #  before_script:
+#  #  - eval $(ssh-agent -s)
+#  #  - mkdir -p ~/.ssh
+#  #  - echo "${SSH_PRIVATE_KEY}" | ssh-add -
+#  #  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+#  # Setup application in production mode (required to install dependencies)
+#  - export APP_ENV=prod
+#  # Install ONLY PRODUCTION dependencies
+#  - composer install --no-dev --optimize-autoloader --no-ansi --no-interaction --no-scripts
+#  only:
+#  - master
+#  - develop
 
-
-
-.building: &building
-  stage: build
-  image: docker:stable
-  services:
-  - docker:dind
-  before_script:
-  - docker login -u ${CI_REGISTRY_USER} -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
-  only:
-  - master
-  - develop
-.building_script: &building_script |
-  docker build \
-      --pull \
-      --compress \
-      --cache-from ${IMAGE} \
-      -f ${DOCKERFILE} \
-      -t ${IMAGE} \
-      .
-  docker tag ${IMAGE} ${IMAGE_LATEST}
-  docker push ${IMAGE}
-  docker push ${IMAGE_LATEST}
-
-image:nginx:
-  <<: *building
-  variables:
-    DOCKERFILE: .docker/nginx/Dockerfile
-  script:
-  - export IMAGE=${NGINX_IMAGE}
-  - export IMAGE_LATEST=${NGINX_IMAGE_LATEST}
-  - *building_script
-
-image:php-fpm:
-  <<: *building
-  variables:
-    DOCKERFILE: .docker/php/Dockerfile
-  script:
-  - export IMAGE=${PHP_IMAGE}
-  - export IMAGE_LATEST=${PHP_IMAGE_LATEST}
-  - *building_script
+#
+#
+#.building: &building
+#  stage: build
+#  image: docker:stable
+#  services:
+#  - docker:dind
+#  before_script:
+#  - docker login -u ${CI_REGISTRY_USER} -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
+#  only:
+#  - master
+#  - develop
+#.building_script: &building_script |
+#  docker build \
+#      --pull \
+#      --compress \
+#      --cache-from ${IMAGE} \
+#      -f ${DOCKERFILE} \
+#      -t ${IMAGE} \
+#      .
+#  docker tag ${IMAGE} ${IMAGE_LATEST}
+#  docker push ${IMAGE}
+#  docker push ${IMAGE_LATEST}
+#
+#image:nginx:
+#  <<: *building
+#  variables:
+#    DOCKERFILE: .docker/nginx/Dockerfile
+#  script:
+#  - export IMAGE=${NGINX_IMAGE}
+#  - export IMAGE_LATEST=${NGINX_IMAGE_LATEST}
+#  - *building_script
+#
+#image:php-fpm:
+#  <<: *building
+#  variables:
+#    DOCKERFILE: .docker/php/Dockerfile
+#  script:
+#  - export IMAGE=${PHP_IMAGE}
+#  - export IMAGE_LATEST=${PHP_IMAGE_LATEST}
+#  - *building_script
 
 
 unit-tests:
@@ -113,27 +113,27 @@ unit-tests:
      - build/
      expire_in: 2 days
 
-
-.deployment_rancher: &deployment_rancher
-  stage: deploy
-  image: registry.devzone.net/rancher/rancher-cli:latest
-  variables:
-    RANCHER_SERVICE_NGINX: nginx
-    RANCHER_SERVICE_PHP_FPM: php-fpm
-
-.deployment_script_rancher: &deployment_script_rancher
-  bash deploy.sh --rancher-url ${RANCHER_URL} --rancher-key ${RANCHER_ACCESS_KEY} --rancher-secret ${RANCHER_SECRET_KEY} --project-id ${RANCHER_PROJECT_ID} --namespace ${RANCHER_NAMESPACE_NAME}  --workload-name ${RANCHER_SERVICE_NGINX} --workload-image ${NGINX_IMAGE} --sidecar ${RANCHER_SERVICE_PHP_FPM} ${PHP_IMAGE}
-
-dev:stable:
-  <<: *deployment_rancher
-  script:
-    - export RANCHER_NAMESPACE_NAME=nexteum-user-app
-    - export RANCHER_PROJECT_ID=${DEV_CLOUD2_PROJECT_ID}
-    - export RANCHER_URL=${DEV_CLOUD2_URL}
-    - export RANCHER_ACCESS_KEY=${DEV_CLOUD2_ACCESS_KEY}
-    - export RANCHER_SECRET_KEY=${DEV_CLOUD2_SECRET_KEY}
-    - *deployment_script_rancher
-  environment:
-    name: staging
-  only:
-    - master
+#
+#.deployment_rancher: &deployment_rancher
+#  stage: deploy
+#  image: registry.devzone.net/rancher/rancher-cli:latest
+#  variables:
+#    RANCHER_SERVICE_NGINX: nginx
+#    RANCHER_SERVICE_PHP_FPM: php-fpm
+#
+#.deployment_script_rancher: &deployment_script_rancher
+#  bash deploy.sh --rancher-url ${RANCHER_URL} --rancher-key ${RANCHER_ACCESS_KEY} --rancher-secret ${RANCHER_SECRET_KEY} --project-id ${RANCHER_PROJECT_ID} --namespace ${RANCHER_NAMESPACE_NAME}  --workload-name ${RANCHER_SERVICE_NGINX} --workload-image ${NGINX_IMAGE} --sidecar ${RANCHER_SERVICE_PHP_FPM} ${PHP_IMAGE}
+#
+#dev:stable:
+#  <<: *deployment_rancher
+#  script:
+#    - export RANCHER_NAMESPACE_NAME=nexteum-user-app
+#    - export RANCHER_PROJECT_ID=${DEV_CLOUD2_PROJECT_ID}
+#    - export RANCHER_URL=${DEV_CLOUD2_URL}
+#    - export RANCHER_ACCESS_KEY=${DEV_CLOUD2_ACCESS_KEY}
+#    - export RANCHER_SECRET_KEY=${DEV_CLOUD2_SECRET_KEY}
+#    - *deployment_script_rancher
+#  environment:
+#    name: staging
+#  only:
+#    - master
