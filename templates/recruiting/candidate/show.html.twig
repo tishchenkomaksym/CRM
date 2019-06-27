@@ -118,6 +118,33 @@
                 <th>Comment</th>
                 <td style="word-break: break-all">{{ candidate.comment }}</td>
             </tr>
+            <tr>
+                <th>CV from Candidate Creation</th>
+                <td>
+                    {% if candidate.receivedCv != null %}
+                        <a href="/uploads/{{ candidate.receivedCv }}">
+                            {{ candidate.receivedCv }}
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>CV from Vacancies</th>
+                <td>
+                    {% for vacancy in vacancies %}
+                        <a href="/uploads/{{ vacancy.receivedCv }}">
+                            {{ vacancy.receivedCv }}
+                        </a>
+                        <span>from Vacancy #{{ vacancy.vacancy.id }}</span>
+                    {% endfor %}
+                    {% for candidateLink in candidate.candidateLinks %}
+                        <a href="/uploads/{{ candidateLink.receivedCv }}">
+                            {{ candidateLink.receivedCv }}
+                        </a>
+                        <span>from Vacancy #{{ candidateLink.vacancy.id }}</span>
+                    {% endfor %}
+                </td>
+            </tr>
         </tbody>
     </table>
     {% for vacancy in vacancies %}

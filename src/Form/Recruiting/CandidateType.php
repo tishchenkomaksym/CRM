@@ -58,6 +58,9 @@ class CandidateType extends AbstractType
                     'required' => false
                 ]
             )
+            ->add('receivedCv',FileType::class,[
+                'required' => false
+            ])
             ->add('phone')
             ->add('email')
             ->add('linkedIn')

@@ -5,6 +5,7 @@
 {{ form_row(form.surname, {'label': 'Surname'}) }}
 {{ form_row(form.currentPosition, {'label': 'Current position'}) }}
 {{ form_row(form.applyingPosition, {'label': 'Applying position'}) }}
+{{ form_row(form.receivedCv, {'label': 'CV'}) }}
 {{ form_row(form.location, {'label': 'Location'}) }}
 {{ form_row(form.vacancy, {'label': 'Vacancy'}) }}
 {{ form_row(form.phone, {'label': 'Phone'}) }}
@@ -16,6 +17,7 @@
 {{ form_row(form.education, {'label': 'Education'}) }}
 {{ form_row(form.employment, {'label': 'Employment'}) }}
 {{ form_row(form.comment, {'label': 'Comment'}) }}
+
 
     <button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
