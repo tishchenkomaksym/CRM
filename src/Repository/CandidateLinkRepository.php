@@ -103,8 +103,7 @@ class CandidateLinkRepository extends ServiceEntityRepository
         $date2 = new DateTime();
         $date2->setTime(23, 59,00);
         return $this->createQueryBuilder('c')
-            ->where('c.dateInterview IS NOT NULL')
-            ->andWhere('c.dateInterview BETWEEN :from AND :to')
+            ->where('c.dateStartWork BETWEEN :from AND :to')
             ->setParameter('from', $date)
             ->setParameter('to', $date2)
             ->getQuery()

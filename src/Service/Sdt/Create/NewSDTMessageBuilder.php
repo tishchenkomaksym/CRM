@@ -35,7 +35,8 @@ class NewSDTMessageBuilder implements MessageBuilderInterface
      * @return Swift_Message
      * @throws Twig_Error_Loader
      * @throws Twig_Error_Runtime
-     * @throws Twig_Error_Syntax
+     * @throws Twig_Error_Runtime
+     * @throws \Exception
      */
     public function build()
     {
