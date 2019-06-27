@@ -1,9 +1,9 @@
 stages:
 - testing
 - code check
-- compile
-- build
-- deploy
+#- compile
+#- build
+#- deploy
 
 
 cache:
