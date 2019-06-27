@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Service\User\QaAgent\QaSkill;
+
+use App\Entity\PhpDeveloperLevel;
+use App\Entity\QaActualSkillTestMark;
+use App\Entity\QaRequiredSkillTestMark;
+use App\Entity\QaSkillTest;
+use App\Entity\User;
+use App\Entity\UserPhpDeveloperLevelRelation;
+use App\Repository\PhpDeveloperLevelRepository;
+use App\Repository\QaActualSkillTestMarkRepository;
+use App\Repository\QaRequiredSkillTestMarkRepository;
+use App\Repository\QaSkillTestRepository;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+
+class QaSkillRowBuilderTest extends TestCase
+{
+
+    public function testGetResult()
+    {
+        /** @var User|MockObject $userMock */
+        $userMock = $this->createMock(User::class);
+        /** @var QaRequiredSkillTestMark|MockObject $requiredMarkMock */
+        $requiredMarkMock = $this->createMock(QaRequiredSkillTestMark::class);
+        /** @var PhpDeveloperLevelRepository|MockObject $phpDeveloperLevelRepositoryMock */
+        $phpDeveloperLevelRepositoryMock = $this->createMock(PhpDeveloperLevelRepository::class);
+        /** @var QaActualSkillTestMark|MockObject $actualMarkMock */
+        $actualMarkMock = $this->createMock(QaActualSkillTestMark::class);
+        /**
+         * @var UserPhpDeveloperLevelRelation|MockObject $levelRelationMock
+         */
+        $levelRelationMock = $this->createMock(UserPhpDeveloperLevelRelation::class);
+        /**
+         * @var QaSkillTest|MockObject $qaSkillTestMock
+         */
+        $qaSkillTestMock = $this->createMock(QaSkillTest::class);
+
+        $qaSkillTestMock->method('getTitle')->willReturn('title');
+        $qaSkillTestMock->method('getLink')->willReturn('link');
+        /**
+         * @var QaRequiredSkillTestMarkRepository|MockObject $requiredSkillTestMarkRepositoryMock
+         */
+        $requiredSkillTestMarkRepositoryMock = $this->createMock(QaRequiredSkillTestMarkRepository::class);
+        $requiredSkillTestMarkRepositoryMock->method('findOneBy')->willReturn($requiredMarkMock);
+        $requiredMarkMock->method('getRequiredPoints')->willReturn(30);
+        /**
+         * @var QaActualSkillTestMarkRepository|MockObject $actualSkillTestMarkRepositoryMock
+         */
+        $actualSkillTestMarkRepositoryMock = $this->createMock(QaActualSkillTestMarkRepository::class);
+        $actualSkillTestMarkRepositoryMock->method('findOneBy')->willReturn($actualMarkMock);
+        $actualMarkMock->method('getActualPoints')->willReturn(31);
+        /**
+         * @var PhpDeveloperLevel|MockObject $levelMock
+         */
+        $levelMock = $this->createMock(PhpDeveloperLevel::class);
+        $userMock->method('getPhpDeveloperLevelRelation')->willReturn($levelRelationMock);
+        $levelRelationMock->method('getPhpDeveloperLevel')->willReturn($levelMock);
+        $phpDeveloperLevelRepositoryMock->method('findOneBy')->willReturn($levelMock);
+        $levelMock->method('getNextLevel')->willReturn(null);
+        $object = new QaSkillRowBuilder(
+            $requiredSkillTestMarkRepositoryMock,
+            $actualSkillTestMarkRepositoryMock,
+            $phpDeveloperLevelRepositoryMock
+        );
+
+        $assertObject = new QaSkillRow();
+        $assertObject->setTitle('title');
+        $assertObject->setRequiredPoints(30);
+        $assertObject->setActualPoints(31);
+        $assertObject->setTestLink('link');
+        $assertObject->setPassed(true);
+
+        $result = $object->getResult($qaSkillTestMock, $userMock);
+        $this->assertEquals($assertObject, $result);
+    }
+}

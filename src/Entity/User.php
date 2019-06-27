@@ -116,8 +116,10 @@ class User implements UserInterface
      */
     private $team;
 
-
-
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\QaActualSkillTestMark", mappedBy="user", orphanRemoval=true)
+     */
+    private $qaActualSkillTestMarks;
 
     public function __construct()
     {
@@ -131,6 +133,7 @@ class User implements UserInterface
         $this->vacancies = new ArrayCollection();
         $this->offices = new ArrayCollection();
         $this->qaUserManagerRelations = new ArrayCollection();
+        $this->qaActualSkillTestMarks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -594,4 +597,34 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @return Collection|QaActualSkillTestMark[]
+     */
+    public function getQaActualSkillTestMarks(): Collection
+    {
+        return $this->qaActualSkillTestMarks;
+    }
+
+    public function addQaActualSkillTestMark(QaActualSkillTestMark $qaActualSkillTestMark): self
+    {
+        if (!$this->qaActualSkillTestMarks->contains($qaActualSkillTestMark)) {
+            $this->qaActualSkillTestMarks[] = $qaActualSkillTestMark;
+            $qaActualSkillTestMark->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQaActualSkillTestMark(QaActualSkillTestMark $qaActualSkillTestMark): self
+    {
+        if ($this->qaActualSkillTestMarks->contains($qaActualSkillTestMark)) {
+            $this->qaActualSkillTestMarks->removeElement($qaActualSkillTestMark);
+            // set the owning side to null (unless already changed)
+            if ($qaActualSkillTestMark->getUser() === $this) {
+                $qaActualSkillTestMark->setUser(null);
+            }
+        }
+
+        return $this;
+    }
 }

@@ -18,7 +18,7 @@ class DepartmentTeamSdtViewRulesType extends AbstractType
                 'expanded' => true,
                 'choices' => $this->roles,
             ])
-            ->add('department', ChoiceType::class, [
+            ->add('team', ChoiceType::class, [
                 'multiple' => true,
                 'expanded' => true,
                 'choices' => $this->roles,
