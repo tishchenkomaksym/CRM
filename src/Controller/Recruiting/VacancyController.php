@@ -24,6 +24,7 @@ use App\Service\Vacancy\CandidateLinkRelationsToCandidate\FormValidators\Candida
 use App\Service\Vacancy\CandidateLinkRelationsToCandidate\StrategyExistenceLinks;
 use App\Service\Vacancy\CandidateLinkRelationsToCandidate\StrategyNonExistenceLinks;
 use App\Service\Vacancy\CandidateLinkRelationsToCandidate\VacancyCandidateBuilder\ExistsCandidateBuilderLinks;
+use App\Service\Vacancy\CandidateVacancyAmount\CandidateVacancyAmountCheckLogic;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\ContextForRelationStrategy;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\FormValidators\CandidateVacancyCheckExistence;
 use App\Service\Vacancy\CandidateVacancyRelationsToCandidate\StrategyExistence;
@@ -326,10 +327,12 @@ class VacancyController extends AbstractController
      * @IsGranted("ROLE_RECRUITER")
      * @Route("/recruiter/candidates/{id}", name="vacancy_show_candidates", methods={"GET","POST"})
      * @param Vacancy $vacancy
+     * @param CandidateVacancyAmountCheckLogic $amountCheckLogic
      * @return NoDateException|Response
      */
-    public function recruiterVacancyCandidates(Vacancy $vacancy)
+    public function recruiterVacancyCandidates(Vacancy $vacancy, CandidateVacancyAmountCheckLogic $amountCheckLogic)
     {
+        $amountCheckLogic->changeVacancyStatus($vacancy);
         return  $this->render('recruiting/vacancy/showRecruiter/showVacancyCandidates.html.twig', [
             self::VACANCY_ENTITY_IN_VIEW => $vacancy,
         ]);

@@ -37,6 +37,23 @@
             <tr>
                 <th>Name</th>
                 <td>{{ candidate.name }}</td>
+                <td></td>
+                {% for vacancy in vacancies %}
+                    {% if vacancy.candidateStatus == 'Employed' %}
+                        <td class="border border-success">
+                            <span class="border border-success px-2 py-2">Employed</span>
+                            Full name by contract: {{ candidate.employeeOnBoardingInfo.fullname }}
+                        </td>
+                    {% endif %}
+                {% endfor %}
+                {% for candidateLink in candidate.candidateLinks %}
+                    {% if candidateLink.candidateStatus == 'Employed' %}
+                        <td class="border border-success">
+                            <span class="border border-success px-2 py-2">Employed</span>
+                            Full name by contract: {{ candidate.employeeOnBoardingInfo.fullname }}
+                        </td>
+                    {% endif %}
+                {% endfor %}
             </tr>
             <tr>
                 <th>Surname</th>
@@ -115,7 +132,7 @@
             </div>
         </div>
         <div class="alert alert-dark">
-            Candidate Status:
+            Candidate Status: {{ vacancy.candidateStatus }}
         </div>
     {% endfor %}
     {% if app.request.get('vacancy') != null %}

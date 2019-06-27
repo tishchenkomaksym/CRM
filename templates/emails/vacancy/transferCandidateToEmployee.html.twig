@@ -1,0 +1,41 @@
+{% extends 'emails/vacancy/template.twig' %}
+
+{% block text %}
+
+    <p>
+        {% if builder.candidateLink != null %}
+            {{ builder.candidateLink.dateStartWork|date('Y-m-d') }}
+        {% else %}
+            {{ builder.candidateVacancy.dateStartWork|date('Y-m-d') }}
+        {% endif %}
+         новый сотрудник {{ employeeInfo.fullname }} выходит на работу.
+        Вам необходимо добавить его в ресурс <a href="https://user-profile.devzone.net">https://user-profile.devzone.net</a>
+
+        Для этого совершите нижеследующие действия:
+
+        Если пользователя есть учётная запись в LDAP - зайдите под его аккаунтом (логин и пароль как в LDAP) в систему
+        (при авторизации в системе вкладка "Ldap"). После первой авторизации нового пользователя пройдите по
+        {% if builder.candidateLink != null %}
+            <a href="{{ url('candidate_employed_choose_user', {'id': builder.candidateLink.candidate.id, 'vacancy': builder.vacancy.id }) }}">ссылке</a>
+        {% else %}
+            <a href="{{ url('candidate_employed_choose_user', {'id': builder.candidateVacancy.candidate.id, 'vacancy': builder.vacancy.id }) }}">ссылке</a>
+        {% endif %}
+         и
+        выберите пользователя из выпадающего списка. Затем нажмите кнопку "Done" и вас перешлёт на страницу добавления
+        пользователя. Большинство полей на этой странице будут заполнены. Вам следует заполнить поле "Skype" и нажать
+        на кнопку "Update". После этого перешлите новому пользователю письмо с логином, паролем и ссылкой на новый ресурс.
+        Если у пользователя нет учётной записи в LDAP, то перейдите по <a href="#">ссылке</a> и создайте учетную запись с паролем.
+        После первой авторизации нового пользователя пройдите по
+        {% if builder.candidateLink != null %}
+            <a href="{{ url('candidate_employed_choose_user', {'id': builder.candidateLink.candidate.id, 'vacancy': builder.vacancy.id }) }}">ссылке</a>
+        {% else %}
+            <a href="{{ url('candidate_employed_choose_user', {'id': builder.candidateVacancy.candidate.id, 'vacancy': builder.vacancy.id }) }}">ссылке</a>
+        {% endif %}
+        и выберите пользователя из выпадающего списка.
+        Затем нажмите кнопку "Done" и вас перешлёт на страницу добавления пользователя. Большинство полей на этой
+        странице будут заполнены. Вам следует заполнить поле "Skype" и нажать на кнопку "Update". После этого перешлите
+        новому пользователю письмо с логином, паролем и ссылкой на новый ресурс.
+
+    </p>
+
+{% endblock %}

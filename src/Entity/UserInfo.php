@@ -86,6 +86,11 @@ class UserInfo
      */
     private $salary;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Candidate", cascade={"persist", "remove"})
+     */
+    private $candidate;
+
 
     public function getId(): ?int
     {
@@ -263,5 +268,17 @@ class UserInfo
             $this->id,
             $this->photo,
             ) = unserialize($serialized, array('allowed_classes' => false));
+    }
+
+    public function getCandidate(): ?Candidate
+    {
+        return $this->candidate;
+    }
+
+    public function setCandidate(?Candidate $candidate): self
+    {
+        $this->candidate = $candidate;
+
+        return $this;
     }
 }

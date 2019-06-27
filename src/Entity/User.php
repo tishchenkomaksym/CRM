@@ -118,6 +118,7 @@ class User implements UserInterface
 
 
 
+
     public function __construct()
     {
         $this->monthlySdts = new ArrayCollection();
@@ -592,4 +593,5 @@ class User implements UserInterface
 
         return $this;
     }
+
 }

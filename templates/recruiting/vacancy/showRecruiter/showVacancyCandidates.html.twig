@@ -151,6 +151,10 @@
                                             Edit Set Start Date for new Employee
                                         {% endif %}
                                     </a>
+                            {% elseif candidateVacancy.candidateStatus == "New employee onboarding" %}
+                                <a class="btn btn-primary" href="{{ path('candidate_onboarding', {'id': candidateVacancy.candidate.id, 'vacancy': vacancy.id }) }}">
+                                    Check onboarding
+                                </a>
                             {% endif %}
                         </th>
                     </tr>
@@ -260,6 +264,10 @@
                                         {% else %}
                                             Edit Set Start Date for new Employee
                                         {% endif %}
+                                    </a>
+                                {% elseif candidateLink.candidateStatus == "New employee onboarding" %}
+                                    <a class="btn btn-primary" href="{{ path('candidate_onboarding', {'id': candidateLink.candidate.id, 'vacancy': vacancy.id }) }}">
+                                        Check onboarding
                                     </a>
                                 {% endif %}
                             </th>
