@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20190627121013 extends AbstractMigration
+final class Version20190627135235 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -23,8 +23,6 @@ final class Version20190627121013 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE candidate ADD received_cv VARCHAR(255) DEFAULT NULL');
-        $this->addSql('ALTER TABLE employee_on_boarding_info CHANGE sex sex ENUM(\'Male\', \'Female\'), CHANGE maritalStatus maritalStatus ENUM(\'Single\', \'Married\', \'Divorced\')');
-        $this->addSql('ALTER TABLE qa_skill_test DROP type');
     }
 
     public function down(Schema $schema) : void
@@ -33,7 +31,5 @@ final class Version20190627121013 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE candidate DROP received_cv');
-        $this->addSql('ALTER TABLE employee_on_boarding_info CHANGE sex sex VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_unicode_ci, CHANGE maritalStatus maritalStatus VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_unicode_ci');
-        $this->addSql('ALTER TABLE qa_skill_test ADD type VARCHAR(255) NOT NULL COLLATE utf8mb4_unicode_ci');
     }
 }
