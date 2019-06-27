@@ -16,12 +16,19 @@
             </tr>
             </thead>
             <tbody>
+            {% for item in skillRows %}
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.actualPoints }}</td>
+                    <td>{{ item.requiredPoints }}</td>
+                    <td><a href="{{ item.testLink }}">Get test</a></td>
+                    <td>{% if item.passed %}
+                            <span class="badge badge-success">Passed</span>
+                        {% else %}
+                            <span class="badge badge-secondary">Not Passed</span>
+                        {% endif %}</td>
                 </tr>
+            {% endfor %}
             </tbody>
 
         </table>
@@ -31,19 +38,18 @@
                 <th>Jira/TestRail:</th>
                 <th>Actual Qty</th>
                 <th>Required Qty</th>
-
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
+            {% for item in jiraHours %}
+                <tr>
+                    <td>{{ item.title }}</td>
+                    <td></td>
+                    <td>{{ item.requiredHours }}</td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
 {% endblock %}
+

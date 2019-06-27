@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Service\QaAgent\SkillTestType;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -25,6 +26,11 @@ class QaSkillTest
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $link;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     */
+    private $type;
 
     public function getId(): ?int
     {
@@ -52,6 +58,20 @@ class QaSkillTest
     {
         $this->link = $link;
 
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        if (!in_array($type, SkillTestType::getAvailableTypes(), true)) {
+            throw new \InvalidArgumentException("Invalid type");
+        }
+        $this->type = $type;
         return $this;
     }
 }
