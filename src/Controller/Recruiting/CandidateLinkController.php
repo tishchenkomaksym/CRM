@@ -14,7 +14,6 @@ use App\Repository\CandidateLinkRepository;
 use App\Repository\CandidateRepository;
 use App\Repository\VacancyLinkRepository;
 use App\Repository\VacancyRepository;
-
 use App\Service\Candidate\CandidatePhotoDecorator;
 use App\Service\CandidateVacancyHistory\CandidateVacancyHistoryDataProvider;
 use App\Service\Vacancy\CandidateLinkRelationsToCandidate\FormValidators\CandidateLinkSearch;
